@@ -29,7 +29,9 @@ deploy/offline-windows/packaging/config/my_runtime.ini
 # ── macOS ─────────────────────────────────────────────────────────────────────
 .DS_Store
 .AppleDouble
+._*
 *.swp
+*.bak.*
 
 # ── 编辑器 ───────────────────────────────────────────────────────────────────
 .idea/
