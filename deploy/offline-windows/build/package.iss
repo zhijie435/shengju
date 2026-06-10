@@ -27,9 +27,11 @@ DefaultGroupName={#AppName}
 AllowNoIcons=no
 OutputDir=..\dist
 OutputBaseFilename=sjrcw-installer-v{#AppVersion}
-Compression=lzma2/ultra64
-SolidCompression=yes
-LZMANumBlockThreads=4
+; Use separate LZMA process to access all available RAM (avoids Out of Memory
+; when packaging node_modules + Chromium runtime, 30k+ files / ~500MB).
+Compression=lzma2/max
+SolidCompression=no
+LZMAUseSeparateProcess=yes
 WizardStyle=modern
 WizardSizePercent=130
 ShowLanguageDialog=no
