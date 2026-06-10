@@ -1,0 +1,198 @@
+name: 构建 Windows 离线安装包
+
+on:
+  # 手动触发（在 GitHub 网页 Actions 标签页点击 "Run workflow"）
+  workflow_dispatch:
+    inputs:
+      version:
+        description: '版本号（如 1.0.0）'
+        required: true
+        default: '1.0.0'
+  # 推送到 main/master 时自动触发（可删除此段如不需要自动构建）
+  push:
+    branches: [main, master]
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - 'deploy/offline-windows/**'
+
+# 必须在 Windows 上运行，才能获得正确的原生模块二进制
+jobs:
+  build:
+    runs-on: windows-latest   # Windows Server 2022, x64
+    timeout-minutes: 60
+
+    steps:
+      # ── 1. 拉取代码 ────────────────────────────────────────────────────────
+      - name: 拉取代码
+        uses: actions/checkout@v4
+
+      # ── 2. 配置 Node.js v20 ───────────────────────────────────────────────
+      - name: 配置 Node.js v20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # ── 3. 构建 4 个前端 ──────────────────────────────────────────────────
+      - name: 安装并构建 exam-admin
+        working-directory: frontend/exam-admin
+        run: |
+          npm install
+          npm run build
+
+      - name: 安装并构建 exam-student
+        working-directory: frontend/exam-student
+        run: |
+          npm install
+          npm run build
+
+      - name: 安装并构建 exam-grader
+        working-directory: frontend/exam-grader
+        run: |
+          npm install
+          npm run build
+
+      - name: 安装并构建 exam-super-admin
+        working-directory: frontend/exam-super-admin
+        run: |
+          npm install
+          npm run build
+
+      # ── 4. 安装后端依赖（Windows x64 原生模块 + Puppeteer Chromium）──────
+      - name: 安装后端依赖（Windows 原生模块）
+        working-directory: backend
+        env:
+          # 让 Puppeteer 把 Chromium 下载到打包目录
+          PUPPETEER_CACHE_DIR: ${{ github.workspace }}\deploy\offline-windows\packaging\runtime\chromium
+          PUPPETEER_SKIP_DOWNLOAD: 'false'
+        run: |
+          npm ci --omit=dev
+
+      # ── 5. 准备 packaging/app 目录 ────────────────────────────────────────
+      - name: 准备打包目录结构
+        shell: pwsh
+        run: |
+          $pkg = "deploy\offline-windows\packaging"
+          New-Item -ItemType Directory -Force -Path "$pkg\app\backend"
+          New-Item -ItemType Directory -Force -Path "$pkg\app\frontend"
+          New-Item -ItemType Directory -Force -Path "$pkg\data"
+          New-Item -ItemType Directory -Force -Path "$pkg\logs"
+          New-Item -ItemType Directory -Force -Path "$pkg\runtime\chromium"
+          New-Item -ItemType Directory -Force -Path "deploy\offline-windows\dist"
+
+          # 复制后端（排除 .env 和本地 .cache）
+          $exclude = @('.env', 'node_modules\.cache', '.git', 'uploads\*')
+          Copy-Item -Path "backend\*" -Destination "$pkg\app\backend\" -Recurse -Force -Exclude $exclude
+
+          # 删除 macOS 版 .node 二进制，只保留 Windows 版
+          Get-ChildItem "$pkg\app\backend\node_modules" -Recurse -Filter "*.node" |
+            Where-Object { $_.FullName -notmatch "win32" -and $_.Name -ne "*.node" } |
+            ForEach-Object { Write-Host "保留: $($_.FullName)" }
+
+          # 复制各前端 dist
+          foreach ($app in @("exam-admin","exam-student","exam-grader","exam-super-admin")) {
+            $src = "frontend\$app\dist"
+            $dst = "$pkg\app\frontend\$app\dist"
+            if (Test-Path $src) {
+              New-Item -ItemType Directory -Force -Path $dst
+              Copy-Item -Path "$src\*" -Destination $dst -Recurse -Force
+              Write-Host "✓ 复制 $app dist"
+            } else {
+              Write-Warning "未找到 $src"
+            }
+          }
+
+      # ── 6. 下载 Node.js v20 便携版 ────────────────────────────────────────
+      - name: 下载 Node.js v20 LTS 便携版
+        shell: pwsh
+        run: |
+          $pkg = "deploy\offline-windows\packaging"
+          # 获取最新 Node v20 LTS 版本号
+          $latest = (Invoke-RestMethod "https://nodejs.org/dist/latest-v20.x/SHASUMS256.txt") -split "`n" |
+            Select-String "node-v20.*win-x64.zip" | Select-Object -First 1 |
+            ForEach-Object { ($_ -split '\s+')[1].Trim() }
+          $version = ($latest -split '-')[1]
+          $url = "https://nodejs.org/dist/$version/$latest"
+          Write-Host "下载 Node: $url"
+
+          Invoke-WebRequest -Uri $url -OutFile "node-win-x64.zip" -UseBasicParsing
+          Expand-Archive -Path "node-win-x64.zip" -DestinationPath "node-tmp" -Force
+
+          # 把解压出的 node-vXX.X.X-win-x64/ 内容移到 runtime/node/
+          $extractedDir = Get-ChildItem "node-tmp" -Directory | Select-Object -First 1
+          New-Item -ItemType Directory -Force -Path "$pkg\runtime\node"
+          Copy-Item -Path "$($extractedDir.FullName)\*" -Destination "$pkg\runtime\node\" -Recurse -Force
+          Write-Host "✓ Node.js $version 就绪"
+
+      # ── 7. 下载 MariaDB 10.11 便携版 ─────────────────────────────────────
+      - name: 下载 MariaDB 10.11 便携版
+        shell: pwsh
+        run: |
+          $pkg = "deploy\offline-windows\packaging"
+          # MariaDB 10.11 最新稳定版 ZIP（无需安装）
+          $url = "https://downloads.mariadb.org/rest-api/mariadb/10.11/?os=Windows&cpu=x86_64&package=ZIP&full_type=gz"
+          $info = Invoke-RestMethod -Uri $url
+          $zipUrl = $info.releases.'10.11' | Select-Object -ExpandProperty files |
+            Where-Object { $_.package_type -eq "ZIP" -and $_.cpu -eq "x86_64" } |
+            Select-Object -ExpandProperty url | Select-Object -First 1
+
+          if (-not $zipUrl) {
+            # 回退到固定版本 URL
+            $zipUrl = "https://downloads.mariadb.org/mariadb/10.11.10/mariadb-10.11.10-winx64.zip"
+          }
+          Write-Host "下载 MariaDB: $zipUrl"
+
+          Invoke-WebRequest -Uri $zipUrl -OutFile "mariadb.zip" -UseBasicParsing
+          Expand-Archive -Path "mariadb.zip" -DestinationPath "mariadb-tmp" -Force
+
+          $extractedDir = Get-ChildItem "mariadb-tmp" -Directory | Select-Object -First 1
+          New-Item -ItemType Directory -Force -Path "$pkg\runtime\mariadb"
+          Copy-Item -Path "$($extractedDir.FullName)\*" -Destination "$pkg\runtime\mariadb\" -Recurse -Force
+          Write-Host "✓ MariaDB 就绪"
+
+      # ── 8. 确认 Chromium 已下载 ───────────────────────────────────────────
+      - name: 确认 Chromium 路径
+        shell: pwsh
+        run: |
+          $pkg = "deploy\offline-windows\packaging"
+          $chrome = Get-ChildItem "$pkg\runtime\chromium" -Recurse -Filter "chrome.exe" -ErrorAction SilentlyContinue | Select-Object -First 1
+          if ($chrome) {
+            Write-Host "✓ Chromium: $($chrome.FullName)"
+            # 把实际路径写入 .env_template，替换占位符
+            $relPath = $chrome.FullName.Replace((Resolve-Path "$pkg").Path + "\", "")
+            Write-Host "Chromium 相对路径: $relPath"
+          } else {
+            Write-Warning "未找到 Chromium，Word导入/PDF功能将不可用"
+          }
+
+      # ── 9. 安装 Inno Setup 并打包 ─────────────────────────────────────────
+      - name: 安装 Inno Setup 6
+        run: choco install innosetup --yes --no-progress
+
+      - name: 生成安装包 .exe
+        shell: cmd
+        env:
+          APP_VERSION: ${{ github.event.inputs.version || '1.0.0' }}
+        run: |
+          "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" ^
+            /DAppVersion=%APP_VERSION% ^
+            "deploy\offline-windows\build\package.iss"
+
+      # ── 10. 上传安装包为 Artifact ─────────────────────────────────────────
+      - name: 上传安装包
+        uses: actions/upload-artifact@v4
+        with:
+          name: 圣举考试系统_安装包_v${{ github.event.inputs.version || '1.0.0' }}
+          path: deploy/offline-windows/dist/*.exe
+          # 保留 30 天
+          retention-days: 30
+          if-no-files-found: error
+
+      # ── 可选：发布到 GitHub Release ──────────────────────────────────────
+      # - name: 创建 GitHub Release
+      #   if: github.event_name == 'workflow_dispatch'
+      #   uses: softprops/action-gh-release@v1
+      #   with:
+      #     tag_name: v${{ github.event.inputs.version }}
+      #     name: 圣举考试系统 v${{ github.event.inputs.version }}
+      #     files: deploy/offline-windows/dist/*.exe

@@ -1,0 +1,52 @@
+/**
+ * 统一 API 基础地址：按当前访问页面的 origin 设置，保证「其他电脑」通过服务器 IP 访问时，所有接口请求到同一台后端。
+ * 后端只需在一台电脑上启动，其他电脑通过该电脑的 IP:3001 访问即可注册、登录并正常显示数据。
+ * 同时修正「圣举测评系统」等指向笔试系统(3000端口)的链接，使用当前主机名，以便其他电脑可访问。
+ */
+(function () {
+  var o = typeof window !== 'undefined' && window.location && window.location.origin;
+  if (o && (o.indexOf('http://') === 0 || o.indexOf('https://') === 0)) {
+    window.BACKEND_BASE_URL = o.replace(/\/$/, '');
+    window.API_BASE_URL = window.BACKEND_BASE_URL + '/api/v1';
+  } else {
+    window.BACKEND_BASE_URL = 'http://127.0.0.1:3001';
+    window.API_BASE_URL = 'http://127.0.0.1:3001/api/v1';
+  }
+  // 圣举测评系统/笔试系统前端地址：优先使用 EXAM_FRONTEND_URL，其次使用当前 3001 服务下的 /exam
+  var loc = typeof window !== 'undefined' && window.location;
+  (function initExamFrontendConfig() {
+    var envUrl = (typeof window.EXAM_FRONTEND_URL === 'string' && window.EXAM_FRONTEND_URL) || null;
+    if (!envUrl && loc && loc.origin) {
+      envUrl = loc.origin.replace(/\/+$/, '') + '/exam';
+    }
+    if (!envUrl) {
+      envUrl = 'http://127.0.0.1:3001/exam';
+    }
+    window.EXAM_SYSTEM_BASE_URL = envUrl.replace(/\/+$/, '');
+    window.EXAM_SYSTEM_APP_URL = window.EXAM_SYSTEM_BASE_URL + '/src/app.html#examSystem';
+    // 试卷/题库 REST 接口在人才库后端（与 /api/v1 同源机），例如 GET /api/exam-papers
+    window.EXAM_REST_API_BASE = window.BACKEND_BASE_URL;
+    // 兼容旧命名：页面若误用 EXAM_API_BASE 请求接口，应落到 REST 基址而非 /exam 静态目录
+    window.EXAM_API_BASE = window.EXAM_REST_API_BASE;
+  })();
+
+  function rewriteExamSystemLinks() {
+    if (typeof document === 'undefined' || !document.querySelectorAll) return;
+    var base = window.EXAM_SYSTEM_BASE_URL || ((typeof location !== 'undefined' && location.origin) ? location.origin.replace(/\/+$/, '') + '/exam' : 'http://127.0.0.1:3001/exam');
+    var appPath = base.replace(/\/+$/, '') + '/src/app.html';
+    // 统一重写原来写死到 localhost:3000 的圣举测评系统链接
+    document.querySelectorAll('a[href^="http://localhost:3000/src/app.html"]').forEach(function (a) {
+      try {
+        var rest = a.getAttribute('href').replace(/^https?:\/\/[^/]+\/src\/app\.html/, '');
+        a.href = appPath + (rest || '#examSystem');
+      } catch (e) {}
+    });
+  }
+  if (typeof document !== 'undefined') {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', rewriteExamSystemLinks);
+    } else {
+      rewriteExamSystemLinks();
+    }
+  }
+})();

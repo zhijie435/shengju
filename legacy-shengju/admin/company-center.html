@@ -1,0 +1,1718 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>企业中心管理 - 圣举人才网管理后台</title>
+    <!-- Tailwind CSS -->
+    <script>(function(){var w=console.warn;console.warn=function(){var m=(arguments[0]!=null&&typeof arguments[0]==='string')?arguments[0]:'';if(m.indexOf('cdn.tailwindcss.com')!==-1||m.indexOf('Tracking Prevention')!==-1)return;return w.apply(console,arguments);};})();</script>
+    <link rel="stylesheet" href="/static/css/tailwind-local.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1E40AF',
+                        secondary: '#3B82F6',
+                        accent: '#60A5FA',
+                        light: '#EFF6FF',
+                        dark: '#1E293B'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow {
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            }
+            .bg-gradient-blue {
+                background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%);
+            }
+            .sidebar-active {
+                background-color: rgba(59, 130, 246, 0.1);
+                border-left: 4px solid #3B82F6;
+            }
+            .card-hover {
+                transition: transform 0.2s, box-shadow 0.2s;
+            }
+            .card-hover:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            }
+        }
+    </style>
+</head>
+<body class="font-sans bg-gray-50">
+    <div class="flex h-screen overflow-hidden">
+        <!-- 侧边栏 -->
+        <aside class="bg-white shadow-md w-64 flex-shrink-0 hidden md:block">
+            <div class="flex items-center justify-center h-16 border-b border-gray-200">
+                <a href="index.html" class="flex items-center space-x-2">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%231E40AF' rx='4'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-size='24' font-weight='bold' fill='white'%3E圣%3C/text%3E%3C/svg%3E" 
+                         alt="圣举人才网" class="h-8 w-8">
+                    <h1 class="text-xl font-bold text-primary">圣举人才网</h1>
+                </a>
+            </div>
+            
+            <nav class="mt-5 px-2">
+                <div class="space-y-1">
+                    <a href="index.html" class="group flex items-center px-2 py-2 text-base font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-primary">
+                        <i class="fa fa-dashboard mr-3 text-gray-400 group-hover:text-primary"></i>
+                        数据概览
+                    </a>
+                    
+                    <div class="group">
+                        <button class="flex items-center w-full px-2 py-2 text-base font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-primary user-management-toggle">
+                            <i class="fa fa-users mr-3 text-gray-400 group-hover:text-primary"></i>
+                            用户管理
+                            <i class="fa fa-chevron-down ml-2 text-xs transition-transform duration-200 user-management-icon"></i>
+                        </button>
+                        <div class="mt-1 pl-10 space-y-1 user-management-submenu">
+                            <a href="jobseekers.html" class="block px-2 py-2 text-sm font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-primary">
+                                求职者管理
+                            </a>
+                            <a href="enterprise-management.html" class="block px-2 py-2 text-sm font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-primary">
+                                企业端管理
+                            </a>
+                            <a href="talent-pool.html" class="block px-2 py-2 text-sm font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-primary">
+                                人才池管理
+                            </a>
+                        </div>
+                    </div>
+
+                    
+                    <a href="assessments.html" class="group flex items-center px-2 py-2 text-base font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-primary">
+                        <i class="fa fa-line-chart mr-3 text-gray-400 group-hover:text-primary"></i>
+                        测评管理
+                    </a>
+                    
+                    <a href="company-center.html" class="sidebar-active group flex items-center px-2 py-2 text-base font-medium rounded-md">
+                        <i class="fa fa-cubes mr-3 text-primary"></i>
+                        企业中心管理
+                    </a>
+                    
+                    <a href="report-templates.html" class="group flex items-center px-2 py-2 text-base font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-primary">
+                        <i class="fa fa-file-text-o mr-3 text-gray-400 group-hover:text-primary"></i>
+                        报告模板管理
+                    </a>
+                    
+                    <a href="enterprise-management.html" class="group flex items-center px-2 py-2 text-base font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-primary">
+                        <i class="fa fa-building mr-3 text-gray-400 group-hover:text-primary"></i>
+                        企业管理
+                    </a>
+                    
+                    <a href="settings.html" class="group flex items-center px-2 py-2 text-base font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-primary">
+                        <i class="fa fa-cog mr-3 text-gray-400 group-hover:text-primary"></i>
+                        系统设置
+                    </a>
+                    <a href="../enterprise/company-center.html" target="_blank" class="group flex items-center px-2 py-2 text-base font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-primary">
+                        <i class="fa fa-external-link mr-3 text-gray-400 group-hover:text-primary"></i>
+                        企业端视图
+                    </a>
+                </div>
+            </nav>
+        </aside>
+        
+        <!-- 主内容区 -->
+        <div class="flex flex-col flex-1 overflow-hidden">
+            <!-- 顶部导航栏 -->
+            <header class="bg-white shadow-sm z-10">
+                <div class="px-4 sm:px-6 lg:px-8">
+                    <div class="flex justify-between items-center h-16">
+                        <!-- 移动端菜单按钮 -->
+                        <button class="md:hidden text-gray-500 focus:outline-none" id="menu-toggle">
+                            <i class="fa fa-bars text-xl"></i>
+                        </button>
+                        
+                        <!-- 搜索框 -->
+                        <div class="flex-1 max-w-md ml-4 md:ml-8">
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fa fa-search text-gray-400"></i>
+                                </div>
+                                <input type="text" placeholder="搜索企业、公告或岗位..." class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-gray-50 placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:border-primary focus:ring-1 focus:ring-primary sm:text-sm">
+                            </div>
+                        </div>
+                        
+                        <!-- 用户菜单 -->
+                        <div class="ml-4 flex items-center md:ml-6">
+                            <button class="p-1 rounded-full text-gray-400 hover:text-primary focus:outline-none">
+                                <i class="fa fa-bell text-xl"></i>
+                                <span class="absolute top-3 right-3 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-500 rounded-full">
+                                    3
+                                </span>
+                            </button>
+                            
+                            <div class="ml-3 relative">
+                                <div>
+                                    <button class="max-w-xs bg-gray-800 flex items-center text-sm rounded-full focus:outline-none" id="user-menu-button">
+                                        <span class="sr-only">打开用户菜单</span>
+                                        <img class="h-8 w-8 rounded-full" src="https://ui-avatars.com/api/?name=管理员&background=1E40AF&color=fff" alt="">
+                                    </button>
+                                </div>
+                                
+                                <div class="hidden origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button">
+                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
+                                        退出登录
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- 移动端侧边栏 -->
+            <div class="md:hidden hidden bg-white shadow-md w-64 flex-shrink-0 absolute inset-y-0 left-0 z-20" id="mobile-sidebar">
+                <div class="flex items-center justify-between h-16 border-b border-gray-200 px-4">
+                    <a href="index.html" class="flex items-center space-x-2">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%231E40AF' rx='4'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-size='24' font-weight='bold' fill='white'%3E圣%3C/text%3E%3C/svg%3E" 
+                             alt="圣举人才网" class="h-8 w-8">
+                        <h1 class="text-xl font-bold text-primary">圣举人才网</h1>
+                    </a>
+                    <button class="text-gray-500 focus:outline-none" id="close-sidebar">
+                        <i class="fa fa-times text-xl"></i>
+                    </button>
+                </div>
+                
+                <nav class="mt-5 px-2">
+                    <div class="space-y-1">
+                        <a href="index.html" class="group flex items-center px-2 py-2 text-base font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-primary">
+                            <i class="fa fa-dashboard mr-3 text-gray-400 group-hover:text-primary"></i>
+                            数据概览
+                        </a>
+                        
+                        <div class="group">
+                            <button class="flex items-center w-full px-2 py-2 text-base font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-primary user-management-toggle">
+                                <i class="fa fa-users mr-3 text-gray-400 group-hover:text-primary"></i>
+                                用户管理
+                                <i class="fa fa-chevron-down ml-2 text-xs transition-transform duration-200 user-management-icon"></i>
+                            </button>
+                            <div class="mt-1 pl-10 space-y-1 user-management-submenu">
+                                <a href="jobseekers.html" class="block px-2 py-2 text-sm font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-primary">
+                                    求职者管理
+                                </a>
+                                <a href="enterprise-management.html" class="block px-2 py-2 text-sm font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-primary">
+                                    企业端管理
+                                </a>
+                                <a href="talent-pool.html" class="block px-2 py-2 text-sm font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-primary">
+                                    人才池管理
+                                </a>
+                            </div>
+                        </div>
+
+                        
+                        <a href="assessments.html" class="group flex items-center px-2 py-2 text-base font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-primary">
+                            <i class="fa fa-line-chart mr-3 text-gray-400 group-hover:text-primary"></i>
+                            测评管理
+                        </a>
+                        
+                        <a href="company-center.html" class="sidebar-active group flex items-center px-2 py-2 text-base font-medium rounded-md">
+                            <i class="fa fa-cubes mr-3 text-primary"></i>
+                            企业中心管理
+                        </a>
+                        
+                        <a href="report-templates.html" class="group flex items-center px-2 py-2 text-base font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-primary">
+                            <i class="fa fa-file-text-o mr-3 text-gray-400 group-hover:text-primary"></i>
+                            报告模板管理
+                        </a>
+                        
+                        <a href="enterprise-management.html" class="group flex items-center px-2 py-2 text-base font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-primary">
+                            <i class="fa fa-building mr-3 text-gray-400 group-hover:text-primary"></i>
+                            企业管理
+                        </a>
+                        
+                        <a href="settings.html" class="group flex items-center px-2 py-2 text-base font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-primary">
+                            <i class="fa fa-cog mr-3 text-gray-400 group-hover:text-primary"></i>
+                            系统设置
+                        </a>
+                        <a href="../enterprise/company-center.html" target="_blank" class="group flex items-center px-2 py-2 text-base font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-primary">
+                            <i class="fa fa-external-link mr-3 text-gray-400 group-hover:text-primary"></i>
+                            企业端视图
+                        </a>
+                    </div>
+                </nav>
+            </div>
+            
+            <!-- 内容滚动区域 -->
+            <main class="flex-1 overflow-y-auto">
+                <div class="container mx-auto px-4 py-6">
+                    <!-- 页面标题 -->
+                    <div class="mb-8">
+                        <h1 class="text-2xl font-bold text-gray-900">企业中心管理</h1>
+                        <p class="mt-1 text-gray-600">统一管理企业端各模块功能，包括企业状况、招聘岗位、数据分析和模块监测</p>
+                    </div>
+
+                    <!-- 企业端模块管理选项卡 -->
+                    <div class="mb-6">
+                        <div class="border-b border-gray-200">
+                            <nav class="flex space-x-8 overflow-x-auto pb-2">
+                                <button class="tab-btn px-1 py-4 text-sm font-medium border-b-2 border-primary text-primary" data-tab="company-status">企业状况管理</button>
+                                <button class="tab-btn px-1 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="custom-service">定制服务方案</button>
+                                <button class="tab-btn px-1 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="ai-reports">AI分析报告模板</button>
+                                <button class="tab-btn px-1 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="enterprise-jobs">企业招聘岗位</button>
+                                <button class="tab-btn px-1 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="data-sync">数据同步管理</button>
+                                <button class="tab-btn px-1 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="module-monitoring">模块监测统计</button>
+                            </nav>
+                        </div>
+                    </div>
+
+                    <!-- 企业状况管理 -->
+                    <div id="company-status" class="tab-content block">
+                        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                            <div class="flex justify-between items-center mb-6">
+                                <h2 class="text-xl font-semibold text-gray-800">企业基本信息</h2>
+                                <button class="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary/90 flex items-center">
+                                    <i class="fa fa-plus mr-2"></i>添加企业
+                                </button>
+                            </div>
+                            
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">企业名称</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">行业分类</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">规模</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">注册时间</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">状态</th>
+                                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        <tr class="hover:bg-gray-50">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="flex items-center">
+                                                    <img class="h-10 w-10 rounded-md" src="https://ui-avatars.com/api/?name=XX科技&background=1E40AF&color=fff" alt="">
+                                                    <div class="ml-4">
+                                                        <div class="text-sm font-medium text-gray-900">XX科技有限公司</div>
+                                                        <div class="text-sm text-gray-500">高新技术企业</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm text-gray-900">信息技术</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm text-gray-900">50-200人</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm text-gray-500">2018-06-15</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">正常</span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                <button class="text-primary hover:text-primary/80 mr-3">编辑</button>
+                                                <button class="text-secondary hover:text-secondary/80 mr-3">查看详情</button>
+                                                <button class="text-gray-500 hover:text-gray-700">禁用</button>
+                                            </td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="flex items-center">
+                                                    <img class="h-10 w-10 rounded-md" src="https://ui-avatars.com/api/?name=未来金融&background=1E40AF&color=fff" alt="">
+                                                    <div class="ml-4">
+                                                        <div class="text-sm font-medium text-gray-900">未来金融科技有限公司</div>
+                                                        <div class="text-sm text-gray-500">金融科技</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm text-gray-900">金融</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm text-gray-900">200-500人</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm text-gray-500">2015-03-22</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">正常</span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                <button class="text-primary hover:text-primary/80 mr-3">编辑</button>
+                                                <button class="text-secondary hover:text-secondary/80 mr-3">查看详情</button>
+                                                <button class="text-gray-500 hover:text-gray-700">禁用</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <div class="mt-6 flex justify-between items-center">
+                                <div class="text-sm text-gray-500">显示 1-2 条，共 2 条</div>
+                                <div class="flex space-x-2">
+                                    <button class="px-3 py-1 rounded border border-gray-300 text-gray-500 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                                        <i class="fa fa-angle-left"></i>
+                                    </button>
+                                    <button class="px-3 py-1 rounded border border-primary bg-primary text-white">1</button>
+                                    <button class="px-3 py-1 rounded border border-gray-300 text-gray-500 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                                        <i class="fa fa-angle-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI分析报告模板 -->
+                    <div id="ai-reports" class="tab-content hidden">
+                        <!-- 这里是AI分析报告模板内容 -->
+                    </div>
+
+                    <!-- 企业招聘岗位 -->
+                    <div id="enterprise-jobs" class="tab-content hidden">
+                        <!-- 这里是企业招聘岗位内容 -->
+                    </div>
+
+                    <!-- 数据同步管理 -->
+                    <div id="data-sync" class="tab-content hidden">
+                        <!-- 这里是数据同步管理内容 -->
+                    </div>
+
+                    <!-- 定制服务方案 -->
+                    <div id="custom-service" class="tab-content hidden">
+                        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                            <div class="flex justify-between items-center mb-6">
+                                <h2 class="text-xl font-semibold text-gray-800">定制服务方案管理</h2>
+                                <div class="flex space-x-3">
+                                    <button class="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary/90 flex items-center">
+                                        <i class="fa fa-plus mr-2"></i>创建方案
+                                    </button>
+                                    <button id="sync-custom-service" class="bg-secondary text-white px-4 py-2 rounded-md hover:bg-secondary/90 flex items-center">
+                                        <i class="fa fa-refresh mr-2"></i>同步数据
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- 搜索和筛选 -->
+                            <div class="flex flex-wrap gap-4 mb-6">
+                                <div class="relative flex-grow max-w-md">
+                                    <input type="text" placeholder="搜索方案名称、企业名称" class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
+                                    <i class="fa fa-search absolute left-3 top-3 text-gray-400"></i>
+                                </div>
+                                <select class="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
+                                    <option>全部状态</option>
+                                    <option>已启用</option>
+                                    <option>已禁用</option>
+                                    <option>待审批</option>
+                                </select>
+                                <select class="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
+                                    <option>全部企业</option>
+                                    <option>XX科技有限公司</option>
+                                    <option>未来金融科技有限公司</option>
+                                </select>
+                            </div>
+                            
+                            <!-- 服务方案列表 -->
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">方案名称</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">所属企业</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">服务类型</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">价格</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">创建时间</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">状态</th>
+                                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        <tr class="hover:bg-gray-50">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm font-medium text-gray-900">高级人才测评方案</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="flex items-center">
+                                                    <img class="h-8 w-8 rounded-md" src="https://ui-avatars.com/api/?name=XX科技&background=1E40AF&color=fff" alt="">
+                                                    <span class="ml-2 text-sm text-gray-500">XX科技有限公司</span>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">人才测评</span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm text-gray-900">¥29,800/年</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm text-gray-500">2023-08-15</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">已启用</span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                <button class="text-primary hover:text-primary/80 mr-3">编辑</button>
+                                                <button class="text-secondary hover:text-secondary/80 mr-3">查看详情</button>
+                                                <button class="text-gray-500 hover:text-gray-700">禁用</button>
+                                            </td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm font-medium text-gray-900">金融人才定制方案</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="flex items-center">
+                                                    <img class="h-8 w-8 rounded-md" src="https://ui-avatars.com/api/?name=未来金融&background=1E40AF&color=fff" alt="">
+                                                    <span class="ml-2 text-sm text-gray-500">未来金融科技有限公司</span>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">综合服务</span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm text-gray-900">¥49,800/年</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm text-gray-500">2023-09-01</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">已启用</span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                <button class="text-primary hover:text-primary/80 mr-3">编辑</button>
+                                                <button class="text-secondary hover:text-secondary/80 mr-3">查看详情</button>
+                                                <button class="text-gray-500 hover:text-gray-700">禁用</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <div class="mt-6 flex justify-between items-center">
+                                <div class="text-sm text-gray-500">显示 1-2 条，共 2 条</div>
+                                <div class="flex space-x-2">
+                                    <button class="px-3 py-1 rounded border border-gray-300 text-gray-500 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                                        <i class="fa fa-angle-left"></i>
+                                    </button>
+                                    <button class="px-3 py-1 rounded border border-primary bg-primary text-white">1</button>
+                                    <button class="px-3 py-1 rounded border border-gray-300 text-gray-500 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                                        <i class="fa fa-angle-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 模块监测统计 -->
+                    <div id="module-monitoring" class="tab-content hidden">
+                        <!-- 这里是模块监测统计内容 -->
+                    </div>
+                            </div>
+
+                            <!-- 企业活跃度排行 -->
+                            <div class="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+                                <h3 class="text-lg font-medium text-gray-900 mb-4">企业活跃度排行</h3>
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-gray-200">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">排名</th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">企业名称</th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">测评使用次数</th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">活跃用户数</th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">平均完成率</th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">环比增长</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white divide-y divide-gray-200">
+                                            <tr class="hover:bg-gray-50">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="flex items-center">
+                                                        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-amber-100 text-amber-800 font-semibold">1</span>
+                                                    </div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm font-medium text-gray-900">XX科技有限公司</div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm text-gray-900">156</div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm text-gray-900">28</div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm text-gray-900">92.3%</div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="flex items-center text-green-500">
+                                                        <i class="fa fa-arrow-up mr-1"></i>
+                                                        <span class="text-sm font-medium">15.6%</span>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="flex items-center">
+                                                        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-gray-800 font-semibold">2</span>
+                                                    </div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm font-medium text-gray-900">未来金融科技有限公司</div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm text-gray-900">102</div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm text-gray-900">19</div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm text-gray-900">88.7%</div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="flex items-center text-green-500">
+                                                        <i class="fa fa-arrow-up mr-1"></i>
+                                                        <span class="text-sm font-medium">8.2%</span>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="flex items-center">
+                                                        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-amber-100 text-amber-800 font-semibold">3</span>
+                                                    </div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm font-medium text-gray-900">星辰教育科技有限公司</div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm text-gray-900">87</div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm text-gray-900">15</div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm text-gray-900">79.5%</div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="flex items-center text-red-500">
+                                                        <i class="fa fa-arrow-down mr-1"></i>
+                                                        <span class="text-sm font-medium">3.1%</span>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="flex items-center">
+                                                        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-gray-800 font-semibold">4</span>
+                                                    </div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm font-medium text-gray-900">创新医疗科技有限公司</div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm text-gray-900">78</div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm text-gray-900">12</div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm text-gray-900">85.2%</div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="flex items-center text-green-500">
+                                                        <i class="fa fa-arrow-up mr-1"></i>
+                                                        <span class="text-sm font-medium">11.8%</span>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="flex items-center">
+                                                        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-gray-800 font-semibold">5</span>
+                                                    </div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm font-medium text-gray-900">智慧城市建设有限公司</div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm text-gray-900">63</div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm text-gray-900">10</div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm text-gray-900">81.9%</div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="flex items-center text-green-500">
+                                                        <i class="fa fa-arrow-up mr-1"></i>
+                                                        <span class="text-sm font-medium">5.3%</span>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div class="mt-6 flex justify-between items-center">
+                                    <div class="text-sm text-gray-500">显示 1-5 条，共 42 条</div>
+                                    <div class="flex space-x-2">
+                                        <button class="px-3 py-1 rounded border border-gray-300 text-gray-500 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                                            <i class="fa fa-angle-left"></i>
+                                        </button>
+                                        <button class="px-3 py-1 rounded border border-primary bg-primary text-white">1</button>
+                                        <button class="px-3 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-50">2</button>
+                                        <button class="px-3 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-50">3</button>
+                                        <button class="px-3 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-50">4</button>
+                                        <button class="px-3 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-50">5</button>
+                                        <button class="px-3 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-50">
+                                            <i class="fa fa-angle-right"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI分析报告模板 -->
+                    <div id="ai-reports" class="tab-content hidden">
+                        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                            <div class="flex justify-between items-center mb-6">
+                                <h2 class="text-xl font-semibold text-gray-800">AI分析报告模板</h2>
+                                <button class="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary/90 flex items-center">
+                                    <i class="fa fa-plus mr-2"></i>创建模板
+                                </button>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                <div class="bg-white border border-gray-200 rounded-lg p-5 card-hover">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="text-lg font-medium text-gray-900">企业运营分析报告</h3>
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">标准模板</span>
+                                    </div>
+                                    <p class="text-gray-600 text-sm mb-4">包含市场分析、人才流动、招聘效果等多个维度的综合分析报告</p>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-xs text-gray-500">更新时间: 2023-07-15</span>
+                                        <div class="flex space-x-2">
+                                            <button class="text-primary hover:text-primary/80 text-sm">编辑</button>
+                                            <button class="text-secondary hover:text-secondary/80 text-sm">预览</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-white border border-gray-200 rounded-lg p-5 card-hover">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="text-lg font-medium text-gray-900">人才画像分析报告</h3>
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">常用模板</span>
+                                    </div>
+                                    <p class="text-gray-600 text-sm mb-4">深入分析企业人才结构、能力分布和发展潜力的专业报告</p>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-xs text-gray-500">更新时间: 2023-08-02</span>
+                                        <div class="flex space-x-2">
+                                            <button class="text-primary hover:text-primary/80 text-sm">编辑</button>
+                                            <button class="text-secondary hover:text-secondary/80 text-sm">预览</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-white border border-gray-200 rounded-lg p-5 card-hover">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="text-lg font-medium text-gray-900">招聘ROI分析报告</h3>
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-amber-100 text-amber-800">新增模板</span>
+                                    </div>
+                                    <p class="text-gray-600 text-sm mb-4">专注于招聘投入产出比分析，帮助企业优化招聘策略和预算</p>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-xs text-gray-500">更新时间: 2023-09-10</span>
+                                        <div class="flex space-x-2">
+                                            <button class="text-primary hover:text-primary/80 text-sm">编辑</button>
+                                            <button class="text-secondary hover:text-secondary/80 text-sm">预览</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 模块监测统计 -->
+                    <div id="module-monitoring" class="tab-content hidden">
+                        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                            <div class="flex justify-between items-center mb-6">
+                                <h2 class="text-xl font-semibold text-gray-800">企业端模块使用监测</h2>
+                                <div class="flex space-x-3">
+                                    <select class="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
+                                        <option>近7天</option>
+                                        <option selected>近30天</option>
+                                        <option>近90天</option>
+                                        <option>自定义</option>
+                                    </select>
+                                    <button class="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary/90 flex items-center">
+                                        <i class="fa fa-download mr-2"></i>导出数据
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- 模块使用统计图表 -->
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                                <div class="bg-white border border-gray-200 rounded-lg p-4">
+                                    <h3 class="text-lg font-medium text-gray-900 mb-4">模块使用活跃度</h3>
+                                    <div class="h-64">
+                                        <canvas id="moduleActivityChart"></canvas>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-white border border-gray-200 rounded-lg p-4">
+                                    <h3 class="text-lg font-medium text-gray-900 mb-4">企业使用分布</h3>
+                                    <div class="h-64">
+                                        <canvas id="enterpriseDistributionChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 模块使用详情表格 -->
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">模块名称</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">使用企业数</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">总使用次数</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">平均使用时长</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">同比增长</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        <tr class="hover:bg-gray-50">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="flex items-center">
+                                                    <i class="fa fa-user-circle text-primary mr-3"></i>
+                                                    <div class="text-sm font-medium text-gray-900">人才测评</div>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm text-gray-900">45</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm text-gray-900">1,234</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm text-gray-900">25分钟</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">+12.5%</span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                <button class="text-primary hover:text-primary/80">查看详情</button>
+                                            </td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="flex items-center">
+                                                    <i class="fa fa-briefcase text-primary mr-3"></i>
+                                                    <div class="text-sm font-medium text-gray-900">岗位管理</div>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm text-gray-900">67</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm text-gray-900">2,890</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm text-gray-900">18分钟</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">+8.3%</span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                <button class="text-primary hover:text-primary/80">查看详情</button>
+                                            </td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="flex items-center">
+                                                    <i class="fa fa-file-text-o text-primary mr-3"></i>
+                                                    <div class="text-sm font-medium text-gray-900">报告生成</div>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm text-gray-900">38</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm text-gray-900">956</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm text-gray-900">12分钟</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">-2.1%</span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                <button class="text-primary hover:text-primary/80">查看详情</button>
+                                            </td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="flex items-center">
+                                                    <i class="fa fa-cog text-primary mr-3"></i>
+                                                    <div class="text-sm font-medium text-gray-900">系统设置</div>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm text-gray-900">52</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm text-gray-900">678</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm text-gray-900">8分钟</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">+5.7%</span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                <button class="text-primary hover:text-primary/80">查看详情</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <div class="mt-6 flex justify-between items-center">
+                                <div class="text-sm text-gray-500">显示 1-4 条，共 4 条</div>
+                                <div class="flex space-x-2">
+                                    <button class="px-3 py-1 rounded border border-gray-300 text-gray-500 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                                        <i class="fa fa-angle-left"></i>
+                                    </button>
+                                    <button class="px-3 py-1 rounded border border-primary bg-primary text-white">1</button>
+                                    <button class="px-3 py-1 rounded border border-gray-300 text-gray-500 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                                        <i class="fa fa-angle-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 企业招聘岗位 -->
+                    <div id="enterprise-jobs" class="tab-content hidden">
+                        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                            <div class="flex justify-between items-center mb-6">
+                                <h2 class="text-xl font-semibold text-gray-800">企业招聘岗位管理</h2>
+                                <div class="flex space-x-3">
+                                    <select class="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
+                                        <option>全部企业</option>
+                                        <option>XX科技有限公司</option>
+                                        <option>未来金融科技有限公司</option>
+                                    </select>
+                                    <button class="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary/90 flex items-center">
+                                        <i class="fa fa-filter mr-2"></i>筛选
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">岗位名称</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">所属企业</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">招聘人数</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">薪资范围</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">发布时间</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">状态</th>
+                                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="enterprise-jobs-tbody" class="bg-white divide-y divide-gray-200">
+                                        <!-- 岗位数据将通过JavaScript动态加载 -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <div id="enterprise-jobs-pagination" class="mt-6 flex justify-between items-center">
+                                <!-- 分页内容将通过JavaScript动态加载 -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 数据同步管理 -->
+                    <div id="data-sync" class="tab-content hidden">
+                        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                            <div class="flex justify-between items-center mb-6">
+                                <h2 class="text-xl font-semibold text-gray-800">数据同步管理</h2>
+                                <button class="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary/90 flex items-center">
+                                    <i class="fa fa-refresh mr-2"></i>立即同步
+                                </button>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                <div class="bg-blue-50 border border-blue-100 rounded-lg p-5">
+                                    <h3 class="text-lg font-medium text-gray-900 mb-3">同步状态概览</h3>
+                                    <div class="space-y-4">
+                                        <div>
+                                            <div class="flex justify-between items-center mb-1">
+                                                <span class="text-sm font-medium text-gray-700">企业基本信息</span>
+                                                <span class="text-xs font-semibold bg-green-100 text-green-800 px-2 py-0.5 rounded">已同步</span>
+                                            </div>
+                                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                                <div class="bg-green-600 h-2 rounded-full" style="width: 100%"></div>
+                                            </div>
+                                            <span class="text-xs text-gray-500 block mt-1">上次同步: 2023-09-15 08:30:00</span>
+                                        </div>
+                                        <div>
+                                            <div class="flex justify-between items-center mb-1">
+                                                <span class="text-sm font-medium text-gray-700">招聘岗位数据</span>
+                                                <span class="text-xs font-semibold bg-green-100 text-green-800 px-2 py-0.5 rounded">已同步</span>
+                                            </div>
+                                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                                <div class="bg-green-600 h-2 rounded-full" style="width: 100%"></div>
+                                            </div>
+                                            <span class="text-xs text-gray-500 block mt-1">上次同步: 2023-09-15 09:15:00</span>
+                                        </div>
+                                        <div>
+                                            <div class="flex justify-between items-center mb-1">
+                                                <span class="text-sm font-medium text-gray-700">AI分析报告</span>
+                                                <span class="text-xs font-semibold bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded">同步中</span>
+                                            </div>
+                                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                                <div class="bg-yellow-600 h-2 rounded-full" style="width: 65%"></div>
+                                            </div>
+                                            <span class="text-xs text-gray-500 block mt-1">预计完成时间: 2023-09-15 10:00:00</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-gray-50 border border-gray-200 rounded-lg p-5">
+                                    <h3 class="text-lg font-medium text-gray-900 mb-3">同步设置</h3>
+                                    <div class="space-y-4">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <label class="text-sm font-medium text-gray-700">自动同步</label>
+                                                <p class="text-xs text-gray-500 mt-1">定期自动同步企业端和管理端数据</p>
+                                            </div>
+                                            <label class="relative inline-flex items-center cursor-pointer">
+                                                <input type="checkbox" checked class="sr-only peer">
+                                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                                            </label>
+                                        </div>
+                                        <div>
+                                            <label class="text-sm font-medium text-gray-700 block mb-2">同步频率</label>
+                                            <select class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
+                                                <option>每小时</option>
+                                                <option>每4小时</option>
+                                                <option selected>每天</option>
+                                                <option>每周</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="text-sm font-medium text-gray-700 block mb-2">同步时间</label>
+                                            <input type="time" value="08:00" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white border border-gray-200 rounded-lg p-5">
+                                <h3 class="text-lg font-medium text-gray-900 mb-3">同步日志</h3>
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-gray-200">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">同步时间</th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">同步类型</th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作人</th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">状态</th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">备注</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white divide-y divide-gray-200">
+                                            <tr>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm text-gray-900">2023-09-15 09:15:00</div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm text-gray-500">招聘岗位数据</div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm text-gray-900">系统自动</div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">成功</span>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                    同步了3个岗位数据
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm text-gray-900">2023-09-15 08:30:00</div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm text-gray-500">企业基本信息</div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm text-gray-900">系统自动</div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">成功</span>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                    同步了2家企业信息
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // 移动端侧边栏切换
+        document.getElementById('menu-toggle').addEventListener('click', function() {
+            document.getElementById('mobile-sidebar').classList.toggle('hidden');
+        });
+        
+        document.getElementById('close-sidebar').addEventListener('click', function() {
+            document.getElementById('mobile-sidebar').classList.add('hidden');
+        });
+        
+        // 标签页切换
+        document.querySelectorAll('.tab-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                // 隐藏所有标签内容
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.add('hidden');
+                });
+                
+                // 移除所有按钮的活动状态
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.remove('border-primary', 'text-primary');
+                    btn.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+                });
+                
+                // 显示选中的标签内容
+                const tabId = button.getAttribute('data-tab');
+                document.getElementById(tabId).classList.remove('hidden');
+                
+                // 设置当前按钮为活动状态
+                button.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+                button.classList.add('border-primary', 'text-primary');
+            });
+        });
+        
+        // 用户菜单切换
+        document.getElementById('user-menu-button').addEventListener('click', function() {
+            const menu = this.nextElementSibling;
+            menu.classList.toggle('hidden');
+        });
+        
+        // 点击其他区域关闭用户菜单
+        document.addEventListener('click', function(event) {
+            const userMenuButton = document.getElementById('user-menu-button');
+            const userMenu = userMenuButton.nextElementSibling;
+            
+            if (!userMenuButton.contains(event.target) && !userMenu.contains(event.target)) {
+                userMenu.classList.add('hidden');
+            }
+        });
+        
+        // 数据同步功能模拟
+        function setupSyncButton(buttonSelector, syncType) {
+            const button = document.querySelector(buttonSelector);
+            if (button) {
+                button.addEventListener('click', function() {
+                    const originalText = this.innerHTML;
+                    const originalClass = this.className;
+                    
+                    this.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i>同步中...';
+                    this.disabled = true;
+                    
+                    // 显示同步进度条 (如果存在)
+                    const progressBar = document.getElementById('sync-progress-bar');
+                    const progressStatus = document.getElementById('sync-progress-status');
+                    
+                    if (progressBar) {
+                        progressBar.style.width = '0%';
+                        progressBar.parentElement.classList.remove('hidden');
+                    }
+                    
+                    if (progressStatus) {
+                        progressStatus.textContent = `正在同步${syncType}数据...`;
+                    }
+                    
+                    // 模拟同步过程，显示进度
+                    let progress = 0;
+                    const interval = setInterval(() => {
+                        progress += Math.random() * 20;
+                        if (progress > 100) progress = 100;
+                        
+                        if (progressBar) {
+                            progressBar.style.width = `${progress}%`;
+                        }
+                        
+                        if (progress === 100) {
+                            clearInterval(interval);
+                            
+                            this.innerHTML = '<i class="fa fa-check mr-2"></i>同步完成';
+                            this.classList.remove('bg-primary', 'bg-secondary');
+                            this.classList.add('bg-green-600');
+                            
+                            if (progressStatus) {
+                                progressStatus.textContent = `${syncType}数据同步完成`;
+                            }
+                            
+                            // 显示成功通知
+                            showSyncNotification(`${syncType}数据同步成功`, 'success');
+                            
+                            setTimeout(() => {
+                                this.innerHTML = originalText;
+                                this.className = originalClass;
+                                this.disabled = false;
+                                
+                                if (progressBar) {
+                                    progressBar.parentElement.classList.add('hidden');
+                                }
+                            }, 2000);
+                        }
+                    }, 500);
+                });
+            }
+        }
+        
+        // 显示同步通知
+        function showSyncNotification(message, type) {
+            // 创建通知元素
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 px-6 py-3 rounded-md shadow-lg z-50 transition-opacity duration-300 ${type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`;
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fa fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} mr-2"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            // 添加到页面
+            document.body.appendChild(notification);
+            
+            // 3秒后自动消失
+            setTimeout(() => {
+                notification.classList.add('opacity-0');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+        
+        // 初始化所有同步按钮
+        setupSyncButton('button:has(.fa-refresh)', '');
+        setupSyncButton('#sync-custom-service', '定制服务方案');
+        
+        // 为数据同步管理页面添加进度条容器
+        const dataSyncTab = document.getElementById('data-sync');
+        if (dataSyncTab) {
+            const progressContainer = document.createElement('div');
+            progressContainer.className = 'mb-6 hidden';
+            progressContainer.innerHTML = `
+                <div class="bg-blue-50 p-4 rounded-lg">
+                    <div class="flex justify-between items-center mb-2">
+                        <span id="sync-progress-status" class="text-sm font-medium text-blue-800">同步进度</span>
+                    </div>
+                    <div class="w-full bg-blue-100 rounded-full h-2.5">
+                        <div id="sync-progress-bar" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%"></div>
+                    </div>
+                </div>
+            `;
+            
+            // 插入到同步按钮后面
+            const syncButtonContainer = dataSyncTab.querySelector('.flex.justify-between');
+            if (syncButtonContainer) {
+                syncButtonContainer.parentNode.insertBefore(progressContainer, syncButtonContainer.nextSibling);
+            }
+        }
+        
+        // 图表初始化和功能实现
+        document.addEventListener('DOMContentLoaded', function() {
+            // 用户管理下拉菜单切换
+            const userManagementToggle = document.querySelector('.user-management-toggle');
+            const userManagementSubmenu = document.querySelector('.user-management-submenu');
+            const userManagementIcon = document.querySelector('.user-management-icon');
+            
+            if (userManagementToggle && userManagementSubmenu && userManagementIcon) {
+                userManagementToggle.addEventListener('click', function() {
+                    userManagementSubmenu.classList.toggle('hidden');
+                    userManagementIcon.classList.toggle('rotate-180');
+                });
+                
+                // 点击页面其他地方关闭下拉菜单
+                document.addEventListener('click', function(event) {
+                    if (!userManagementToggle.contains(event.target) && !userManagementSubmenu.contains(event.target)) {
+                        userManagementSubmenu.classList.add('hidden');
+                        userManagementIcon.classList.remove('rotate-180');
+                    }
+                });
+            }
+            
+            // 模块活跃度图表
+            if (document.getElementById('moduleActivityChart')) {
+                const moduleActivityCtx = document.getElementById('moduleActivityChart').getContext('2d');
+                const moduleActivityChart = new Chart(moduleActivityCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['1月', '2月', '3月', '4月', '5月', '6月'],
+                        datasets: [
+                            {
+                                label: '人才测评',
+                                data: [65, 59, 80, 81, 56, 55],
+                                borderColor: '#3B82F6',
+                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                tension: 0.3
+                            },
+                            {
+                                label: '岗位管理',
+                                data: [28, 48, 40, 19, 86, 27],
+                                borderColor: '#10B981',
+                                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                                tension: 0.3
+                            },
+                            {
+                                label: '报告生成',
+                                data: [35, 25, 35, 55, 40, 45],
+                                borderColor: '#F59E0B',
+                                backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                                tension: 0.3
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // 企业分布图表
+            if (document.getElementById('enterpriseDistributionChart')) {
+                const enterpriseDistributionCtx = document.getElementById('enterpriseDistributionChart').getContext('2d');
+                const enterpriseDistributionChart = new Chart(enterpriseDistributionCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['信息技术', '金融', '教育', '医疗健康', '其他'],
+                        datasets: [{
+                            data: [35, 25, 15, 15, 10],
+                            backgroundColor: [
+                                '#3B82F6',
+                                '#10B981',
+                                '#F59E0B',
+                                '#EF4444',
+                                '#8B5CF6'
+                            ],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // 测评包管理功能
+            initAssessmentPackageManagement();
+            
+            // 初始化标签页切换
+            initTabSwitching();
+        });
+        
+        // 标签页切换功能
+        function initTabSwitching() {
+            const tabs = document.querySelectorAll('.tab-nav a');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    
+                    // 移除所有活跃状态
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.add('hidden'));
+                    
+                    // 添加当前活跃状态
+                    tab.classList.add('active');
+                    const targetId = tab.getAttribute('href').substring(1);
+                    document.getElementById(targetId).classList.remove('hidden');
+                    
+                    // 如果切换到企业数据分析选项卡，初始化图表
+                    if (targetId === 'company-analysis') {
+                        initAnalysisCharts();
+                    }
+                });
+            });
+        }
+        
+        // 测评包管理功能初始化
+        function initAssessmentPackageManagement() {
+            // 更新价格功能
+            const updatePriceButtons = document.querySelectorAll('.update-price');
+            updatePriceButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                      const packageId = this.getAttribute('data-package-id');
+                      // 此处可以添加功能实现
+                  });
+              });
+          }
+          
+          // 用户管理下拉菜单交互逻辑
+          function initUserManagementDropdown() {
+              const toggleButtons = document.querySelectorAll('.user-management-toggle');
+              const submenus = document.querySelectorAll('.user-management-submenu');
+              const icons = document.querySelectorAll('.user-management-icon');
+              
+              toggleButtons.forEach((button, index) => {
+                  button.addEventListener('click', () => {
+                      const isExpanded = submenus[index].classList.contains('hidden');
+                      
+                      // 关闭所有其他下拉菜单
+                      submenus.forEach((submenu, i) => {
+                          if (i !== index) {
+                              submenu.classList.add('hidden');
+                              icons[i].classList.remove('rotate-180');
+                          }
+                      });
+                      
+                      // 切换当前下拉菜单
+                      if (isExpanded) {
+                          submenus[index].classList.remove('hidden');
+                          icons[index].classList.add('rotate-180');
+                      } else {
+                          submenus[index].classList.add('hidden');
+                          icons[index].classList.remove('rotate-180');
+                      }
+                  });
+              });
+              
+              // 点击其他区域关闭下拉菜单
+              document.addEventListener('click', (e) => {
+                  const isClickInsideToggle = Array.from(toggleButtons).some(button => 
+                      button.contains(e.target)
+                  );
+                  
+                  if (!isClickInsideToggle) {
+                      submenus.forEach((submenu, index) => {
+                          submenu.classList.add('hidden');
+                          icons[index].classList.remove('rotate-180');
+                      });
+                  }
+              });
+          }
+          
+          // 初始化用户管理下拉菜单
+          initUserManagementDropdown();
+          
+          // ========== 企业招聘岗位管理 ==========
+          let allEnterpriseJobsData = [];
+          let filteredEnterpriseJobsData = [];
+          let enterpriseJobsCurrentPage = 1;
+          const enterpriseJobsItemsPerPage = 10;
+          let enterpriseJobsFilters = {
+              company: '全部企业',
+              keyword: ''
+          };
+          
+          // 加载所有企业的岗位数据
+          function loadEnterpriseJobsData() {
+              try {
+                  const savedJobs = localStorage.getItem('allCompanyJobsData');
+                  if (savedJobs) {
+                      allEnterpriseJobsData = JSON.parse(savedJobs);
+                      // 只显示状态为"招聘中"的岗位
+                      allEnterpriseJobsData = allEnterpriseJobsData.filter(job => job.status === '招聘中');
+                  } else {
+                      allEnterpriseJobsData = [];
+                  }
+                  applyEnterpriseJobsFilters();
+              } catch (e) {
+                  console.error('读取岗位数据失败:', e);
+                  allEnterpriseJobsData = [];
+                  applyEnterpriseJobsFilters();
+              }
+          }
+          
+          // 应用筛选条件
+          function applyEnterpriseJobsFilters() {
+              filteredEnterpriseJobsData = allEnterpriseJobsData.filter(job => {
+                  // 企业筛选
+                  if (enterpriseJobsFilters.company !== '全部企业' && job.companyName !== enterpriseJobsFilters.company) {
+                      return false;
+                  }
+                  
+                  // 关键词搜索
+                  if (enterpriseJobsFilters.keyword) {
+                      const keyword = enterpriseJobsFilters.keyword.toLowerCase();
+                      const searchText = `${job.name} ${job.companyName || ''} ${job.description || ''}`.toLowerCase();
+                      if (!searchText.includes(keyword)) {
+                          return false;
+                      }
+                  }
+                  
+                  return true;
+              });
+              
+              // 按发布时间排序（最新的在前）
+              filteredEnterpriseJobsData.sort((a, b) => {
+                  return new Date(b.publishDate) - new Date(a.publishDate);
+              });
+              
+              enterpriseJobsCurrentPage = 1;
+              renderEnterpriseJobsList();
+              renderEnterpriseJobsPagination();
+          }
+          
+          // 渲染岗位列表
+          function renderEnterpriseJobsList() {
+              const tbody = document.getElementById('enterprise-jobs-tbody');
+              if (!tbody) return;
+              
+              const startIndex = (enterpriseJobsCurrentPage - 1) * enterpriseJobsItemsPerPage;
+              const endIndex = startIndex + enterpriseJobsItemsPerPage;
+              const pageData = filteredEnterpriseJobsData.slice(startIndex, endIndex);
+              
+              if (pageData.length === 0) {
+                  tbody.innerHTML = `
+                      <tr>
+                          <td colspan="7" class="px-6 py-4 text-center text-gray-500">
+                              暂无岗位数据
+                          </td>
+                      </tr>
+                  `;
+                  return;
+              }
+              
+              tbody.innerHTML = pageData.map(job => {
+                  const statusClass = job.status === '招聘中' ? 'bg-green-100 text-green-800' :
+                                     job.status === '已下线' ? 'bg-gray-100 text-gray-800' :
+                                     'bg-red-100 text-red-800';
+                  
+                  return `
+                      <tr class="hover:bg-gray-50">
+                          <td class="px-6 py-4 whitespace-nowrap">
+                              <div class="text-sm font-medium text-gray-900">${job.name || '未命名岗位'}</div>
+                          </td>
+                          <td class="px-6 py-4 whitespace-nowrap">
+                              <div class="text-sm text-gray-500">${job.companyName || '未知公司'}</div>
+                          </td>
+                          <td class="px-6 py-4 whitespace-nowrap">
+                              <div class="text-sm text-gray-900">${job.recruitCount || 1}人</div>
+                          </td>
+                          <td class="px-6 py-4 whitespace-nowrap">
+                              <div class="text-sm text-gray-900">${job.salary || '面议'}</div>
+                          </td>
+                          <td class="px-6 py-4 whitespace-nowrap">
+                              <div class="text-sm text-gray-900">${job.publishDate || '未知'}</div>
+                          </td>
+                          <td class="px-6 py-4 whitespace-nowrap">
+                              <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusClass}">${job.status || '招聘中'}</span>
+                          </td>
+                          <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                              <button onclick="viewEnterpriseJob('${job.id}')" class="text-primary hover:text-primary/80 mr-3">查看</button>
+                              <button onclick="editEnterpriseJob('${job.id}')" class="text-primary hover:text-primary/80 mr-3">编辑</button>
+                              <button onclick="offlineEnterpriseJob('${job.id}')" class="text-gray-500 hover:text-gray-700">下架</button>
+                          </td>
+                      </tr>
+                  `;
+              }).join('');
+          }
+          
+          // 渲染分页
+          function renderEnterpriseJobsPagination() {
+              const paginationContainer = document.getElementById('enterprise-jobs-pagination');
+              if (!paginationContainer) return;
+              
+              const totalItems = filteredEnterpriseJobsData.length;
+              const totalPages = Math.ceil(totalItems / enterpriseJobsItemsPerPage);
+              const startIndex = (enterpriseJobsCurrentPage - 1) * enterpriseJobsItemsPerPage + 1;
+              const endIndex = Math.min(enterpriseJobsCurrentPage * enterpriseJobsItemsPerPage, totalItems);
+              
+              let paginationHTML = `
+                  <div class="text-sm text-gray-500">显示 ${startIndex}-${endIndex} 条，共 ${totalItems} 条</div>
+                  <div class="flex space-x-2">
+              `;
+              
+              if (totalPages <= 1) {
+                  paginationHTML += `
+                      <button class="px-3 py-1 rounded border border-gray-300 text-gray-500 opacity-50 cursor-not-allowed" disabled>
+                          <i class="fa fa-angle-left"></i>
+                      </button>
+                      <button class="px-3 py-1 rounded border border-primary bg-primary text-white">1</button>
+                      <button class="px-3 py-1 rounded border border-gray-300 text-gray-500 opacity-50 cursor-not-allowed" disabled>
+                          <i class="fa fa-angle-right"></i>
+                      </button>
+                  `;
+              } else {
+                  paginationHTML += `
+                      <button onclick="changeEnterpriseJobsPage(${enterpriseJobsCurrentPage - 1})" 
+                              class="px-3 py-1 rounded border border-gray-300 text-gray-500 hover:bg-gray-50 ${enterpriseJobsCurrentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}"
+                              ${enterpriseJobsCurrentPage === 1 ? 'disabled' : ''}>
+                          <i class="fa fa-angle-left"></i>
+                      </button>
+                  `;
+                  
+                  const maxVisiblePages = 5;
+                  let startPage = Math.max(1, enterpriseJobsCurrentPage - Math.floor(maxVisiblePages / 2));
+                  let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+                  
+                  if (endPage - startPage < maxVisiblePages - 1) {
+                      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+                  }
+                  
+                  if (startPage > 1) {
+                      paginationHTML += `
+                          <button onclick="changeEnterpriseJobsPage(1)" class="px-3 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-50">1</button>
+                      `;
+                      if (startPage > 2) {
+                          paginationHTML += `<span class="px-3 py-1 text-gray-500">...</span>`;
+                      }
+                  }
+                  
+                  for (let i = startPage; i <= endPage; i++) {
+                      paginationHTML += `
+                          <button onclick="changeEnterpriseJobsPage(${i})" 
+                                  class="px-3 py-1 rounded border ${i === enterpriseJobsCurrentPage ? 'border-primary bg-primary text-white' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}">
+                              ${i}
+                          </button>
+                      `;
+                  }
+                  
+                  if (endPage < totalPages) {
+                      if (endPage < totalPages - 1) {
+                          paginationHTML += `<span class="px-3 py-1 text-gray-500">...</span>`;
+                      }
+                      paginationHTML += `
+                          <button onclick="changeEnterpriseJobsPage(${totalPages})" class="px-3 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-50">${totalPages}</button>
+                      `;
+                  }
+                  
+                  paginationHTML += `
+                      <button onclick="changeEnterpriseJobsPage(${enterpriseJobsCurrentPage + 1})" 
+                              class="px-3 py-1 rounded border border-gray-300 text-gray-500 hover:bg-gray-50 ${enterpriseJobsCurrentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''}"
+                              ${enterpriseJobsCurrentPage === totalPages ? 'disabled' : ''}>
+                          <i class="fa fa-angle-right"></i>
+                      </button>
+                  `;
+              }
+              
+              paginationHTML += `</div>`;
+              paginationContainer.innerHTML = paginationHTML;
+          }
+          
+          // 切换页码
+          window.changeEnterpriseJobsPage = function(page) {
+              const totalPages = Math.ceil(filteredEnterpriseJobsData.length / enterpriseJobsItemsPerPage);
+              if (page < 1 || page > totalPages) return;
+              enterpriseJobsCurrentPage = page;
+              renderEnterpriseJobsList();
+              renderEnterpriseJobsPagination();
+          };
+          
+          // 查看岗位详情
+          window.viewEnterpriseJob = function(jobId) {
+              const job = allEnterpriseJobsData.find(j => j.id === jobId);
+              if (!job) {
+                  alert('岗位不存在');
+                  return;
+              }
+              alert(`岗位名称：${job.name}\n公司：${job.companyName}\n薪资：${job.salary}\n描述：${job.description || '暂无描述'}`);
+          };
+          
+          // 编辑岗位
+          window.editEnterpriseJob = function(jobId) {
+              alert('编辑功能待实现');
+          };
+          
+          // 下架岗位
+          window.offlineEnterpriseJob = function(jobId) {
+              if (!confirm('确定要下架此岗位吗？')) return;
+              
+              try {
+                  const savedJobs = localStorage.getItem('allCompanyJobsData');
+                  if (savedJobs) {
+                      let allJobs = JSON.parse(savedJobs);
+                      const jobIndex = allJobs.findIndex(j => j.id === jobId);
+                      if (jobIndex > -1) {
+                          allJobs[jobIndex].status = '已下线';
+                          localStorage.setItem('allCompanyJobsData', JSON.stringify(allJobs));
+                          loadEnterpriseJobsData();
+                          alert('岗位已下架');
+                      }
+                  }
+              } catch (e) {
+                  console.error('下架岗位失败:', e);
+                  alert('操作失败');
+              }
+          };
+          
+          // 更新企业筛选下拉框
+          function updateCompanyFilter() {
+              const companySelect = document.querySelector('#enterprise-jobs select');
+              if (!companySelect) return;
+              
+              // 获取所有不重复的企业名称
+              const companies = [...new Set(allEnterpriseJobsData.map(job => job.companyName).filter(Boolean))];
+              
+              companySelect.innerHTML = '<option>全部企业</option>' + 
+                  companies.map(company => `<option value="${company}">${company}</option>`).join('');
+              
+              companySelect.addEventListener('change', function() {
+                  enterpriseJobsFilters.company = this.value;
+                  applyEnterpriseJobsFilters();
+              });
+          }
+          
+          // 选项卡切换时加载数据
+          document.addEventListener('DOMContentLoaded', function() {
+              const tabBtns = document.querySelectorAll('.tab-btn[data-tab]');
+              tabBtns.forEach(btn => {
+                  btn.addEventListener('click', function() {
+                      const tabId = this.getAttribute('data-tab');
+                      if (tabId === 'enterprise-jobs') {
+                          loadEnterpriseJobsData();
+                      }
+                  });
+              });
+              
+              // 监听岗位数据更新
+              window.addEventListener('storage', function(e) {
+                  if (e.key === 'allCompanyJobsData') {
+                      loadEnterpriseJobsData();
+                  }
+              });
+              
+              // 初始加载（如果当前显示的是岗位管理标签页）
+              const activeTab = document.querySelector('.tab-btn[data-tab="enterprise-jobs"]');
+              if (activeTab && activeTab.classList.contains('border-primary')) {
+                  loadEnterpriseJobsData();
+              }
+          });
+      </script>
+</body>
+</html>

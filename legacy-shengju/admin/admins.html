@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理员账号与权限 - 圣举人才网</title>
+    <script src="../js/api-config.js"></script>
+    <script>(function(){var w=console.warn;console.warn=function(){var m=(arguments[0]!=null&&typeof arguments[0]==='string')?arguments[0]:'';if(m.indexOf('cdn.tailwindcss.com')!==-1||m.indexOf('Tracking Prevention')!==-1)return;return w.apply(console,arguments);};})();</script>
+    <link rel="stylesheet" href="/static/css/tailwind-local.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <script>
+        tailwind.config = { theme: { extend: { colors: { primary: '#1E40AF', secondary: '#3B82F6' }, fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] } } } };
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities { .sidebar-active { background-color: rgba(59, 130, 246, 0.1); border-left: 4px solid #3B82F6; } }
+    </style>
+</head>
+<body class="font-sans bg-gray-50">
+    <div class="flex h-screen overflow-hidden">
+        <aside class="bg-white shadow-md w-64 flex-shrink-0 hidden md:block">
+            <div class="flex items-center justify-center h-16 border-b border-gray-200">
+                <a href="../index.html" class="flex items-center space-x-2">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%231E40AF' rx='4'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='24' font-weight='bold' fill='white'%3E圣%3C/text%3E%3C/svg%3E" alt="圣举人才网" class="h-8 w-8">
+                    <h1 class="text-xl font-bold text-primary">圣举人才网</h1>
+                </a>
+            </div>
+            <nav class="mt-5 px-2">
+                <a href="index.html" class="group flex items-center px-2 py-2 text-base font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-primary"><i class="fa fa-dashboard mr-3 text-gray-400 group-hover:text-primary"></i>数据概览</a>
+                <a href="jobseekers.html" class="group flex items-center px-2 py-2 text-base font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-primary"><i class="fa fa-users mr-3 text-gray-400 group-hover:text-primary"></i>求职者管理</a>
+                <a href="enterprise-management.html" class="group flex items-center px-2 py-2 text-base font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-primary"><i class="fa fa-building mr-3 text-gray-400 group-hover:text-primary"></i>企业端管理</a>
+                <a href="talent-pool.html" class="group flex items-center px-2 py-2 text-base font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-primary"><i class="fa fa-database mr-3 text-gray-400 group-hover:text-primary"></i>人才池管理</a>
+                <a href="assessments.html" class="group flex items-center px-2 py-2 text-base font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-primary"><i class="fa fa-line-chart mr-3 text-gray-400 group-hover:text-primary"></i>测评管理</a>
+                <a href="report-templates.html" class="group flex items-center px-2 py-2 text-base font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-primary"><i class="fa fa-file-text-o mr-3 text-gray-400 group-hover:text-primary"></i>报告模板管理</a>
+                <a href="settings.html" class="group flex items-center px-2 py-2 text-base font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-primary"><i class="fa fa-cog mr-3 text-gray-400 group-hover:text-primary"></i>系统设置</a>
+                <a href="admins.html" class="sidebar-active group flex items-center px-2 py-2 text-base font-medium rounded-md"><i class="fa fa-user-secret mr-3 text-primary"></i>管理员账号</a>
+            </nav>
+        </aside>
+        <div class="flex flex-col flex-1 overflow-hidden">
+            <header class="bg-white shadow-sm z-10">
+                <div class="px-4 sm:px-6 lg:px-8">
+                    <div class="flex justify-between items-center h-16">
+                        <button class="md:hidden text-gray-500 focus:outline-none" id="menu-toggle"><i class="fa fa-bars text-xl"></i></button>
+                        <div class="flex items-center space-x-4">
+                            <a href="../index.html" class="flex items-center space-x-2 hover:opacity-80"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%231E40AF' rx='4'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-size='24' font-weight='bold'%3E圣%3C/text%3E%3C/svg%3E" alt="Logo" class="h-8 w-8"><h1 class="text-xl font-bold text-primary hidden sm:block">圣举人才网</h1></a>
+                            <a href="../index.html" class="text-sm text-gray-500 hover:text-primary hidden md:block">返回首页 <i class="fa fa-arrow-left ml-1"></i></a>
+                        </div>
+                        <div class="ml-3 relative">
+                            <button class="max-w-xs bg-gray-800 flex items-center text-sm rounded-full focus:outline-none" id="user-menu-button">
+                                <img id="user-avatar-img" class="h-8 w-8 rounded-full" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="" data-navbar-avatar>
+                            </button>
+                            <div class="hidden origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 z-50" id="user-menu">
+                                <div class="px-4 py-2 border-b border-gray-200"><p class="text-sm font-medium text-gray-900" id="user-menu-name">管理员</p><p class="text-xs text-gray-500" id="user-menu-email">-</p></div>
+                                <a href="../index.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><i class="fa fa-home mr-2"></i>返回首页</a>
+                                <a href="settings.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><i class="fa fa-cog mr-2"></i>系统设置</a>
+                                <a href="admins.html" class="block px-4 py-2 text-sm text-primary bg-blue-50"><i class="fa fa-user-secret mr-2"></i>管理员账号</a>
+                                <div class="border-t border-gray-100"></div>
+                                <a href="#" onclick="logout(); return false;" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><i class="fa fa-sign-out mr-2"></i>退出登录</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <main class="flex-1 overflow-auto">
+                <div class="py-6 px-4 sm:px-6 lg:px-8">
+                    <h1 class="text-2xl font-bold text-gray-900 mb-2">管理员账号与权限</h1>
+                    <p class="text-gray-600 mb-6">在此维护多名后台管理员及其模块权限；账号与密码存储在数据库用户表（qms_users，role=admin），权限记录在表 compat_admin_portal_permissions。</p>
+                    <div id="no-permission-tip" class="hidden mb-4 p-4 bg-amber-50 border border-amber-200 rounded-lg text-amber-800 text-sm">您没有「管理员账号」权限，仅可查看当前账号信息。如需管理其他管理员，请联系超级管理员开通权限。</div>
+                    <div id="new-admin-panel" class="mb-6 bg-white shadow rounded-lg p-6 border border-gray-100">
+                        <h2 class="text-lg font-semibold text-gray-900 mb-2">新建管理员</h2>
+                        <p class="text-sm text-gray-500 mb-4">新建账号默认可访问除「管理员账号」外的各模块；创建后可在下表为其勾选「管理员账号」以允许其继续新增其他管理员。</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">用户名 <span class="text-red-500">*</span></label>
+                                <input type="text" id="new-admin-username" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" placeholder="登录用户名" autocomplete="off">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">初始密码 <span class="text-red-500">*</span></label>
+                                <input type="password" id="new-admin-password" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" placeholder="至少 6 位" autocomplete="new-password">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">邮箱（可选）</label>
+                                <input type="email" id="new-admin-email" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" placeholder="admin@example.com">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">姓名（可选）</label>
+                                <input type="text" id="new-admin-realname" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" placeholder="显示名称">
+                            </div>
+                        </div>
+                        <button type="button" id="new-admin-submit" class="mt-4 px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-blue-700">创建管理员</button>
+                    </div>
+                    <div class="bg-white shadow rounded-lg overflow-hidden">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">用户名</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">邮箱</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">手机</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">权限</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">状态</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admins-tbody" class="bg-white divide-y divide-gray-200"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- 编辑权限弹窗 -->
+    <div id="edit-modal" class="fixed inset-0 z-50 hidden">
+        <div class="fixed inset-0 bg-black bg-opacity-50" onclick="closeEditModal()"></div>
+        <div class="fixed inset-0 flex items-center justify-center p-4">
+            <div class="bg-white rounded-xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-hidden flex flex-col">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h2 class="text-xl font-bold text-gray-900">编辑权限</h2>
+                    <p class="text-sm text-gray-500 mt-1" id="edit-modal-subtitle">-</p>
+                </div>
+                <div class="px-6 py-4 overflow-y-auto flex-1">
+                    <div class="grid grid-cols-2 gap-3" id="edit-modal-permissions"></div>
+                </div>
+                <div class="px-6 py-4 border-t border-gray-200 flex justify-end gap-2">
+                    <button type="button" onclick="closeEditModal()" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">取消</button>
+                    <button type="button" onclick="saveAdminPermissions()" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.API_BASE_URL || 'http://127.0.0.1:3001/api/v1';
+        function getToken() { return sessionStorage.getItem('authToken') || localStorage.getItem('authToken') || ''; }
+        function authHeaders() { const t = getToken(); return t ? { 'Authorization': 'Bearer ' + t, 'Content-Type': 'application/json' } : { 'Content-Type': 'application/json' }; }
+        function logout() { localStorage.removeItem('authToken'); sessionStorage.removeItem('authToken'); localStorage.removeItem('userType'); localStorage.removeItem('username'); window.location.href = '../index.html'; }
+
+        let permissionOptions = [];
+        let adminList = [];
+        let currentMe = null;
+        let editingAdminId = null;
+
+        function permissionLabel(key) {
+            const o = permissionOptions.find(p => p.key === key); return o ? o.name : key;
+        }
+        function formatPerms(perms) {
+            if (perms == null || (Array.isArray(perms) && perms.includes('*'))) return '超级管理员（全部）';
+            if (!Array.isArray(perms)) return '-';
+            return perms.map(k => permissionLabel(k)).filter(Boolean).join('、') || '无';
+        }
+
+        async function loadMe() {
+            try {
+                const res = await fetch(API_BASE + '/admin/admins/me', { headers: authHeaders() });
+                const json = await res.json();
+                if (json && json.success && json.data) {
+                    currentMe = json.data;
+                    permissionOptions = json.data.permissionOptions || [];
+                    return currentMe;
+                }
+            } catch (e) { console.warn('loadMe error', e); }
+            return null;
+        }
+
+        async function loadAdmins() {
+            try {
+                const res = await fetch(API_BASE + '/admin/admins', { headers: authHeaders() });
+                if (res.status === 403) {
+                    document.getElementById('no-permission-tip').classList.remove('hidden');
+                    if (currentMe) adminList = [currentMe];
+                    else adminList = [];
+                    permissionOptions = currentMe && currentMe.permissionOptions ? currentMe.permissionOptions : [];
+                    renderTable();
+                    updateNewAdminPanelVisibility();
+                    return;
+                }
+                const json = await res.json();
+                if (json && json.success && Array.isArray(json.data)) {
+                    adminList = json.data;
+                    if (json.permissionOptions) permissionOptions = json.permissionOptions;
+                } else { adminList = []; }
+            } catch (e) { adminList = []; }
+            renderTable();
+            updateNewAdminPanelVisibility();
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('admins-tbody');
+            const canEdit = adminList.length > 1 || (adminList.length === 1 && !document.getElementById('no-permission-tip').classList.contains('hidden'));
+            tbody.innerHTML = adminList.map(a => {
+                const isMe = currentMe && a.id === currentMe.id;
+                const statusText = a.status === 1 ? '正常' : '禁用';
+                const statusClass = a.status === 1 ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800';
+                const canEditThis = canEdit && (a.id !== currentMe.id || hasAdminsPermission());
+                return `<tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${a.id}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${escapeHtml(a.username)} ${isMe ? '<span class="text-primary text-xs">(当前)</span>' : ''}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${escapeHtml(a.email)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${escapeHtml(a.phone || '-')}</td>
+                    <td class="px-6 py-4 text-sm text-gray-600">${formatPerms(a.adminPermissions)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap"><span class="px-2 py-1 text-xs font-semibold rounded-full ${statusClass}">${statusText}</span></td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm">${canEditThis ? `<button type="button" onclick="openEditModal(${a.id})" class="text-primary hover:text-blue-700">编辑权限</button>` : '-'}</td>
+                </tr>`;
+            }).join('') || '<tr><td colspan="7" class="px-6 py-8 text-center text-gray-500">暂无管理员数据</td></tr>';
+        }
+
+        function hasAdminsPermission() {
+            if (!currentMe) return false;
+            if (currentMe.adminPermissions == null) return true;
+            if (currentMe.adminPermissions === '*') return true;
+            return Array.isArray(currentMe.adminPermissions) && currentMe.adminPermissions.includes('admins');
+        }
+
+        function updateNewAdminPanelVisibility() {
+            var el = document.getElementById('new-admin-panel');
+            if (!el) return;
+            if (hasAdminsPermission()) el.classList.remove('hidden');
+            else el.classList.add('hidden');
+        }
+
+        function escapeHtml(s) {
+            if (s == null) return ''; const d = document.createElement('div'); d.textContent = s; return d.innerHTML;
+        }
+
+        function openEditModal(adminId) {
+            const a = adminList.find(x => x.id === adminId); if (!a) return;
+            editingAdminId = adminId;
+            document.getElementById('edit-modal-subtitle').textContent = a.username + '（' + a.email + '）';
+            const container = document.getElementById('edit-modal-permissions');
+            container.innerHTML = permissionOptions.map(p => {
+                const checked = a.adminPermissions == null || (Array.isArray(a.adminPermissions) && (a.adminPermissions.includes('*') || a.adminPermissions.includes(p.key)));
+                return `<label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="admin-perm-check h-4 w-4 text-primary rounded border-gray-300" data-key="${escapeHtml(p.key)}" ${checked ? 'checked' : ''}><span class="text-sm text-gray-700">${escapeHtml(p.name)}</span></label>`;
+            }).join('');
+            document.getElementById('edit-modal').classList.remove('hidden');
+        }
+
+        function closeEditModal() {
+            editingAdminId = null;
+            document.getElementById('edit-modal').classList.add('hidden');
+        }
+
+        async function saveAdminPermissions() {
+            if (editingAdminId == null) return;
+            const container = document.getElementById('edit-modal-permissions');
+            const checks = container.querySelectorAll('.admin-perm-check');
+            const adminPermissions = [];
+            checks.forEach(cb => { if (cb.checked) adminPermissions.push(cb.getAttribute('data-key')); });
+            try {
+                const res = await fetch(API_BASE + '/admin/admins/' + editingAdminId, {
+                    method: 'PUT',
+                    headers: authHeaders(),
+                    body: JSON.stringify({ adminPermissions })
+                });
+                const json = await res.json().catch(() => ({}));
+                if (res.ok && json.success) {
+                    closeEditModal();
+                    const a = adminList.find(x => x.id === editingAdminId); if (a) a.adminPermissions = adminPermissions;
+                    renderTable();
+                    if (typeof showNotification === 'function') showNotification('保存成功', 'success'); else alert('保存成功');
+                } else {
+                    if (typeof showNotification === 'function') showNotification(json.message || '保存失败', 'error'); else alert(json.message || '保存失败');
+                }
+            } catch (e) {
+                if (typeof showNotification === 'function') showNotification('请求失败', 'error'); else alert('请求失败');
+            }
+        }
+
+        document.getElementById('user-menu-button').addEventListener('click', function() {
+            document.getElementById('user-menu').classList.toggle('hidden');
+        });
+        document.getElementById('menu-toggle').addEventListener('click', function() {
+            document.querySelector('aside').classList.toggle('hidden');
+        });
+
+        document.getElementById('new-admin-submit').addEventListener('click', async function () {
+            if (!hasAdminsPermission()) {
+                alert('无权限创建管理员');
+                return;
+            }
+            var username = (document.getElementById('new-admin-username') || {}).value;
+            username = (username && String(username).trim()) || '';
+            var password = (document.getElementById('new-admin-password') || {}).value || '';
+            var email = (document.getElementById('new-admin-email') || {}).value;
+            email = email != null ? String(email).trim() : '';
+            var real_name = (document.getElementById('new-admin-realname') || {}).value;
+            real_name = real_name != null ? String(real_name).trim() : '';
+            if (!username || !password) {
+                alert('请填写用户名和初始密码');
+                return;
+            }
+            try {
+                var res = await fetch(API_BASE + '/admin/admins', {
+                    method: 'POST',
+                    headers: authHeaders(),
+                    body: JSON.stringify({ username: username, password: password, email: email || null, real_name: real_name || null })
+                });
+                var json = await res.json().catch(function () { return {}; });
+                if (res.ok && json.success) {
+                    document.getElementById('new-admin-username').value = '';
+                    document.getElementById('new-admin-password').value = '';
+                    document.getElementById('new-admin-email').value = '';
+                    document.getElementById('new-admin-realname').value = '';
+                    await loadAdmins();
+                    alert('管理员已创建');
+                } else {
+                    alert((json && json.message) || '创建失败');
+                }
+            } catch (e) {
+                alert('请求失败');
+            }
+        });
+
+        (async function init() {
+            await loadMe();
+            if (currentMe) {
+                document.getElementById('user-menu-name').textContent = currentMe.username || '管理员';
+                document.getElementById('user-menu-email').textContent = currentMe.email || '';
+                const avatar = document.getElementById('user-avatar-img');
+                if (avatar) avatar.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent((currentMe.username || '管').substring(0, 1)) + '&background=1E40AF&color=fff';
+            }
+            await loadAdmins();
+            updateNewAdminPanelVisibility();
+        })();
+    </script>
+    <script src="js/admin-navbar.js"></script>
+</body>
+</html>

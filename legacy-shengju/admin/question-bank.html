@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>题库管理模块已下线</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="../js/api-config.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+</head>
+<body class="min-h-screen bg-gray-50 flex items-center justify-center">
+    <div class="bg-white shadow-lg rounded-xl p-8 max-w-lg w-full text-center">
+        <h1 class="text-2xl font-bold text-gray-900 mb-4">题库管理模块已下线</h1>
+        <p class="text-gray-600 mb-6">
+            原企业端 <strong>题库管理（question-bank.html）</strong> 模块及相关功能已删除。
+        </p>
+        <p class="text-gray-600 mb-6">
+            请在新的 <strong>圣举测评系统</strong> 中管理试卷与试题。
+        </p>
+        <a href="javascript:void(0)"
+           onclick="window.open(window.EXAM_QUESTION_BANK_ENTRY_URL || (window.EXAM_SYSTEM_BASE_URL || (window.BACKEND_BASE_URL || '').replace(/\/+$/, '') + '/exam') + '/src/app.html#questionBank/questions','_blank')"
+           rel="noopener noreferrer"
+           class="inline-flex items-center px-5 py-2.5 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+            进入圣举测评系统
+        </a>
+        <div class="mt-6">
+            <a href="index.html" class="text-sm text-gray-500 hover:text-gray-700">
+                返回管理后台首页
+            </a>
+        </div>
+    </div>
+</body>
+</html>

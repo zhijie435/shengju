@@ -1,0 +1,54 @@
+# 本地一键：MySQL 8 + 笔试 API（含静态前端 dist，由 backend/server.js 挂载）
+# 使用：见同目录 README.md
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: shengju-local-mysql
+    command: >
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+      --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-localExamRoot}
+      MYSQL_DATABASE: ${MAIN_DB_NAME:-question_management_shared}
+    ports:
+      - "${MYSQL_PUBLISH_PORT:-3306}:3306"
+    volumes:
+      - mysql_exam_data:/var/lib/mysql
+      - ./initdb:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 40
+      start_period: 25s
+
+  exam-api:
+    build:
+      context: ../..
+      dockerfile: deploy/local-docker/Dockerfile.backend
+    container_name: shengju-local-exam-api
+    depends_on:
+      mysql:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      DB_HOST: mysql
+      DB_PORT: "3306"
+      DB_USER: root
+      DB_PASSWORD: ${MYSQL_ROOT_PASSWORD:-localExamRoot}
+      MAIN_DB_NAME: ${MAIN_DB_NAME:-question_management_shared}
+      SHENGJU_DB_NAME: ${SHENGJU_DB_NAME:-shengju}
+      PORT: "3000"
+      NODE_ENV: production
+      TRUST_PROXY: "0"
+      JWT_SECRET: ${JWT_SECRET:-local-docker-jwt-change-me}
+    ports:
+      - "${EXAM_API_PORT:-3000}:3000"
+    volumes:
+      - exam_uploads:/workspace/backend/uploads
+
+volumes:
+  mysql_exam_data:
+  exam_uploads:

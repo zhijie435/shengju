@@ -1,0 +1,47 @@
+# ── Node ─────────────────────────────────────────────────────────────────────
+node_modules/
+npm-debug.log*
+.npm
+
+# ── 前端构建产物（CI 重新构建）───────────────────────────────────────────────
+frontend/*/dist/
+frontend/exam-enterprise/
+
+# ── 后端运行时数据 ────────────────────────────────────────────────────────────
+backend/uploads/
+backend/.env
+data/
+logs/
+
+# ── 打包运行时目录（Windows CI 下载填充，不提交到 git）────────────────────────
+deploy/offline-windows/packaging/runtime/
+deploy/offline-windows/packaging/data/
+deploy/offline-windows/packaging/logs/
+deploy/offline-windows/packaging/app/
+deploy/offline-windows/dist/
+deploy/offline-windows/packaging/config/my_runtime.ini
+
+# ── 环境配置 ─────────────────────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+
+# ── macOS ─────────────────────────────────────────────────────────────────────
+.DS_Store
+.AppleDouble
+*.swp
+
+# ── 编辑器 ───────────────────────────────────────────────────────────────────
+.idea/
+.vscode/
+*.code-workspace
+
+# ── Tauri / Rust ─────────────────────────────────────────────────────────────
+src-tauri/target/
+Cargo.lock
+
+# ── 临时文件 ─────────────────────────────────────────────────────────────────
+*.log
+*.tmp
+*.bak
+dist-tauri/

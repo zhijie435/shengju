@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>人才池 - 圣举人才网</title>
+    <!-- 引入Tailwind CSS -->
+    <script>(function(){var w=console.warn;console.warn=function(){var m=(arguments[0]!=null&&typeof arguments[0]==='string')?arguments[0]:'';if(m.indexOf('cdn.tailwindcss.com')!==-1||m.indexOf('Tracking Prevention')!==-1)return;return w.apply(console,arguments);};})();</script>
+    <link rel="stylesheet" href="/static/css/tailwind-local.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../js/api-config.js"></script>
+    <script src="../js/auth-helper.js"></script>
+    <script src="../js/user-navbar.js"></script>
+    <!-- 引入Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <!-- Tailwind配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#10B981',
+                        success: '#22C55E',
+                        warning: '#F59E0B',
+                        danger: '#EF4444',
+                        dark: '#1F2937',
+                        light: '#F9FAFB'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    backgroundImage: {
+                        'gradient-blue': 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)',
+                        'gradient-green': 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+                    },
+                },
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .card-hover {
+                transition: all 0.3s;
+            }
+            .card-hover:hover { box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.05); transform: translateY(-0.25rem); }
+            .btn-primary {
+                background-color: #1E40AF; color: white; padding: 0.5rem 1.5rem; border-radius: 0.5rem; font-weight: 500; transition: background-color 0.15s;
+            }
+            .btn-primary:hover { background-color: #1d4ed8; }
+            .btn-secondary {
+                background-color: white; border: 1px solid #d1d5db; color: #374151; padding: 0.5rem 1.5rem; border-radius: 0.5rem; font-weight: 500; transition: background-color 0.15s;
+            }
+            .btn-secondary:hover { background-color: #f9fafb; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+    <!-- 导航栏 -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+            <!-- Logo -->
+            <div class="flex items-center space-x-2">
+                <a href="../index.html" class="flex items-center space-x-2">
+                    <img data-site-brand-logo src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%231E40AF' rx='4'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-size='24' font-weight='bold' fill='white'%3E圣%3C/text%3E%3C/svg%3E" 
+                         alt="圣举人才网" class="h-10 w-10 rounded-full">
+                    <h1 class="text-2xl font-bold text-primary">圣举人才网</h1>
+                </a>
+                <span class="text-gray-400">|</span>
+                <span class="text-gray-600 font-medium">求职者中心</span>
+            </div>
+            
+            <!-- 导航链接（与首页完全一致） -->
+            <nav class="hidden md:flex items-center space-x-8">
+                <a href="index.html" class="text-primary font-medium border-b-2 border-primary">首页</a>
+                <a href="assessment.html" class="text-gray-700 hover:text-primary font-medium">测评中心</a>
+                <a href="recommendation.html" class="text-gray-700 hover:text-primary font-medium">岗位推荐</a>
+                <a href="announcements.html" class="text-gray-700 hover:text-primary font-medium">招聘公告</a>
+                <a href="talent-pool.html" class="text-gray-700 hover:text-primary font-medium">人才池</a>
+                <a href="payment.html" class="text-gray-700 hover:text-primary font-medium">付费服务</a>
+                <a href="profile.html" class="text-gray-700 hover:text-primary font-medium">个人中心</a>
+            </nav>
+            
+            <!-- 用户菜单 -->
+            <div class="flex items-center space-x-4">
+                <div class="hidden md:flex items-center space-x-2" id="user-menu">
+                    <img id="user-avatar-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="" class="h-8 w-8 rounded-full">
+                    <span class="text-gray-700" id="user-name-display"></span>
+                </div>
+                <button type="button" onclick="showLogoutModal()" class="hidden md:flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition">
+                    <i class="fa fa-sign-out"></i> 退出
+                </button>
+                <button class="md:hidden text-gray-700 focus:outline-none" id="menu-toggle">
+                    <i class="fa fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- 移动端菜单（与首页完全一致） -->
+        <div class="md:hidden hidden bg-white border-t border-gray-200" id="mobile-menu">
+            <div class="container mx-auto px-4 py-2">
+                <a href="index.html" class="block py-2 text-primary font-medium border-l-4 border-primary pl-2">首页</a>
+                <a href="assessment.html" class="block py-2 text-gray-700 hover:text-primary pl-2">测评中心</a>
+                <a href="recommendation.html" class="block py-2 text-gray-700 hover:text-primary pl-2">岗位推荐</a>
+                <a href="announcements.html" class="block py-2 text-gray-700 hover:text-primary pl-2">招聘公告</a>
+                <a href="talent-pool.html" class="block py-2 text-gray-700 hover:text-primary pl-2">人才池</a>
+                <a href="payment.html" class="block py-2 text-gray-700 hover:text-primary pl-2">付费服务</a>
+                <a href="profile.html" class="block py-2 text-gray-700 hover:text-primary pl-2">个人中心</a>
+                <div class="border-t border-gray-200 my-2"></div>
+                <button type="button" onclick="showLogoutModal()" class="block w-full text-left py-2 text-primary font-medium pl-2"><i class="fa fa-sign-out mr-2"></i>退出</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 退出确认弹窗 -->
+    <div id="logout-modal" class="fixed inset-0 z-50 hidden">
+        <div class="fixed inset-0 bg-black bg-opacity-50" onclick="closeLogoutModal()"></div>
+        <div class="fixed inset-0 flex items-center justify-center p-4">
+            <div class="bg-white rounded-xl shadow-xl max-w-sm w-full p-6">
+                <p class="text-center text-gray-800 mb-6">确定要退出登录吗？</p>
+                <div class="flex gap-3">
+                    <button type="button" onclick="closeLogoutModal()" class="flex-1 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">取消</button>
+                    <button type="button" onclick="confirmLogout()" class="flex-1 py-2 bg-primary text-white rounded-lg hover:bg-blue-700">确定退出</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+    function showLogoutModal() { document.getElementById('logout-modal').classList.remove('hidden'); }
+    function closeLogoutModal() { document.getElementById('logout-modal').classList.add('hidden'); }
+    function confirmLogout() {
+        if (typeof AuthHelper !== 'undefined') AuthHelper.clear('jobseeker');
+        else { localStorage.removeItem('authToken'); sessionStorage.removeItem('authToken'); localStorage.removeItem('userId'); localStorage.removeItem('userType'); localStorage.removeItem('username'); }
+        closeLogoutModal();
+        window.location.href = 'login.html';
+    }
+    </script>
+
+    <!-- 主内容区 -->
+    <main>
+        <!-- 页面标题 -->
+        <section class="bg-gradient-blue text-white py-8">
+            <div class="container mx-auto px-4">
+                <h1 class="text-3xl font-bold text-center">精英人才池</h1>
+                <p class="text-center mt-2">加入人才池，获得更多优质项目机会和灵活就业选择</p>
+            </div>
+        </section>
+
+        <!-- 人才池状态和申请 -->
+        <section class="py-10">
+            <div class="container mx-auto px-4">
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="p-6 border-b border-gray-200">
+                        <h2 class="text-xl font-bold text-gray-800">我的人才池状态</h2>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div id="talent-pool-status-content">
+                            <!-- 状态内容将通过JavaScript动态加载 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 项目承接机会 -->
+        <section class="py-10 bg-gray-50">
+            <div class="container mx-auto px-4">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">可承接项目机会</h2>
+                
+                <!-- 项目等级筛选 -->
+                <div class="mb-6 flex flex-wrap gap-2">
+                    <button class="project-level-filter btn-primary active" data-level="all">全部项目</button>
+                    <button class="project-level-filter btn-secondary" data-level="初级">初级项目</button>
+                    <button class="project-level-filter btn-secondary" data-level="中级">中级项目</button>
+                    <button class="project-level-filter btn-secondary" data-level="高级">高级项目</button>
+                    <button class="project-level-filter btn-secondary" data-level="专家级">专家级项目</button>
+                </div>
+                
+                <!-- 项目列表容器 -->
+                <div id="available-projects-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- 项目将通过JavaScript动态加载 -->
+                </div>
+                
+                <div class="text-center mt-8">
+                    <button id="load-more-projects-btn" class="btn-secondary hidden">
+                        查看更多项目 <i class="fa fa-angle-right ml-1"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 项目详情模态框 -->
+        <div id="project-detail-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+            <div class="bg-white rounded-lg shadow-xl max-w-3xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-semibold" id="project-detail-title">项目详情</h3>
+                        <button id="close-project-detail-modal" class="text-gray-500 hover:text-gray-700">
+                            <i class="fa fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    <div id="project-detail-content">
+                        <!-- 项目详情内容将通过JavaScript填充 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- 人才池优势 -->
+        <section class="py-10">
+            <div class="container mx-auto px-4">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">加入人才池的优势</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- 优势1 -->
+                    <div class="bg-white p-6 rounded-lg shadow-md card-hover">
+                        <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mb-4">
+                            <i class="fa fa-briefcase text-xl text-primary"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-800 mb-2">优质项目机会</h3>
+                        <p class="text-gray-600">
+                            优先获得企业发布的高质量项目机会，包括短期项目、灵活就业和兼职工作
+                        </p>
+                    </div>
+                    
+                    <!-- 优势2 -->
+                    <div class="bg-white p-6 rounded-lg shadow-md card-hover">
+                        <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mb-4">
+                            <i class="fa fa-line-chart text-xl text-primary"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-800 mb-2">竞争力薪资</h3>
+                        <p class="text-gray-600">
+                            获得有竞争力的项目报酬，根据技能和经验匹配最合适的薪酬标准
+                        </p>
+                    </div>
+                    
+                    <!-- 优势3 -->
+                    <div class="bg-white p-6 rounded-lg shadow-md card-hover">
+                        <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mb-4">
+                            <i class="fa fa-users text-xl text-primary"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-800 mb-2">专业人脉拓展</h3>
+                        <p class="text-gray-600">
+                            加入专业人才社区，拓展行业人脉，与企业和其他专业人士建立联系
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 常见问题 -->
+        <section class="py-10 bg-gray-50">
+            <div class="container mx-auto px-4">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">常见问题</h2>
+                
+                <div class="max-w-3xl mx-auto">
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                        <!-- 问题1 -->
+                        <div class="border-b border-gray-200">
+                            <button class="faq-toggle w-full text-left px-6 py-4 font-medium flex justify-between items-center">
+                                <span>如何提高加入人才池的成功率？</span>
+                                <i class="fa fa-plus text-gray-400 transition-transform duration-300"></i>
+                            </button>
+                            <div class="faq-content hidden px-6 pb-4 text-gray-600">
+                                <p>提高加入人才池成功率的关键是完善个人简历，确保工作经验和技能真实准确；完成相关专业测评并取得高分；积极参与平台活动，提升个人曝光度；根据自身专业领域有针对性地申请适合的人才池分类。</p>
+                            </div>
+                        </div>
+                        
+                        <!-- 问题2 -->
+                        <div class="border-b border-gray-200">
+                            <button class="faq-toggle w-full text-left px-6 py-4 font-medium flex justify-between items-center">
+                                <span>人才池中的项目是如何匹配给求职者的？</span>
+                                <i class="fa fa-plus text-gray-400 transition-transform duration-300"></i>
+                            </button>
+                            <div class="faq-content hidden px-6 pb-4 text-gray-600">
+                                <p>系统会根据求职者的专业背景、工作经验、测评结果和技能标签等多维度信息，与企业发布的项目需求进行智能匹配。匹配度高的求职者会优先收到项目推荐通知，同时政企端也会根据人才分类查看合适的人才。</p>
+                            </div>
+                        </div>
+                        
+                        <!-- 问题3 -->
+                        <div>
+                            <button class="faq-toggle w-full text-left px-6 py-4 font-medium flex justify-between items-center">
+                                <span>加入人才池是否需要付费？</span>
+                                <i class="fa fa-plus text-gray-400 transition-transform duration-300"></i>
+                            </button>
+                            <div class="faq-content hidden px-6 pb-4 text-gray-600">
+                                <p>基础的人才池加入和项目申请功能是免费的。平台提供付费增值服务，如更精准的项目匹配、简历优化指导、面试辅导等。您可以根据自身需求选择是否使用这些增值服务。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-dark text-white py-10">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- 公司信息 -->
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <img src="https://ui-avatars.com/api/?name=SJ&background=3B82F6&color=fff" 
+                             alt="圣举人才网" class="h-8 w-8">
+                        <h3 class="text-xl font-bold">圣举人才网</h3>
+                    </div>
+                    <p class="text-gray-400 mb-4">
+                        连接优质人才与企业，促进灵活就业和项目合作
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fa fa-weixin text-xl"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fa fa-weibo text-xl"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fa fa-linkedin text-xl"></i></a>
+                    </div>
+                </div>
+                
+                <!-- 快速链接 -->
+                <div>
+                    <h4 class="text-lg font-medium mb-4">快速链接</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">关于我们</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">服务条款</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">隐私政策</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">帮助中心</a></li>
+                    </ul>
+                </div>
+                
+                <!-- 联系方式 -->
+                <div>
+                    <h4 class="text-lg font-medium mb-4">联系方式</h4>
+                    <ul class="space-y-2" id="footer-contact">
+                        <li class="flex items-center"><i class="fa fa-map-marker text-gray-400 mr-2"></i> <span class="text-gray-400" id="footer-address">北京市海淀区中关村大街1号</span></li>
+                        <li class="flex items-center"><i class="fa fa-phone text-gray-400 mr-2"></i> <span class="text-gray-400" id="footer-phone">400-123-4567</span></li>
+                        <li class="flex items-center"><i class="fa fa-envelope text-gray-400 mr-2"></i> <span class="text-gray-400" id="footer-email">contact@shengju.com</span></li>
+                    </ul>
+                </div>
+                
+                <!-- 订阅 -->
+                <div>
+                    <h4 class="text-lg font-medium mb-4">订阅最新资讯</h4>
+                    <p class="text-gray-400 mb-4">获取最新的项目机会和行业动态</p>
+                    <div class="flex">
+                        <input type="email" placeholder="请输入您的邮箱" class="px-4 py-2 rounded-l-lg w-full focus:outline-none text-gray-800">
+                        <button class="bg-primary text-white px-4 rounded-r-lg hover:bg-blue-700 transition">
+                            订阅
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-8 pt-6 text-center text-gray-400">
+                <p id="footer-copyright">&copy; 2025 圣举人才网 版权所有</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // 从管理端基本设置加载底部内容
+        function loadFooterContent() {
+            try {
+                const contactInfo = JSON.parse(localStorage.getItem('contactInfo') || '{}');
+                const siteName = localStorage.getItem('siteName') || '圣举人才网';
+                
+                if (contactInfo.phone) {
+                    const phoneEl = document.getElementById('footer-phone');
+                    if (phoneEl) phoneEl.textContent = contactInfo.phone;
+                }
+                
+                if (contactInfo.email) {
+                    const emailEl = document.getElementById('footer-email');
+                    if (emailEl) emailEl.textContent = contactInfo.email;
+                }
+                
+                if (contactInfo.address) {
+                    const addressEl = document.getElementById('footer-address');
+                    if (addressEl) addressEl.textContent = contactInfo.address;
+                }
+                
+                const copyrightEl = document.getElementById('footer-copyright');
+                if (copyrightEl) {
+                    const year = new Date().getFullYear();
+                    copyrightEl.textContent = `© ${year} ${siteName} 版权所有`;
+                }
+            } catch (e) {
+                console.error('加载底部内容失败:', e);
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // 加载底部内容
+            loadFooterContent();
+            
+            // 监听设置更新事件
+            window.addEventListener('contactInfoUpdated', function(e) {
+                loadFooterContent();
+            });
+            
+            // 移动端菜单切换
+            const menuToggle = document.getElementById('menu-toggle');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            menuToggle.addEventListener('click', function() {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            // 常见问题折叠效果
+            const faqToggles = document.querySelectorAll('.faq-toggle');
+            
+            faqToggles.forEach(toggle => {
+                toggle.addEventListener('click', function() {
+                    const content = this.nextElementSibling;
+                    const icon = this.querySelector('i');
+                    
+                    content.classList.toggle('hidden');
+                    icon.classList.toggle('fa-plus');
+                    icon.classList.toggle('fa-minus');
+                    icon.classList.toggle('rotate-45');
+                });
+            });
+            
+            // ========== API 与人才池状态 ==========
+            const API_BASE_URL = window.API_BASE_URL || 'http://127.0.0.1:3001/api/v1';
+            function getAuthToken() {
+                var a = (typeof AuthHelper !== 'undefined') ? AuthHelper.get('jobseeker') : null;
+                return (a && a.token) || localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+            }
+            async function apiRequest(url, options = {}) {
+                const token = getAuthToken();
+                const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
+                if (token) headers['Authorization'] = 'Bearer ' + token;
+                const res = await fetch(url, { ...options, headers });
+                if (res.status === 401) {
+                    if (typeof AuthHelper !== 'undefined') AuthHelper.clear('jobseeker');
+                    else { localStorage.removeItem('authToken'); sessionStorage.removeItem('authToken'); }
+                    window.location.href = '../index.html';
+                    throw new Error('未登录');
+                }
+                const text = await res.text();
+                if (!text) return null;
+                try { return JSON.parse(text); } catch (e) { throw new Error(text || res.statusText); }
+            }
+            function mapBackendLevelToDisplay(backendLevel) {
+                const map = {
+                    primary: { name: '初级', badge: 'bg-yellow-100 text-yellow-800', icon: 'fa-certificate' },
+                    intermediate: { name: '中级', badge: 'bg-green-100 text-green-800', icon: 'fa-medal' },
+                    advanced: { name: '高级', badge: 'bg-blue-100 text-blue-800', icon: 'fa-trophy' },
+                    expert: { name: '专家级', badge: 'bg-purple-100 text-purple-800', icon: 'fa-star' }
+                };
+                return map[backendLevel] || map.primary;
+            }
+
+            async function evaluateTalentPoolStatus() {
+                const token = getAuthToken();
+                if (token) {
+                    try {
+                        const res = await apiRequest(API_BASE_URL + '/talent-pool/status');
+                        if (res && res.success && res.data) {
+                            const d = res.data;
+                            const canJoin = d.status === 'active';
+                            const level = mapBackendLevelToDisplay(d.level);
+                            const details = {
+                                hasHighScore: (d.maxScore || 0) >= 80,
+                                maxScore: d.maxScore || 0,
+                                assessmentCount: d.maxScore > 0 ? 1 : 0,
+                                resumeCompleteness: d.resumeCompleteness || 0,
+                                workYears: d.workYears || 0
+                            };
+                            renderTalentPoolStatus(canJoin, level, details);
+                            return;
+                        }
+                    } catch (e) {
+                        console.warn('获取人才池状态失败，使用本地数据:', e.message);
+                    }
+                }
+                // 回退：本地计算
+                const assessmentResults = JSON.parse(localStorage.getItem('assessmentResults') || '[]');
+                const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+                let hasHighScore = false;
+                let maxScore = 0;
+                let assessmentCount = assessmentResults.length;
+                assessmentResults.forEach(result => {
+                    const score = result.score || result.totalScore || 0;
+                    if (score >= 80) hasHighScore = true;
+                    if (score > maxScore) maxScore = score;
+                });
+                const resumeCompleteness = calculateResumeCompleteness(userProfile);
+                const workExperience = userProfile.workExperience || [];
+                const workYears = calculateWorkYears(workExperience);
+                const canJoin = hasHighScore;
+                const level = calculateTalentLevel(maxScore, resumeCompleteness, workYears);
+                renderTalentPoolStatus(canJoin, level, {
+                    hasHighScore,
+                    maxScore,
+                    assessmentCount,
+                    resumeCompleteness,
+                    workYears
+                });
+            }
+            
+            // 计算简历完善度
+            function calculateResumeCompleteness(profile) {
+                let completeness = 0;
+                const fields = [
+                    'name', 'email', 'phone', 'gender', 'birthDate',
+                    'education', 'workExperience', 'skills', 'selfIntroduction'
+                ];
+                
+                fields.forEach(field => {
+                    if (profile[field] && (Array.isArray(profile[field]) ? profile[field].length > 0 : profile[field] !== '')) {
+                        completeness += 100 / fields.length;
+                    }
+                });
+                
+                return Math.round(completeness);
+            }
+            
+            // 计算工作年限
+            function calculateWorkYears(workExperience) {
+                if (!Array.isArray(workExperience) || workExperience.length === 0) {
+                    return 0;
+                }
+                
+                let totalMonths = 0;
+                workExperience.forEach(exp => {
+                    if (exp.startDate && exp.endDate) {
+                        const start = new Date(exp.startDate);
+                        const end = exp.endDate === '至今' ? new Date() : new Date(exp.endDate);
+                        const months = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());
+                        totalMonths += months;
+                    }
+                });
+                
+                return Math.floor(totalMonths / 12);
+            }
+            
+            // 计算人才等级
+            function calculateTalentLevel(maxScore, resumeCompleteness, workYears) {
+                let score = 0;
+                
+                // 测评分数权重 40%
+                if (maxScore >= 95) score += 40;
+                else if (maxScore >= 90) score += 35;
+                else if (maxScore >= 85) score += 30;
+                else if (maxScore >= 80) score += 25;
+                
+                // 简历完善度权重 30%
+                if (resumeCompleteness >= 95) score += 30;
+                else if (resumeCompleteness >= 90) score += 25;
+                else if (resumeCompleteness >= 80) score += 20;
+                else if (resumeCompleteness >= 70) score += 15;
+                else if (resumeCompleteness >= 60) score += 10;
+                
+                // 工作经验权重 30%
+                if (workYears >= 10) score += 30;
+                else if (workYears >= 7) score += 25;
+                else if (workYears >= 5) score += 20;
+                else if (workYears >= 3) score += 15;
+                else if (workYears >= 1) score += 10;
+                else if (workYears > 0) score += 5;
+                
+                // 根据总分确定等级
+                if (score >= 85) return { name: '专家级', badge: 'bg-purple-100 text-purple-800', icon: 'fa-star' };
+                else if (score >= 70) return { name: '高级', badge: 'bg-blue-100 text-blue-800', icon: 'fa-trophy' };
+                else if (score >= 55) return { name: '中级', badge: 'bg-green-100 text-green-800', icon: 'fa-medal' };
+                else return { name: '初级', badge: 'bg-yellow-100 text-yellow-800', icon: 'fa-certificate' };
+            }
+            
+            // 渲染人才池状态
+            function renderTalentPoolStatus(canJoin, level, details) {
+                const container = document.getElementById('talent-pool-status-content');
+                if (!container) return;
+                
+                if (canJoin) {
+                    // 已满足条件，显示加入状态和等级
+                    container.innerHTML = `
+                        <div class="flex flex-col md:flex-row items-center justify-between mb-6">
+                            <div class="flex items-center mb-4 md:mb-0">
+                                <div class="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mr-4">
+                                    <i class="fa ${level.icon} text-2xl text-success"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-medium text-gray-800">已加入人才池</h3>
+                                    <p class="text-gray-500 mt-1">当前等级：<span class="${level.badge} px-2 py-1 rounded-full text-sm font-semibold">${level.name}</span></p>
+                                </div>
+                            </div>
+                            <button class="btn-secondary" disabled>
+                                已加入
+                            </button>
+                        </div>
+                        
+                        <!-- 评定信息 -->
+                        <div class="bg-gray-50 p-6 rounded-lg">
+                            <h4 class="font-medium text-gray-700 mb-4">评定信息</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="bg-white p-4 rounded-lg">
+                                    <div class="text-sm text-gray-500 mb-1">最高测评分数</div>
+                                    <div class="text-2xl font-bold text-primary">${details.maxScore}</div>
+                                    <div class="text-xs text-gray-400 mt-1">已完成 ${details.assessmentCount} 项测评</div>
+                                </div>
+                                <div class="bg-white p-4 rounded-lg">
+                                    <div class="text-sm text-gray-500 mb-1">简历完善度</div>
+                                    <div class="text-2xl font-bold text-primary">${details.resumeCompleteness}%</div>
+                                    <div class="text-xs text-gray-400 mt-1">${details.resumeCompleteness >= 90 ? '优秀' : details.resumeCompleteness >= 70 ? '良好' : '待完善'}</div>
+                                </div>
+                                <div class="bg-white p-4 rounded-lg">
+                                    <div class="text-sm text-gray-500 mb-1">工作经验</div>
+                                    <div class="text-2xl font-bold text-primary">${details.workYears}</div>
+                                    <div class="text-xs text-gray-400 mt-1">年</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // 未满足条件，显示申请条件和当前状态
+                    container.innerHTML = `
+                        <div class="flex flex-col md:flex-row items-center justify-between mb-6">
+                            <div class="flex items-center mb-4 md:mb-0">
+                                <div class="w-16 h-16 rounded-full bg-yellow-100 flex items-center justify-center mr-4">
+                                    <i class="fa fa-trophy text-2xl text-warning"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-medium text-gray-800">尚未加入人才池</h3>
+                                    <p class="text-gray-500 mt-1">完成以下条件可申请加入精英人才池</p>
+                                </div>
+                            </div>
+                            <button id="join-talent-pool-btn" class="btn-primary" data-service="talent_pool_join">
+                                申请加入人才池
+                            </button>
+                        </div>
+                        
+                        <!-- 申请条件 -->
+                        <div class="bg-gray-50 p-6 rounded-lg">
+                            <h4 class="font-medium text-gray-700 mb-4">申请条件</h4>
+                            <ul class="space-y-3">
+                                <li class="flex items-start">
+                                    <i class="fa ${details.hasHighScore ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'} mt-1 mr-3"></i>
+                                    <span>专业能力测评一次达到80分以上</span>
+                                    ${details.maxScore > 0 ? `<span class="ml-2 text-sm text-gray-500">（当前最高：${details.maxScore}分）</span>` : ''}
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fa fa-info-circle text-info mt-1 mr-3"></i>
+                                    <span>无需面试评审，系统将根据简历、测评分数、工作经验综合评定等级</span>
+                                </li>
+                            </ul>
+                            
+                            <!-- 当前状态 -->
+                            <div class="mt-4 pt-4 border-t border-gray-200">
+                                <h5 class="font-medium text-gray-700 mb-3">当前状态</h5>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                    <div class="text-sm">
+                                        <span class="text-gray-500">测评分数：</span>
+                                        <span class="font-medium">${details.maxScore > 0 ? details.maxScore + '分' : '未完成'}</span>
+                                    </div>
+                                    <div class="text-sm">
+                                        <span class="text-gray-500">简历完善度：</span>
+                                        <span class="font-medium">${details.resumeCompleteness}%</span>
+                                    </div>
+                                    <div class="text-sm">
+                                        <span class="text-gray-500">工作经验：</span>
+                                        <span class="font-medium">${details.workYears}年</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // 重新绑定申请按钮事件
+                    const joinBtn = document.getElementById('join-talent-pool-btn');
+                    if (joinBtn) {
+                        joinBtn.addEventListener('click', async function() {
+                            if (!details.hasHighScore) {
+                                alert('您需要完成至少一次专业能力测评并达到80分以上才能申请加入人才池。\n\n请前往测评中心完成测评。');
+                                return;
+                            }
+                            const token = getAuthToken();
+                            if (!token) {
+                                alert('请先登录');
+                                return;
+                            }
+                            try {
+                                const res = await apiRequest(API_BASE_URL + '/talent-pool/join', { method: 'POST' });
+                                if (res && res.success) {
+                                    if (window.showToast) window.showToast('已成功加入人才池', 'success');
+                                    else alert('恭喜！您已成功加入人才池。');
+                                    evaluateTalentPoolStatus();
+                                } else {
+                                    alert(res && res.message ? res.message : '加入失败，请稍后重试');
+                                }
+                            } catch (e) {
+                                alert('加入失败：' + (e.message || '网络错误'));
+                            }
+                        });
+                    }
+                }
+            }
+            
+            // 初始化人才池状态
+            evaluateTalentPoolStatus();
+            
+            // ========== 可承接项目模块 ==========
+            let availableProjectsData = [];
+            let filteredAvailableProjects = [];
+            let currentProjectLevel = 'all';
+            let projectsDisplayCount = 9; // 初始显示9个项目
+            
+            // 加载项目数据：优先从 API，否则从 localStorage
+            async function loadAvailableProjects() {
+                const API_BASE = window.API_BASE_URL || 'http://127.0.0.1:3001/api/v1';
+                try {
+                    const r = await fetch(API_BASE + '/projects');
+                    if (r.ok) {
+                        const j = await r.json();
+                        if (j.success && Array.isArray(j.data)) {
+                            // 管理端曾写入的 localStorage 全量列表会与后端「仅 talent_pool」不一致，导致公告岗位仍显示；以接口为准并清缓存
+                            try {
+                                localStorage.removeItem('allUserProjectData');
+                                localStorage.removeItem('userProjectData');
+                            } catch (_) {}
+                            availableProjectsData = j.data.map(project => {
+                                const level = determineProjectLevel(project);
+                                const budget = (project.budgetMin != null || project.budgetMax != null)
+                                    ? '¥' + (project.budgetMin || 0).toLocaleString() + '-' + (project.budgetMax || 0).toLocaleString()
+                                    : generateBudgetRange(level);
+                                return {
+                                    id: project.id,
+                                    name: project.name,
+                                    company: project.company || '企业',
+                                    type: project.type,
+                                    requiredTalentType: project.requiredTalentType,
+                                    status: project.status || 'recruiting',
+                                    publishDate: (project.publishDate || '').toString().slice(0, 10),
+                                    level: level,
+                                    budget: budget,
+                                    description: project.description || generateProjectDescription(project),
+                                    skills: generateProjectSkills(project.requiredTalentType)
+                                };
+                            });
+                            applyProjectLevelFilter();
+                            return;
+                        }
+                    }
+                } catch (e) { console.warn('Load projects from API failed', e); }
+                // 不再回退到 localStorage（旧数据含公告岗位，与后端过滤不一致）
+                availableProjectsData = [];
+                applyProjectLevelFilter();
+            }
+            
+            // 确定项目等级
+            function determineProjectLevel(project) {
+                // 根据项目类型、需求人才类型等综合判断
+                const type = project.type || '';
+                const talentType = project.requiredTalentType || '';
+                
+                // 简单规则：根据项目类型判断
+                if (type.includes('专家') || type.includes('高级') || talentType === 'tech') {
+                    return Math.random() > 0.5 ? '高级' : '专家级';
+                } else if (type.includes('中级') || talentType === 'design' || talentType === 'product') {
+                    return '中级';
+                } else {
+                    return '初级';
+                }
+            }
+            
+            // 生成预算范围
+            function generateBudgetRange(level) {
+                const ranges = {
+                    '初级': { min: 5000, max: 15000 },
+                    '中级': { min: 15000, max: 30000 },
+                    '高级': { min: 30000, max: 50000 },
+                    '专家级': { min: 50000, max: 100000 }
+                };
+                const range = ranges[level] || ranges['中级'];
+                return `¥${range.min.toLocaleString()}-${range.max.toLocaleString()}`;
+            }
+            
+            // 生成项目描述
+            function generateProjectDescription(project) {
+                const descriptions = {
+                    'tech': '负责技术研发工作，包括系统设计、开发、测试等全流程。',
+                    'design': '负责产品设计和用户体验优化，提供高质量的设计方案。',
+                    'product': '负责产品规划和运营，推动产品迭代和优化。',
+                    'marketing': '负责市场推广和品牌建设，提升产品知名度和用户增长。',
+                    'finance': '负责财务分析和风险控制，提供专业的金融咨询服务。',
+                    'operation': '负责运营管理和数据分析，优化业务流程和效率。'
+                };
+                return descriptions[project.requiredTalentType] || '负责项目相关工作，提供专业服务。';
+            }
+            
+            // 生成项目技能标签
+            function generateProjectSkills(talentType) {
+                const skillsMap = {
+                    'tech': ['React', 'TypeScript', 'Node.js'],
+                    'design': ['Figma', 'UI设计', '用户研究'],
+                    'product': ['产品规划', '数据分析', '用户研究'],
+                    'marketing': ['市场推广', '品牌建设', '内容运营'],
+                    'finance': ['财务分析', '风险控制', '投资分析'],
+                    'operation': ['运营管理', '数据分析', '流程优化']
+                };
+                return skillsMap[talentType] || ['专业技能', '团队协作', '沟通能力'];
+            }
+            
+            // 应用等级筛选
+            function applyProjectLevelFilter() {
+                if (currentProjectLevel === 'all') {
+                    filteredAvailableProjects = [...availableProjectsData];
+                } else {
+                    filteredAvailableProjects = availableProjectsData.filter(p => p.level === currentProjectLevel);
+                }
+                
+                // 按发布时间排序
+                filteredAvailableProjects.sort((a, b) => {
+                    return new Date(b.publishDate) - new Date(a.publishDate);
+                });
+                
+                renderAvailableProjects();
+            }
+            
+            // 渲染项目列表
+            function renderAvailableProjects() {
+                const container = document.getElementById('available-projects-container');
+                if (!container) return;
+                
+                const displayProjects = filteredAvailableProjects.slice(0, projectsDisplayCount);
+                
+                if (displayProjects.length === 0) {
+                    container.innerHTML = `
+                        <div class="col-span-full bg-white rounded-lg shadow-md p-12 text-center">
+                            <i class="fa fa-inbox text-gray-400 text-5xl mb-4"></i>
+                            <p class="text-gray-500 text-lg">暂无可承接项目</p>
+                            <p class="text-gray-400 text-sm mt-2">请稍后再来查看</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = displayProjects.map(project => {
+                    const daysAgo = getDaysAgo(project.publishDate);
+                    const statusBadge = project.status === '招聘中' || project.status === 'recruiting' 
+                        ? 'bg-green-100 text-green-800' 
+                        : 'bg-gray-100 text-gray-800';
+                    
+                    return `
+                        <div class="bg-white rounded-lg shadow-md overflow-hidden card-hover">
+                            <div class="relative">
+                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Cdefs%3E%3ClinearGradient id='cardGradient' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%231E40AF;stop-opacity:0.8'/%3E%3Cstop offset='100%25' style='stop-color:%233B82F6;stop-opacity:0.6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23cardGradient)'/%3E%3C/svg%3E" 
+                                     alt="${project.name}" class="w-full h-48 object-cover">
+                                <div class="absolute top-4 right-4 ${statusBadge} text-white text-xs font-medium px-2.5 py-0.5 rounded-full">
+                                    ${project.status === '招聘中' || project.status === 'recruiting' ? '热招中' : project.status || '招聘中'}
+                                </div>
+                                <div class="absolute top-4 left-4 bg-primary text-white text-xs font-medium px-2.5 py-0.5 rounded-full">
+                                    ${project.level}
+                                </div>
+                            </div>
+                            <div class="p-6">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h3 class="text-lg font-bold text-gray-800">${project.name}</h3>
+                                    <span class="text-primary font-medium">${project.budget}</span>
+                                </div>
+                                <p class="text-gray-600 mb-4 line-clamp-2">
+                                    ${project.description}
+                                </p>
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    ${project.skills.map(skill => `
+                                        <span class="bg-blue-50 text-primary text-xs px-2 py-1 rounded">${skill}</span>
+                                    `).join('')}
+                                </div>
+                                <div class="flex justify-between items-center text-gray-500 text-sm mb-4">
+                                    <span><i class="fa fa-building mr-1"></i> ${project.company}</span>
+                                    <span><i class="fa fa-clock-o mr-1"></i> ${daysAgo}</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <div class="flex items-center">
+                                        <span class="text-warning mr-1"><i class="fa fa-star"></i></span>
+                                        <span>${project.level}</span>
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <button onclick="viewProjectDetail('${project.id}')" class="btn-secondary text-sm px-3 py-1">
+                                            查看
+                                        </button>
+                                        <button onclick="applyProject('${project.id}')" class="btn-primary text-sm px-3 py-1">
+                                            申请
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+                // 显示/隐藏"查看更多"按钮
+                const loadMoreBtn = document.getElementById('load-more-projects-btn');
+                if (loadMoreBtn) {
+                    if (filteredAvailableProjects.length > projectsDisplayCount) {
+                        loadMoreBtn.classList.remove('hidden');
+                    } else {
+                        loadMoreBtn.classList.add('hidden');
+                    }
+                }
+            }
+            
+            // 获取发布时间距离现在的天数
+            function getDaysAgo(dateString) {
+                if (!dateString) return '未知';
+                const date = new Date(dateString);
+                const now = new Date();
+                const diffTime = Math.abs(now - date);
+                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                
+                if (diffDays === 0) return '今天发布';
+                if (diffDays === 1) return '1天前发布';
+                if (diffDays < 7) return `${diffDays}天前发布`;
+                if (diffDays < 30) return `${Math.floor(diffDays / 7)}周前发布`;
+                return `${Math.floor(diffDays / 30)}个月前发布`;
+            }
+            
+            // 查看项目详情
+            window.viewProjectDetail = function(projectId) {
+                const project = availableProjectsData.find(p => String(p.id) === String(projectId));
+                if (!project) {
+                    alert('项目不存在');
+                    return;
+                }
+                
+                const modal = document.getElementById('project-detail-modal');
+                const titleEl = document.getElementById('project-detail-title');
+                const contentEl = document.getElementById('project-detail-content');
+                
+                if (!modal || !titleEl || !contentEl) return;
+                
+                titleEl.textContent = project.name;
+                contentEl.innerHTML = `
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-4">
+                            <span class="px-3 py-1 ${project.level === '专家级' ? 'bg-purple-100 text-purple-800' : 
+                                project.level === '高级' ? 'bg-blue-100 text-blue-800' : 
+                                project.level === '中级' ? 'bg-green-100 text-green-800' : 
+                                'bg-yellow-100 text-yellow-800'} rounded-full text-sm font-semibold">
+                                ${project.level}
+                            </span>
+                            <span class="text-primary font-medium text-lg">${project.budget}</span>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-semibold text-gray-700 mb-2">项目描述</h4>
+                            <p class="text-gray-600">${project.description}</p>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <h4 class="font-semibold text-gray-700 mb-2">项目类型</h4>
+                                <p class="text-gray-600">${project.type || '未指定'}</p>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-700 mb-2">需求人才类型</h4>
+                                <p class="text-gray-600">${project.requiredTalentType || '未指定'}</p>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-700 mb-2">发布企业</h4>
+                                <p class="text-gray-600">${project.company}</p>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-700 mb-2">发布时间</h4>
+                                <p class="text-gray-600">${project.publishDate}</p>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-semibold text-gray-700 mb-2">所需技能</h4>
+                            <div class="flex flex-wrap gap-2">
+                                ${project.skills.map(skill => `
+                                    <span class="bg-blue-50 text-primary text-xs px-2 py-1 rounded">${skill}</span>
+                                `).join('')}
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-end gap-3 pt-4 border-t">
+                            <button onclick="document.getElementById('project-detail-modal').classList.add('hidden')" class="btn-secondary">
+                                关闭
+                            </button>
+                            <button onclick="applyProject('${project.id}'); document.getElementById('project-detail-modal').classList.add('hidden');" class="btn-primary">
+                                申请承接
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                modal.classList.remove('hidden');
+            };
+            
+            // 申请项目
+            window.applyProject = async function(projectId) {
+                const project = availableProjectsData.find(p => String(p.id) === String(projectId));
+                if (!project) {
+                    alert('项目不存在');
+                    return;
+                }
+                const token = getAuthToken();
+                if (!token) {
+                    alert('请先登录');
+                    return;
+                }
+                const assessmentResults = JSON.parse(localStorage.getItem('assessmentResults') || '[]');
+                let hasHighScore = false;
+                assessmentResults.forEach(result => {
+                    const score = result.score || result.totalScore || 0;
+                    if (score >= 80) hasHighScore = true;
+                });
+                if (!hasHighScore) {
+                    alert('您需要完成至少一次专业能力测评并达到80分以上才能申请项目。\n\n请前往测评中心完成测评。');
+                    return;
+                }
+                if (!confirm(`确定要申请承接项目"${project.name}"吗？`)) return;
+                try {
+                    const res = await apiRequest(API_BASE_URL + '/cooperations', {
+                        method: 'POST',
+                        body: JSON.stringify({ projectId: project.id })
+                    });
+                    if (res && res.success) {
+                        if (window.showToast) window.showToast('项目申请已提交', 'success');
+                        else alert('项目申请已提交！\n\n企业将在3-5个工作日内审核您的申请。');
+                    } else {
+                        alert(res && res.message ? res.message : '提交失败，请稍后重试');
+                    }
+                } catch (e) {
+                    alert('提交失败：' + (e.message || '网络错误'));
+                }
+            };
+            
+            // 绑定等级筛选按钮
+            document.querySelectorAll('.project-level-filter').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // 更新按钮状态
+                    document.querySelectorAll('.project-level-filter').forEach(b => {
+                        b.classList.remove('btn-primary', 'active');
+                        b.classList.add('btn-secondary');
+                    });
+                    this.classList.remove('btn-secondary');
+                    this.classList.add('btn-primary', 'active');
+                    
+                    // 更新筛选条件
+                    currentProjectLevel = this.getAttribute('data-level');
+                    projectsDisplayCount = 9; // 重置显示数量
+                    applyProjectLevelFilter();
+                });
+            });
+            
+            // 加载更多项目
+            const loadMoreBtn = document.getElementById('load-more-projects-btn');
+            if (loadMoreBtn) {
+                loadMoreBtn.addEventListener('click', function() {
+                    projectsDisplayCount += 9;
+                    renderAvailableProjects();
+                });
+            }
+            
+            // 关闭项目详情模态框
+            const closeProjectDetailBtn = document.getElementById('close-project-detail-modal');
+            if (closeProjectDetailBtn) {
+                closeProjectDetailBtn.addEventListener('click', function() {
+                    document.getElementById('project-detail-modal').classList.add('hidden');
+                });
+            }
+            
+            // 点击模态框外部关闭
+            const projectDetailModal = document.getElementById('project-detail-modal');
+            if (projectDetailModal) {
+                projectDetailModal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        this.classList.add('hidden');
+                    }
+                });
+            }
+            
+            // 初始化加载项目
+            loadAvailableProjects();
+            
+            // 监听项目数据更新
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'allUserProjectData' || e.key === 'userProjectData') {
+                    loadAvailableProjects();
+                }
+            });
+            
+            
+            // 滚动到顶部按钮
+            const scrollToTop = () => {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            };
+            
+            // 监听滚动事件，显示/隐藏回到顶部按钮
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 300) {
+                    // 可以添加回到顶部按钮显示逻辑
+                } else {
+                    // 可以添加回到顶部按钮隐藏逻辑
+                }
+            });
+        });
+      </script>
+  </body>
+</html>

@@ -1,0 +1,1876 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>圣举人才网 - 求职者端</title>
+    <!-- Tailwind CSS -->
+    <script>(function(){var w=console.warn;console.warn=function(){var m=(arguments[0]!=null&&typeof arguments[0]==='string')?arguments[0]:'';if(m.indexOf('cdn.tailwindcss.com')!==-1||m.indexOf('Tracking Prevention')!==-1)return;return w.apply(console,arguments);};})();</script>
+    <link rel="stylesheet" href="/static/css/tailwind-local.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <script src="../js/api-config.js"></script>
+    <script src="../js/auth-helper.js"></script>
+    <script src="../js/user-navbar.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#1E40AF',
+                        accent: '#60A5FA',
+                        light: '#EFF6FF',
+                        dark: '#1E293B'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow {
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            }
+            .bg-gradient-blue {
+                background: linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%);
+            }
+        }
+    </style>
+</head>
+<body class="font-sans bg-gray-50">
+    <!-- 导航栏 -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+            <!-- Logo -->
+            <div class="flex items-center space-x-2">
+                <a href="../index.html" class="flex items-center space-x-2">
+                    <img data-site-brand-logo src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%231E40AF' rx='4'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-size='24' font-weight='bold' fill='white'%3E圣%3C/text%3E%3C/svg%3E" 
+                         alt="圣举人才网" class="h-10 w-10 rounded-full">
+                    <h1 class="text-2xl font-bold text-primary">圣举人才网</h1>
+                </a>
+                <span class="text-gray-400">|</span>
+                <span class="text-gray-600 font-medium">求职者中心</span>
+            </div>
+            
+            <!-- 导航链接 -->
+            <nav class="hidden md:flex items-center space-x-8">
+                <a href="index.html" class="text-primary font-medium border-b-2 border-primary">首页</a>
+                <a href="assessment.html" class="text-gray-700 hover:text-primary font-medium">测评中心</a>
+                <a href="recommendation.html" class="text-gray-700 hover:text-primary font-medium">岗位推荐</a>
+                <a href="announcements.html" class="text-gray-700 hover:text-primary font-medium">招聘公告</a>
+                <a href="talent-pool.html" class="text-gray-700 hover:text-primary font-medium">人才池</a>
+                <a href="payment.html" class="text-gray-700 hover:text-primary font-medium">付费服务</a>
+                <a href="profile.html" class="text-gray-700 hover:text-primary font-medium">个人中心</a>
+            </nav>
+            
+            <!-- 用户菜单 -->
+            <div class="flex items-center space-x-4">
+                <div class="hidden md:flex items-center space-x-2" id="user-menu">
+                    <img id="user-avatar-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="" class="h-8 w-8 rounded-full">
+                    <span class="text-gray-700" id="user-name-display"></span>
+                </div>
+                <button type="button" onclick="showLogoutModal()" class="hidden md:flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition">
+                    <i class="fa fa-sign-out"></i> 退出
+                </button>
+                <button class="md:hidden text-gray-700 focus:outline-none" id="menu-toggle">
+                    <i class="fa fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- 移动端菜单 -->
+        <div class="md:hidden hidden bg-white border-t border-gray-200" id="mobile-menu">
+            <div class="container mx-auto px-4 py-2">
+                <a href="index.html" class="block py-2 text-primary font-medium border-l-4 border-primary pl-2">首页</a>
+                <a href="assessment.html" class="block py-2 text-gray-700 hover:text-primary pl-2">测评中心</a>
+                <a href="recommendation.html" class="block py-2 text-gray-700 hover:text-primary pl-2">岗位推荐</a>
+                <a href="announcements.html" class="block py-2 text-gray-700 hover:text-primary pl-2">招聘公告</a>
+                <a href="talent-pool.html" class="block py-2 text-gray-700 hover:text-primary pl-2">人才池</a>
+                <a href="payment.html" class="block py-2 text-gray-700 hover:text-primary pl-2">付费服务</a>
+                <a href="profile.html" class="block py-2 text-gray-700 hover:text-primary pl-2">个人中心</a>
+                <div class="border-t border-gray-200 my-2"></div>
+                <button type="button" onclick="showLogoutModal()" class="block w-full text-left py-2 text-primary font-medium pl-2"><i class="fa fa-sign-out mr-2"></i>退出</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 退出确认弹窗 -->
+    <div id="logout-modal" class="fixed inset-0 z-50 hidden">
+        <div class="fixed inset-0 bg-black bg-opacity-50" onclick="closeLogoutModal()"></div>
+        <div class="fixed inset-0 flex items-center justify-center p-4">
+            <div class="bg-white rounded-xl shadow-xl max-w-sm w-full p-6">
+                <p class="text-center text-gray-800 mb-6">确定要退出登录吗？</p>
+                <div class="flex gap-3">
+                    <button type="button" onclick="closeLogoutModal()" class="flex-1 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">取消</button>
+                    <button type="button" onclick="confirmLogout()" class="flex-1 py-2 bg-primary text-white rounded-lg hover:bg-blue-700">确定退出</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+    function showLogoutModal() { document.getElementById('logout-modal').classList.remove('hidden'); }
+    function closeLogoutModal() { document.getElementById('logout-modal').classList.add('hidden'); }
+    function confirmLogout() {
+        if (typeof AuthHelper !== 'undefined') AuthHelper.clear('jobseeker');
+        else { localStorage.removeItem('authToken'); sessionStorage.removeItem('authToken'); localStorage.removeItem('userId'); localStorage.removeItem('userType'); localStorage.removeItem('username'); }
+        closeLogoutModal();
+        window.location.href = 'login.html';
+    }
+    </script>
+
+    <!-- 主内容区 -->
+    <main>
+        <!-- 英雄区 - 简洁版 -->
+        <section class="bg-gradient-blue text-white py-12">
+            <div class="container mx-auto px-4">
+                <div class="text-center max-w-2xl mx-auto">
+                    <h1 class="text-3xl md:text-4xl font-bold mb-3 text-shadow">发现你的职业潜能</h1>
+                    <p class="text-base md:text-lg mb-6 opacity-90">通过科学的职业测评和个性化推荐，找到最适合你的职业发展道路</p>
+                    <div class="flex flex-col sm:flex-row justify-center gap-3">
+                        <a href="assessment.html" class="bg-white text-primary hover:bg-gray-100 font-medium py-2.5 px-6 rounded-lg transition">
+                            开始测评
+                        </a>
+                        <a href="recommendation.html" class="bg-transparent border-2 border-white text-white hover:bg-white/10 font-medium py-2.5 px-6 rounded-lg transition">
+                            查看岗位
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 招聘公告模块 -->
+        <section class="py-16 bg-gray-50">
+            <div class="container mx-auto px-4 max-w-7xl">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-3">招聘公告</h2>
+                    <p class="text-gray-600 max-w-2xl mx-auto">最新、最全面的招聘信息，助您找到理想工作</p>
+                </div>
+                
+                <!-- 招聘类型选项卡 - 优化版 -->
+                <div class="flex flex-wrap justify-center mb-10 border-b border-gray-200">
+                    <button class="announcement-tab-btn px-6 py-3 text-sm font-medium text-primary border-b-2 border-primary transition" data-tab="all">全部</button>
+                    <button class="announcement-tab-btn px-6 py-3 text-sm font-medium text-gray-600 hover:text-primary border-b-2 border-transparent hover:border-gray-300 transition" data-tab="government">事业单位</button>
+                    <button class="announcement-tab-btn px-6 py-3 text-sm font-medium text-gray-600 hover:text-primary border-b-2 border-transparent hover:border-gray-300 transition" data-tab="soe">国企</button>
+                    <button class="announcement-tab-btn px-6 py-3 text-sm font-medium text-gray-600 hover:text-primary border-b-2 border-transparent hover:border-gray-300 transition" data-tab="official">官方活动</button>
+                </div>
+                
+                <!-- 公告列表容器 - 优化版，只显示4个 -->
+                <div id="announcements-container" class="space-y-5 mb-8">
+                    <!-- 公告数据将通过JavaScript动态加载 -->
+                </div>
+                
+                <div class="text-center">
+                    <a href="announcements.html" class="inline-flex items-center text-primary hover:text-blue-700 font-medium transition">
+                        查看更多 <i class="fa fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 岗位推荐模块 -->
+        <section class="py-16 bg-white">
+            <div class="container mx-auto px-4 max-w-7xl">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-3">岗位推荐</h2>
+                    <p class="text-gray-600 max-w-2xl mx-auto">基于您的测评结果，为您精准匹配适合的岗位</p>
+                </div>
+                
+                <!-- 基于测评结果的匹配岗位 - 优化版 -->
+                <div id="matched-jobs-section" class="mb-10">
+                    <div class="bg-gradient-to-r from-primary to-indigo-600 rounded-xl shadow-lg p-5 mb-6">
+                        <div class="flex items-center justify-center">
+                            <i class="fa fa-star text-white mr-3 text-xl"></i>
+                            <h3 class="text-xl font-bold text-white">基于测评结果的适合岗位</h3>
+                        </div>
+                    </div>
+                    
+                    <div id="matched-jobs-list" class="space-y-4 mb-8">
+                        <!-- 匹配岗位数据将通过JavaScript动态加载 -->
+                    </div>
+                </div>
+                
+                <!-- 岗位推荐 -->
+                <div class="mb-6">
+                    <h3 class="text-xl font-bold text-gray-800 text-center">岗位推荐</h3>
+                </div>
+                
+                <!-- 推荐岗位列表 - 优化版，只显示4个 -->
+                <div id="job-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <!-- 岗位数据将通过JavaScript动态加载 -->
+                </div>
+                
+                <div class="text-center">
+                    <a href="recommendation.html" class="inline-flex items-center text-primary hover:text-blue-700 font-medium transition">
+                        查看更多 <i class="fa fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 功能模块导航 - 优化版 -->
+        <section id="features" class="py-16 bg-white">
+            <div class="container mx-auto px-4 max-w-7xl">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-3">功能模块</h2>
+                    <p class="text-gray-600 max-w-2xl mx-auto">一站式求职服务平台，满足您的所有需求</p>
+                </div>
+                
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    <!-- 岗位推荐 -->
+                    <a href="recommendation.html" class="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition-all transform hover:-translate-y-1 text-center group">
+                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-green-200 transition">
+                            <i class="fa fa-briefcase text-green-600 text-2xl"></i>
+                        </div>
+                        <h3 class="text-sm font-semibold text-gray-800">岗位推荐</h3>
+                    </a>
+                    
+                    <!-- 招聘公告 -->
+                    <a href="announcements.html" class="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition-all transform hover:-translate-y-1 text-center group">
+                        <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-purple-200 transition">
+                            <i class="fa fa-bullhorn text-purple-600 text-2xl"></i>
+                        </div>
+                        <h3 class="text-sm font-semibold text-gray-800">招聘公告</h3>
+                    </a>
+                    
+                    <!-- 付费服务 -->
+                    <a href="payment.html" class="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition-all transform hover:-translate-y-1 text-center group">
+                        <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-yellow-200 transition">
+                            <i class="fa fa-crown text-yellow-600 text-2xl"></i>
+                        </div>
+                        <h3 class="text-sm font-semibold text-gray-800">付费服务</h3>
+                    </a>
+                    
+                    <!-- 个人中心 -->
+                    <a href="profile.html" class="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition-all transform hover:-translate-y-1 text-center group">
+                        <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-indigo-200 transition">
+                            <i class="fa fa-user-circle text-indigo-600 text-2xl"></i>
+                        </div>
+                        <h3 class="text-sm font-semibold text-gray-800">个人中心</h3>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 会员体系 - 关联付费服务模块 -->
+        <section class="py-16 bg-gray-50">
+            <div class="container mx-auto px-4 max-w-7xl">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-3">会员服务</h2>
+                    <p class="text-gray-600 max-w-2xl mx-auto">享受更多专属权益，提升求职竞争力</p>
+                </div>
+                
+                <!-- 会员服务列表 - 从付费服务模块加载 -->
+                <div id="membership-services-container" class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto mb-8">
+                    <!-- 会员服务卡片将通过JavaScript动态加载 -->
+                </div>
+                
+                <div class="text-center">
+                    <a href="payment.html" class="inline-flex items-center text-primary hover:text-blue-700 font-medium transition">
+                        查看更多服务 <i class="fa fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-gray-800 text-white py-10">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">关于我们</h4>
+                    <p class="text-gray-400">
+                        圣举人才网是一家以测评驱动的招聘平台，致力于连接求职者与企业，通过科学测评实现精准匹配。
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">求职者服务</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="assessment.html" class="hover:text-white">职业测评</a></li>
+                        <li><a href="profile.html" class="hover:text-white">个人中心</a></li>
+                        <li><a href="recommendation.html" class="hover:text-white">岗位推荐</a></li>
+                        <li><a href="payment.html" class="hover:text-white">付费服务</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">帮助中心</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white">常见问题</a></li>
+                        <li><a href="#" class="hover:text-white">使用指南</a></li>
+                        <li><a href="#" class="hover:text-white">隐私政策</a></li>
+                        <li><a href="#" class="hover:text-white">用户协议</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">联系我们</h4>
+                    <ul class="space-y-2 text-gray-400" id="footer-contact">
+                        <li class="flex items-center">
+                            <i class="fa fa-phone mr-2"></i>
+                            <span id="footer-phone">400-123-4567</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fa fa-envelope mr-2"></i>
+                            <span id="footer-email">contact@shengju.com</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fa fa-map-marker mr-2"></i>
+                            <span id="footer-address">北京市海淀区中关村大街1号</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                <p id="footer-copyright">&copy; 2025 圣举人才网 版权所有</p>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        // 从管理端基本设置加载系统设置
+        function loadSystemSettings() {
+            try {
+                const systemSettings = JSON.parse(localStorage.getItem('systemSettings') || '{}');
+                const contactInfo = JSON.parse(localStorage.getItem('contactInfo') || localStorage.getItem('sj_contact_config') || '{}');
+                const siteName = localStorage.getItem('siteName') || systemSettings.siteName || '圣举人才网';
+                const siteLogo = localStorage.getItem('siteLogo') || systemSettings.siteLogo || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%231E40AF' rx='4'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-size='24' font-weight='bold' fill='white'%3E圣%3C/text%3E%3C/svg%3E";
+                
+                // 更新Logo
+                const logoImg = document.querySelector('header img[alt*="圣举"]');
+                if (logoImg) {
+                    logoImg.src = siteLogo;
+                }
+                
+                // 更新网站名称
+                const siteNameEl = document.querySelector('header h1');
+                if (siteNameEl) {
+                    siteNameEl.textContent = siteName;
+                }
+                
+                // 更新页面标题
+                document.title = siteName + ' - 求职者端';
+                
+                // 更新底部联系信息
+                if (contactInfo.phone) {
+                    const phoneEl = document.getElementById('footer-phone');
+                    if (phoneEl) phoneEl.textContent = contactInfo.phone;
+                }
+                
+                if (contactInfo.email) {
+                    const emailEl = document.getElementById('footer-email');
+                    if (emailEl) emailEl.textContent = contactInfo.email;
+                }
+                
+                if (contactInfo.address) {
+                    const addressEl = document.getElementById('footer-address');
+                    if (addressEl) addressEl.textContent = contactInfo.address;
+                }
+                
+                const copyrightEl = document.getElementById('footer-copyright');
+                if (copyrightEl) {
+                    const year = new Date().getFullYear();
+                    copyrightEl.textContent = `© ${year} ${siteName} 版权所有`;
+                }
+            } catch (e) {
+                console.error('加载系统设置失败:', e);
+            }
+        }
+        
+        // 兼容旧函数名
+        function loadFooterContent() {
+            loadSystemSettings();
+        }
+        
+        // 检查求职者付费访问控制并隐藏相关入口
+        function checkAndHideJobseekerPaymentAccess() {
+            try {
+                const paymentSettings = JSON.parse(localStorage.getItem('paymentSettings') || 'null');
+                const systemSettings = JSON.parse(localStorage.getItem('systemSettings') || '{}');
+                
+                let jobseekerPaymentEnabled = true;
+                
+                if (paymentSettings && paymentSettings.jobseekerPaymentEnabled !== undefined) {
+                    jobseekerPaymentEnabled = paymentSettings.jobseekerPaymentEnabled;
+                } else if (systemSettings.payment && systemSettings.payment.jobseekerPaymentEnabled !== undefined) {
+                    jobseekerPaymentEnabled = systemSettings.payment.jobseekerPaymentEnabled;
+                } else {
+                    const enabled = localStorage.getItem('jobseekerPaymentEnabled');
+                    if (enabled === 'disabled') {
+                        jobseekerPaymentEnabled = false;
+                    }
+                }
+                
+                if (!jobseekerPaymentEnabled) {
+                    // 隐藏导航栏中的付费服务链接
+                    const paymentNavLinks = document.querySelectorAll('nav a[href="payment.html"], #mobile-menu a[href="payment.html"]');
+                    paymentNavLinks.forEach(link => {
+                        if (link) link.style.display = 'none';
+                    });
+                    
+                    // 隐藏主内容区中的付费服务区块（勿用 header：顶栏也是 bg-white，会误把整个导航栏隐藏）
+                    const paymentCards = document.querySelectorAll('main a[href="payment.html"]');
+                    paymentCards.forEach(card => {
+                        const parent = card.closest('.bg-white, section');
+                        if (parent && !parent.closest('footer') && !parent.closest('header')) {
+                            parent.style.display = 'none';
+                        }
+                    });
+                }
+            } catch (e) {
+                console.error('检查求职者付费访问控制失败:', e);
+            }
+        }
+        
+        // 从公开接口拉取系统设置并写入 localStorage，再应用
+        async function fetchPublicSettingsAndApply() {
+            const API_BASE = (window.API_BASE_URL || 'http://127.0.0.1:3001/api/v1').replace(/\/$/, '');
+            const urls = [API_BASE + '/public/site-settings', API_BASE + '/admin/settings/public'];
+            try {
+                let json = null;
+                for (let i = 0; i < urls.length; i++) {
+                    try {
+                        const res = await fetch(urls[i]);
+                        if (!res.ok) continue;
+                        const j = await res.json();
+                        if (j && j.success && j.data) { json = j; break; }
+                    } catch (e) {}
+                }
+                if (json && json.data) {
+                    const d = json.data;
+                    if (d.siteName != null) {
+                        localStorage.setItem('siteName', typeof d.siteName === 'string' ? d.siteName : JSON.stringify(d.siteName));
+                    }
+                    if (d.siteLogo != null) {
+                        localStorage.setItem('siteLogo', typeof d.siteLogo === 'string' ? d.siteLogo : JSON.stringify(d.siteLogo));
+                    }
+                    if (d.contactInfo != null) {
+                        const ci = typeof d.contactInfo === 'object' ? d.contactInfo : {};
+                        localStorage.setItem('contactInfo', JSON.stringify(ci));
+                    }
+                    const sys = JSON.parse(localStorage.getItem('systemSettings') || '{}');
+                    if (d.siteName != null) sys.siteName = d.siteName;
+                    if (d.siteLogo != null) sys.siteLogo = d.siteLogo;
+                    if (d.contactInfo != null) sys.contactInfo = d.contactInfo;
+                    localStorage.setItem('systemSettings', JSON.stringify(sys));
+                }
+            } catch (e) {
+                console.warn('拉取公开系统设置失败，使用本地缓存:', e);
+            }
+            loadSystemSettings();
+        }
+        
+        // 页面加载时加载系统设置
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchPublicSettingsAndApply();
+            checkAndHideJobseekerPaymentAccess();
+            
+            // 监听设置更新事件（包括storage事件和自定义事件）
+            window.addEventListener('contactInfoUpdated', function(e) {
+                loadSystemSettings();
+            });
+            
+            window.addEventListener('siteNameUpdated', function(e) {
+                loadSystemSettings();
+            });
+            
+            window.addEventListener('logoUpdated', function(e) {
+                loadSystemSettings();
+            });
+            
+            // 监听支付设置更新
+            window.addEventListener('jobseekerPaymentEnabledUpdated', function(event) {
+                if (event.detail) {
+                    checkAndHideJobseekerPaymentAccess();
+                }
+            });
+            
+            // 监听 storage 事件
+            window.addEventListener('storage', function(event) {
+                if (event.key === 'jobseekerPaymentEnabled' || event.key === 'paymentSettings') {
+                    checkAndHideJobseekerPaymentAccess();
+                }
+            });
+            
+            // 监听storage事件，确保跨页面同步
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'contactInfo' || e.key === 'siteName' || e.key === 'siteLogo' || e.key === 'sj_contact_config') {
+                    loadSystemSettings();
+                }
+            });
+        });
+    </script>
+
+    <!-- JavaScript -->
+    <script>
+        // 检查求职者登录状态（使用分端存储，与企业端互不影响）
+        function checkJobseekerAuth() {
+            var a = (typeof AuthHelper !== 'undefined') ? AuthHelper.get('jobseeker') : null;
+            if (!a) a = (localStorage.getItem('userType') === 'jobseeker') ? { token: localStorage.getItem('authToken') } : null;
+            if (!a || !a.token) {
+                window.location.href = 'login.html';
+                return false;
+            }
+            return true;
+        }
+        
+        // 页面加载时立即检查登录状态
+        if (!checkJobseekerAuth()) {
+            // 如果未通过验证，页面会跳转，后续代码不会执行
+        } else {
+            // 已登录：显示用户菜单，隐藏登录按钮
+            const loginBtn = document.querySelector('a[href*="action=login"][href*="jobseeker"]');
+            if (loginBtn) loginBtn.classList.add('hidden');
+            const userMenu = document.getElementById('user-menu');
+            if (userMenu) { userMenu.classList.remove('hidden'); userMenu.classList.add('flex'); }
+        }
+        
+        // 移动端菜单切换
+        document.getElementById('menu-toggle').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        // FAQ切换
+        function toggleFAQ(button) {
+            const content = button.nextElementSibling;
+            const icon = button.querySelector('i');
+            
+            content.classList.toggle('hidden');
+            icon.classList.toggle('rotate-180');
+        }
+        
+        // 模拟登录状态
+        function simulateLogin() {
+            document.querySelector('button:contains("登录/注册")').classList.add('hidden');
+            document.getElementById('user-menu').classList.remove('hidden');
+            document.getElementById('user-menu').classList.add('flex');
+        }
+        
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        // 测评按钮点击事件
+        document.querySelectorAll('a[href^="assessment-detail.html"]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                // 检查是否登录
+                const isLoggedIn = document.getElementById('user-menu').classList.contains('flex');
+                
+                if (!isLoggedIn) {
+                    e.preventDefault();
+                    alert('请先登录/注册');
+                    // 这里可以跳转到登录页面
+                }
+            });
+        });
+        
+        // 打开支付页面
+        function openPayment(serviceId) {
+            const windowFeatures = 'width=500,height=600,top=200,left=500,toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes';
+            window.open(`payment-popup.html?service=${serviceId}`, '_blank', windowFeatures);
+        }
+        
+        // 暴露函数到全局作用域
+        window.openPayment = openPayment;
+        
+        // 付费服务按钮点击事件 - 已取消登录检查，可以直接访问
+        
+        // 默认免费测评包数据（仅作为后备，优先使用管理端数据）
+        const defaultFreePackages = [
+            {
+                id: 1,
+                name: 'MBTI职业性格测评',
+                price: 0,
+                type: 'free',
+                description: '探索你的性格类型，发现最适合的职业方向',
+                duration: '15分钟',
+                participants: '12.5万人已测',
+                rating: 4.8,
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Cdefs%3E%3ClinearGradient id='cardGradient' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%231E40AF;stop-opacity:0.8'/%3E%3Cstop offset='100%25' style='stop-color:%233B82F6;stop-opacity:0.6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23cardGradient)'/%3E%3C/svg%3E"
+            },
+            {
+                id: 2,
+                name: '职业能力测评',
+                price: 0,
+                type: 'free',
+                description: '全面评估你的职业能力，发现潜在优势',
+                duration: '20分钟',
+                participants: '9.8万人已测',
+                rating: 4.2,
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Cdefs%3E%3ClinearGradient id='cardGradient' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%231E40AF;stop-opacity:0.8'/%3E%3Cstop offset='100%25' style='stop-color:%233B82F6;stop-opacity:0.6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23cardGradient)'/%3E%3C/svg%3E"
+            },
+            {
+                id: 3,
+                name: '职业兴趣测评',
+                price: 0,
+                type: 'free',
+                description: '了解你的职业兴趣倾向，找到真正热爱的工作',
+                duration: '10分钟',
+                participants: '8.6万人已测',
+                rating: 4.5,
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Cdefs%3E%3ClinearGradient id='cardGradient' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%231E40AF;stop-opacity:0.8'/%3E%3Cstop offset='100%25' style='stop-color:%233B82F6;stop-opacity:0.6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23cardGradient)'/%3E%3C/svg%3E"
+            }
+        ];
+        
+        function shouldShowPackageToJobseeker(pkg) {
+            if (!pkg || typeof pkg !== 'object') return false;
+            var idStr = String(pkg.id != null ? pkg.id : '');
+            if (idStr.indexOf('paper_') === 0) return true;
+            const vs = String(pkg.visibleSide || pkg.visible_side || '').toLowerCase().trim();
+            if (vs === 'enterprise' || vs === 'company' || vs === 'government') return false;
+            if (vs === 'candidate' || vs === 'jobseeker') return true;
+            const plat = String(pkg.platform || '').toLowerCase();
+            if (plat === 'enterprise' || plat === 'government') return false;
+            if (plat === 'jobseeker') return true;
+            const pn = String(pkg.platformName || '');
+            if (pn.indexOf('企业') !== -1) return false;
+            return false;
+        }
+
+        // 从localStorage读取测评包数据（完全由管理端控制）
+        function loadAssessmentPackages() {
+            let allPackages = [];
+            
+            try {
+                const saved = localStorage.getItem('assessmentPackages');
+                if (saved) {
+                    const adminPackages = JSON.parse(saved);
+                    if (Array.isArray(adminPackages) && adminPackages.length > 0) {
+                        // 将管理端的测评包数据转换为前端显示格式
+                        allPackages = adminPackages
+                            .filter(pkg => pkg.status === 'active' && shouldShowPackageToJobseeker(pkg))
+                            .map(pkg => {
+                                // 根据名称和描述推断分类
+                                const name = pkg.name || '';
+                                const desc = (pkg.description || '').toLowerCase();
+                                let category = 'all';
+                                
+                                if (name.includes('性格') || name.includes('MBTI') || desc.includes('性格')) {
+                                    category = 'personality';
+                                } else if (name.includes('能力') || desc.includes('能力')) {
+                                    category = 'ability';
+                                } else if (name.includes('兴趣') || desc.includes('兴趣')) {
+                                    category = 'interest';
+                                } else if (name.includes('行业') || name.includes('测评包')) {
+                                    category = 'industry';
+                                } else if (name.includes('倾向') || name.includes('职业倾向')) {
+                                    category = 'career';
+                                }
+                                
+                                return {
+                                    id: pkg.id,
+                                    name: pkg.name,
+                                    price: pkg.price || 0,
+                                    type: (pkg.price && pkg.price > 0) ? 'paid' : 'free',
+                                    category: category,
+                                    description: pkg.description || '',
+                                    duration: '30分钟',
+                                    participants: '0人已测',
+                                    rating: 4.5,
+                                    image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Cdefs%3E%3ClinearGradient id='cardGradient' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%231E40AF;stop-opacity:0.8'/%3E%3Cstop offset='100%25' style='stop-color:%233B82F6;stop-opacity:0.6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23cardGradient)'/%3E%3C/svg%3E"
+                                };
+                            });
+                    }
+                }
+            } catch (e) {
+                console.error('读取测评包数据失败:', e);
+            }
+            
+            // 合并默认的免费测评包（如果管理端没有配置免费测评包）
+            const freePackages = defaultFreePackages.map(pkg => ({
+                ...pkg,
+                category: pkg.name.includes('性格') ? 'personality' : 
+                         pkg.name.includes('能力') ? 'ability' : 
+                         pkg.name.includes('兴趣') ? 'interest' : 'all'
+            }));
+            const paidPackages = allPackages.filter(p => p.type === 'paid');
+            
+            // 如果管理端有免费测评包，使用管理端的；否则使用默认的
+            const adminFreePackages = allPackages.filter(p => p.type === 'free');
+            const finalFreePackages = adminFreePackages.length > 0 ? adminFreePackages : freePackages;
+            
+            return [...finalFreePackages, ...paidPackages];
+        }
+        
+        // 渲染测评包列表
+        function renderAssessmentPackages(filter = 'all') {
+            const container = document.getElementById('assessment-packages-container');
+            if (!container) return;
+            
+            const packages = loadAssessmentPackages();
+            let filteredPackages = packages;
+            
+            // 根据分类筛选
+            if (filter !== 'all') {
+                filteredPackages = packages.filter(p => p.category === filter);
+            }
+            
+            // 只显示前4个（首页预览）
+            filteredPackages = filteredPackages.slice(0, 4);
+            
+            if (filteredPackages.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-12">
+                        <p class="text-gray-500">暂无测评包数据</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = filteredPackages.map(pkg => {
+                const isFree = pkg.price === 0 || pkg.type === 'free';
+                const priceBadge = isFree 
+                    ? '<div class="absolute top-4 right-4 bg-primary text-white text-xs font-medium px-2.5 py-0.5 rounded-full">免费</div>'
+                    : '<div class="absolute top-4 right-4 bg-red-500 text-white text-xs font-medium px-2.5 py-0.5 rounded-full">付费</div>';
+                
+                const stars = Array.from({ length: 5 }, (_, i) => {
+                    const fullStar = i < Math.floor(pkg.rating);
+                    const halfStar = i === Math.floor(pkg.rating) && pkg.rating % 1 >= 0.5;
+                    if (fullStar) return '<i class="fa fa-star"></i>';
+                    if (halfStar) return '<i class="fa fa-star-half-o"></i>';
+                    return '<i class="fa fa-star-o"></i>';
+                }).join('');
+                
+                const actionButton = isFree
+                    ? `<a href="assessment-detail.html?id=${pkg.id}" class="block w-full bg-primary hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition text-center">开始测评</a>`
+                    : `<div class="flex justify-between items-center">
+                        <span class="text-primary font-semibold text-sm">¥${pkg.price}</span>
+                        <a href="javascript:void(0)" onclick="openPayment('${pkg.id}')" class="bg-primary hover:bg-blue-700 text-white text-sm font-medium py-1.5 px-4 rounded-lg transition">购买</a>
+                    </div>`;
+                
+                return `
+                    <div class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition" data-type="${pkg.type}">
+                        <div class="relative">
+                            <img src="${pkg.image}" alt="${pkg.name}" class="w-full h-32 object-cover">
+                            ${priceBadge}
+                        </div>
+                        <div class="p-4">
+                            <h3 class="text-base font-bold text-gray-800 mb-1.5">${pkg.name}</h3>
+                            <p class="text-gray-600 text-xs mb-3 line-clamp-2">${pkg.description}</p>
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="text-yellow-500 text-xs">
+                                    ${stars}
+                                </div>
+                                <span class="text-gray-400 text-xs"><i class="fa fa-clock-o mr-1"></i> ${pkg.duration}</span>
+                            </div>
+                            ${actionButton}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // 当前测评筛选分类
+        let currentAssessmentFilter = 'all';
+        
+        // 筛选按钮事件
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterBtns = document.querySelectorAll('.assessment-filter-btn');
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const filter = this.getAttribute('data-filter');
+                    currentAssessmentFilter = filter;
+                    
+                    // 更新按钮样式
+                    filterBtns.forEach(b => {
+                        b.classList.remove('bg-primary', 'text-white');
+                        b.classList.add('bg-white', 'border', 'border-gray-300', 'text-gray-700');
+                    });
+                    
+                    this.classList.remove('bg-white', 'border', 'border-gray-300', 'text-gray-700');
+                    this.classList.add('bg-primary', 'text-white');
+                    
+                    // 渲染筛选后的测评包
+                    renderAssessmentPackages(filter);
+                });
+            });
+            
+            // 初始加载
+            renderAssessmentPackages('all');
+            
+            // 监听localStorage变化（当管理端更新数据时）
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'assessmentPackages') {
+                    renderAssessmentPackages(currentAssessmentFilter);
+                }
+            });
+            
+            // 使用自定义事件监听同页面的localStorage变化（管理端在同一浏览器中修改时）
+            const originalSetItem = localStorage.setItem;
+            localStorage.setItem = function(key, value) {
+                if (key === 'assessmentPackages') {
+                    window.dispatchEvent(new Event('storage'));
+                }
+                originalSetItem.apply(this, arguments);
+            };
+        });
+        
+        // ========== 岗位推荐模块 ==========
+        const API_BASE_JOBS = window.API_BASE_URL || 'http://127.0.0.1:3001/api/v1';
+        let allJobsData = [];
+        async function loadJobsFromAPI() {
+            try {
+                const res = await fetch(API_BASE_JOBS + '/jobs');
+                const json = await res.json();
+                if (json && json.success && Array.isArray(json.data)) {
+                    allJobsData = json.data.map(function(j) {
+                        return {
+                            id: j.id,
+                            name: j.title,
+                            companyName: j.companyName || '',
+                            salary: j.salaryRange || '面议',
+                            location: j.location || '',
+                            description: j.description || '',
+                            publishDate: (j.publishedAt || j.createdAt || '').toString(),
+                            jobType: j.department || '',
+                            skills: j.requirement ? j.requirement.split(/[、,，\s]+/).filter(Boolean) : []
+                        };
+                    });
+                } else {
+                    allJobsData = [];
+                }
+            } catch (e) {
+                console.error('岗位 API 加载失败:', e);
+                allJobsData = [];
+            }
+        }
+        
+        // 读取测评结果和简历数据
+        function loadUserProfile() {
+            try {
+                const assessmentResults = JSON.parse(localStorage.getItem('assessmentResults') || '[]');
+                const resumeData = JSON.parse(localStorage.getItem('resumeData') || '{}');
+                return {
+                    assessmentResults: assessmentResults,
+                    resume: resumeData
+                };
+            } catch (e) {
+                console.error('读取用户信息失败:', e);
+                return {
+                    assessmentResults: [],
+                    resume: {}
+                };
+            }
+        }
+        
+        // 根据测评结果和简历匹配岗位
+        function matchJobsByProfile(jobs, userProfile) {
+            const { assessmentResults, resume } = userProfile;
+            
+            return jobs.map(job => {
+                let matchScore = 0;
+                let matchReasons = [];
+                
+                // 基于测评结果匹配
+                if (assessmentResults.length > 0) {
+                    const latestResult = assessmentResults[assessmentResults.length - 1];
+                    
+                    // 职位类型匹配
+                    if (latestResult.recommendedJobTypes && latestResult.recommendedJobTypes.includes(job.jobType)) {
+                        matchScore += 30;
+                        matchReasons.push('符合测评推荐的职位类型');
+                    }
+                    
+                    // 能力匹配
+                    if (latestResult.skills && job.skills) {
+                        const commonSkills = latestResult.skills.filter(skill => 
+                            job.skills.some(jobSkill => 
+                                jobSkill.toLowerCase().includes(skill.toLowerCase()) || 
+                                skill.toLowerCase().includes(jobSkill.toLowerCase())
+                            )
+                        );
+                        matchScore += commonSkills.length * 10;
+                        if (commonSkills.length > 0) {
+                            matchReasons.push(`技能匹配：${commonSkills.join('、')}`);
+                        }
+                    }
+                }
+                
+                // 基于简历信息匹配
+                if (resume) {
+                    // 学历匹配
+                    if (resume.education && job.education) {
+                        const educationLevels = { '大专': 1, '本科': 2, '硕士': 3, '博士': 4 };
+                        const userLevel = educationLevels[resume.education] || 0;
+                        const jobLevel = educationLevels[job.education] || 0;
+                        if (userLevel >= jobLevel) {
+                            matchScore += 15;
+                            matchReasons.push('学历符合要求');
+                        }
+                    }
+                    
+                    // 工作地点匹配
+                    if (resume.location && job.location) {
+                        if (resume.location === job.location || job.location.includes(resume.location)) {
+                            matchScore += 10;
+                            matchReasons.push('工作地点匹配');
+                        }
+                    }
+                }
+                
+                matchScore = Math.min(100, Math.max(0, matchScore));
+                
+                return {
+                    ...job,
+                    matchScore: matchScore,
+                    matchReasons: matchReasons
+                };
+            }).filter(job => job.matchScore > 0)
+              .sort((a, b) => b.matchScore - a.matchScore);
+        }
+        
+        // 渲染匹配岗位列表（数据仅来自后台 GET /jobs）
+        async function renderMatchedJobs() {
+            const matchedJobsContainer = document.getElementById('matched-jobs-list');
+            const matchedJobsSection = document.getElementById('matched-jobs-section');
+            if (!matchedJobsContainer) return;
+            
+            if (allJobsData.length === 0) {
+                await loadJobsFromAPI();
+            }
+            if (allJobsData.length === 0) {
+                if (matchedJobsSection) matchedJobsSection.style.display = 'block';
+                matchedJobsContainer.innerHTML = `
+                    <div class="bg-white rounded-lg shadow-md p-8 text-center">
+                        <i class="fa fa-inbox text-gray-400 text-4xl mb-4"></i>
+                        <p class="text-gray-500">当前暂无发布中的岗位</p>
+                        <p class="text-gray-400 text-sm mt-2">数据来自后台接口，与企业端发布岗位同步。请稍后再来查看。</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const userProfile = loadUserProfile();
+            const matchedJobs = matchJobsByProfile(allJobsData, userProfile);
+            
+            // 只显示匹配度最高的前2个岗位（首页简化版）
+            const topMatchedJobs = matchedJobs.slice(0, 2);
+            
+            if (topMatchedJobs.length === 0 || (userProfile.assessmentResults.length === 0 && Object.keys(userProfile.resume).length === 0)) {
+                matchedJobsContainer.innerHTML = `
+                    <div class="bg-white rounded-lg shadow-md p-8 text-center">
+                        <i class="fa fa-info-circle text-gray-400 text-4xl mb-4"></i>
+                        <p class="text-gray-500">暂无基于测评结果的匹配岗位</p>
+                        <p class="text-gray-400 text-sm mt-2">基于您的测评结果与个人中心简历智能推荐合适岗位</p>
+                        <div class="mt-4 flex justify-center">
+                            <a href="recommendation.html?from=smart" class="inline-block bg-primary hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition">
+                                智能推荐岗位
+                            </a>
+                        </div>
+                        <p class="text-gray-400 text-xs mt-3">未完成测评或简历？<a href="assessment.html" class="text-primary hover:underline">去完成测评</a> · <a href="profile.html" class="text-primary hover:underline">填写简历</a></p>
+                    </div>
+                `;
+                return;
+            }
+            
+            matchedJobsContainer.innerHTML = topMatchedJobs.map(job => {
+                return `
+                    <div class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition border-l-4 border-primary">
+                        <div class="p-4">
+                            <div class="flex items-start justify-between mb-2">
+                                <h3 class="text-lg font-bold text-gray-800">${job.name}</h3>
+                                <span class="bg-primary text-white text-xs font-medium px-2 py-1 rounded-full">
+                                    匹配度 ${job.matchScore}%
+                                </span>
+                            </div>
+                            <div class="flex items-center text-gray-500 text-xs mb-2">
+                                <span class="mr-3"><i class="fa fa-building mr-1"></i> ${job.companyName || '未知公司'}</span>
+                                <span class="mr-3"><i class="fa fa-map-marker mr-1"></i> ${job.location || '未知地点'}</span>
+                                <span><i class="fa fa-money mr-1"></i> ${job.salary}</span>
+                            </div>
+                            <p class="text-gray-600 text-sm line-clamp-1 mb-3">
+                                ${job.description || '暂无描述'}
+                            </p>
+                            <a href="recommendation.html" class="text-primary hover:text-blue-700 text-sm font-medium">
+                                查看详情 <i class="fa fa-arrow-right ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // 计算匹配度（模拟）
+        function calculateMatchRate(job) {
+            let matchRate = 70;
+            return matchRate + Math.floor(Math.random() * 25);
+        }
+        
+        // 渲染岗位列表（数据仅来自后台 GET /jobs，与企业端同步）
+        async function renderJobList() {
+            const jobListContainer = document.getElementById('job-list');
+            if (!jobListContainer) return;
+            
+            if (allJobsData.length === 0) {
+                jobListContainer.innerHTML = '<div class="col-span-full text-center py-8 text-gray-500"><i class="fa fa-spinner fa-spin fa-2x mb-2"></i><p>正在加载岗位…</p></div>';
+                await loadJobsFromAPI();
+            }
+            // 只显示前4个岗位（首页预览）
+            const displayJobs = allJobsData.slice(0, 4);
+            
+            if (displayJobs.length === 0) {
+                jobListContainer.innerHTML = `
+                    <div class="col-span-full bg-white rounded-lg shadow-md p-12 text-center">
+                        <i class="fa fa-inbox text-gray-400 text-5xl mb-4"></i>
+                        <p class="text-gray-500 text-lg">当前暂无发布中的岗位</p>
+                        <p class="text-gray-400 text-sm mt-2">数据来自后台接口，与企业端发布岗位同步。请稍后再来查看。</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            jobListContainer.innerHTML = displayJobs.map(job => {
+                const matchRate = calculateMatchRate(job);
+                const daysAgo = getDaysAgo(job.publishDate);
+                
+                return `
+                    <div class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition">
+                        <div class="p-4">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="text-base font-bold text-gray-800">${job.name}</h3>
+                                <span class="text-primary font-semibold text-sm">${job.salary}</span>
+                            </div>
+                            <div class="flex items-center text-xs text-gray-500 mb-2">
+                                <span class="mr-3"><i class="fa fa-building-o mr-1"></i> ${job.companyName || '未知公司'}</span>
+                                <span><i class="fa fa-map-marker mr-1"></i> ${job.location || '未知地点'}</span>
+                            </div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="bg-blue-100 text-primary text-xs font-medium px-2 py-0.5 rounded-full">
+                                    匹配度 ${matchRate}%
+                                </span>
+                                <span class="text-gray-400 text-xs"><i class="fa fa-clock-o mr-1"></i> ${daysAgo}</span>
+                            </div>
+                            <p class="text-gray-600 text-xs line-clamp-2 mb-3">
+                                ${job.description || '暂无描述'}
+                            </p>
+                            <a href="recommendation.html" class="text-primary hover:text-blue-700 text-xs font-medium">
+                                查看详情 <i class="fa fa-arrow-right ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // 获取发布时间距离现在的天数
+        function getDaysAgo(dateString) {
+            if (!dateString) return '未知';
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffTime = Math.abs(now - date);
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 0) return '今天发布';
+            if (diffDays === 1) return '1天前发布';
+            if (diffDays < 7) return `${diffDays}天前发布`;
+            if (diffDays < 30) return `${Math.floor(diffDays / 7)}周前发布`;
+            return `${Math.floor(diffDays / 30)}个月前发布`;
+        }
+        
+        // 初始化岗位推荐
+        document.addEventListener('DOMContentLoaded', function() {
+            renderMatchedJobs();
+            renderJobList();
+        });
+        
+        // ========== 招聘公告模块 ==========
+        let allAnnouncementsData = [];
+        let currentAnnouncementCategory = 'all';
+        
+        // 分类映射
+        const announcementCategoryMap = {
+            'all': '全部公告',
+            'government': '事业单位',
+            'education': '教育类',
+            'healthcare': '卫生类',
+            'soe': '国企',
+            'official': '官方活动',
+            'private': '民营企业'
+        };
+        
+        // 分类样式映射
+        const announcementCategoryStyleMap = {
+            '事业单位': 'bg-green-100 text-green-800',
+            '教育类': 'bg-blue-100 text-blue-800',
+            '卫生类': 'bg-red-100 text-red-800',
+            '国企': 'bg-amber-100 text-amber-800',
+            '官方活动': 'bg-purple-100 text-purple-800',
+            '民营企业': 'bg-indigo-100 text-indigo-800'
+        };
+        
+        // 加载公告数据
+        const API_BASE_ANNOUNCEMENTS = window.API_BASE_URL || 'http://127.0.0.1:3001/api/v1';
+        async function loadAnnouncementsData() {
+            try {
+                const res = await fetch(API_BASE_ANNOUNCEMENTS + '/announcements?pageSize=50');
+                const json = await res.json();
+                if (json && json.success && Array.isArray(json.data) && json.data.length > 0) {
+                    allAnnouncementsData = json.data.map(function(r) {
+                        var ex = r.extraJson;
+                        if (typeof ex === 'string') {
+                            try { ex = JSON.parse(ex || '{}'); } catch (e) { ex = {}; }
+                        }
+                        return {
+                            id: r.id,
+                            title: r.title,
+                            content: r.content,
+                            category: r.category || '未分类',
+                            source: r.source || '管理者端',
+                            companyName: r.companyName || '',
+                            publishDate: r.publishDate || '',
+                            expiryDate: r.expiryDate || '',
+                            rawStatus: r.status || 'published',
+                            status: r.status === 'published' ? '发布中' : (r.status === 'offline' ? '已下架' : '已过期'),
+                            views: r.views || 0,
+                            extraJson: ex && typeof ex === 'object' ? ex : {},
+                            publisherLabel: (ex && ex.candidateNavBranding && ex.candidateNavBranding.publisherLabel) || ''
+                        };
+                    });
+                    renderAnnouncements();
+                    return;
+                }
+            } catch (e) { console.warn('公告 API 加载失败，使用本地数据', e); }
+            try {
+                const savedAnnouncements = localStorage.getItem('announcementsData');
+                if (savedAnnouncements) {
+                    allAnnouncementsData = JSON.parse(savedAnnouncements);
+                    allAnnouncementsData = allAnnouncementsData.map(ann => {
+                        if (!ann.source) ann.source = (ann.companyName || ann.companyId) ? '企业端' : '管理者端';
+                        if (!ann.status) ann.status = '发布中';
+                        if (!ann.expiryDate && ann.publishDate) {
+                            const d = new Date(ann.publishDate); d.setMonth(d.getMonth() + 1);
+                            ann.expiryDate = d.toISOString().split('T')[0];
+                        }
+                        return ann;
+                    });
+                    allAnnouncementsData = allAnnouncementsData.filter(ann => {
+                        if (ann.status === '已下架') return false;
+                        return true;
+                    });
+                } else {
+                    allAnnouncementsData = [];
+                }
+            } catch (e) {
+                allAnnouncementsData = [];
+            }
+            renderAnnouncements();
+        }
+        
+        function displayPublisherLabel(ann) {
+            var custom = '';
+            if (ann) {
+                custom = (ann.publisherLabel || '').trim();
+                if (!custom && ann.extraJson && ann.extraJson.candidateNavBranding) {
+                    custom = (ann.extraJson.candidateNavBranding.publisherLabel || '').trim();
+                }
+            }
+            if (custom) return custom;
+            var generic = ['企业端', '管理者端', '政企端', ''];
+            var s = (ann.source || '').trim();
+            var c = (ann.companyName || '').trim();
+            if (c && generic.indexOf(s) >= 0) return c;
+            if (s) return s;
+            return c || '官方';
+        }
+
+        function getOnlyShowAnnouncementIdForHome() {
+            var b = window.__jobseekerAnnouncementBranding;
+            if (b && b.onlyShowThisAnnouncement && b.announcementId != null && /^[0-9]+$/.test(String(b.announcementId))) {
+                return String(b.announcementId);
+            }
+            return null;
+        }
+
+        function isAnnouncementSignupClosedForDisplay(ann) {
+            if (!ann) return false;
+            if (ann.status === '已下架') return true;
+            if (ann.status === '已过期') return true;
+            if (ann.rawStatus === 'expired') return true;
+            if (ann.expiryDate) {
+                var e = new Date(ann.expiryDate);
+                e.setHours(23, 59, 59, 999);
+                if (e < new Date()) return true;
+            }
+            return false;
+        }
+
+        // 渲染公告列表
+        function renderAnnouncements() {
+            const container = document.getElementById('announcements-container');
+            if (!container) return;
+            
+            // 根据分类筛选
+            let filteredAnnouncements = allAnnouncementsData;
+            var onlyAnnId = typeof getOnlyShowAnnouncementIdForHome === 'function' ? getOnlyShowAnnouncementIdForHome() : null;
+            if (onlyAnnId) {
+                filteredAnnouncements = allAnnouncementsData.filter(function(ann) { return String(ann.id) === String(onlyAnnId); });
+            } else if (currentAnnouncementCategory !== 'all') {
+                const categoryName = announcementCategoryMap[currentAnnouncementCategory];
+                filteredAnnouncements = allAnnouncementsData.filter(ann => ann.category === categoryName);
+            }
+            
+            // 按发布时间排序（最新的在前）
+            filteredAnnouncements.sort((a, b) => {
+                return new Date(b.publishDate) - new Date(a.publishDate);
+            });
+            
+            // 只显示前4个（首页预览）
+            filteredAnnouncements = filteredAnnouncements.slice(0, 4);
+            
+            if (filteredAnnouncements.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-white rounded-lg shadow-md p-12 text-center">
+                        <i class="fa fa-inbox text-gray-400 text-5xl mb-4"></i>
+                        <p class="text-gray-500 text-lg">暂无公告</p>
+                        <p class="text-gray-400 text-sm mt-2">请稍后再来查看</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = filteredAnnouncements.map(ann => {
+                const categoryStyle = announcementCategoryStyleMap[ann.category] || 'bg-gray-100 text-gray-800';
+                const iconMap = {
+                    '事业单位': 'fa-building',
+                    '教育类': 'fa-graduation-cap',
+                    '卫生类': 'fa-hospital-o',
+                    '国企': 'fa-industry',
+                    '官方活动': 'fa-bullhorn',
+                    '民营企业': 'fa-users'
+                };
+                const icon = iconMap[ann.category] || 'fa-file-text-o';
+                
+                return `
+                    <div class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition">
+                        <div class="p-4 border-b">
+                            <h3 class="text-base font-semibold text-primary mb-2">
+                                <i class="fa ${icon} mr-2"></i>${ann.title}
+                            </h3>
+                            <div class="flex flex-wrap items-center text-gray-500 text-xs gap-3">
+                                <span><i class="fa fa-building-o mr-1"></i>发布方：${displayPublisherLabel(ann)}</span>
+                                <span><i class="fa fa-calendar mr-1"></i>${ann.publishDate}</span>
+                                <span><i class="fa fa-eye mr-1"></i>${ann.views || 0}</span>
+                                <span class="px-2 py-0.5 ${categoryStyle} rounded-full text-xs font-semibold">${ann.category}</span>
+                                ${isAnnouncementSignupClosedForDisplay(ann) ? '<span class="px-2 py-0.5 bg-gray-200 text-gray-700 rounded-full text-xs font-semibold">报名已截止</span>' : ''}
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <p class="text-gray-700 text-sm line-clamp-2 mb-3">${ann.content ? ann.content.substring(0, 150) + (ann.content.length > 150 ? '...' : '') : '暂无描述'}</p>
+                            <div class="flex justify-between items-center">
+                                <div class="text-gray-500 text-xs">
+                                    ${ann.location ? `<i class="fa fa-map-marker mr-1"></i>${ann.location}` : ''}
+                                </div>
+                                <a href="announcement-detail.html?id=${encodeURIComponent(ann.id)}" class="text-primary hover:text-blue-700 text-xs font-medium">
+                                    查看详情 <i class="fa fa-arrow-right ml-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // 切换分类
+        function switchAnnouncementCategory(category) {
+            currentAnnouncementCategory = category;
+            renderAnnouncements();
+        }
+        
+        // 初始化招聘公告
+        document.addEventListener('DOMContentLoaded', function() {
+            // 加载公告数据
+            loadAnnouncementsData();
+
+            window.addEventListener('jobseekerNavBrandingReady', function() {
+                renderAnnouncements();
+            });
+            
+            // 选项卡切换
+            const tabBtns = document.querySelectorAll('.announcement-tab-btn');
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tab = this.getAttribute('data-tab');
+                    
+                    // 更新按钮样式
+                    tabBtns.forEach(b => {
+                        b.classList.remove('text-primary', 'border-primary');
+                        b.classList.add('text-gray-600', 'border-transparent');
+                    });
+                    
+                    this.classList.remove('text-gray-600', 'border-transparent');
+                    this.classList.add('text-primary', 'border-primary');
+                    
+                    // 切换分类
+                    switchAnnouncementCategory(tab);
+                });
+            });
+            
+            // 监听公告数据更新
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'announcementsData') {
+                    loadAnnouncementsData();
+                }
+            });
+        });
+        
+        // ========== 人才池模块 ==========
+        // 评估人才池状态
+        function evaluateTalentPoolStatus() {
+            const assessmentResults = JSON.parse(localStorage.getItem('assessmentResults') || '[]');
+            const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+            
+            let hasHighScore = false;
+            let maxScore = 0;
+            let assessmentCount = assessmentResults.length;
+            
+            assessmentResults.forEach(result => {
+                const score = result.score || result.totalScore || 0;
+                if (score >= 80) {
+                    hasHighScore = true;
+                }
+                if (score > maxScore) {
+                    maxScore = score;
+                }
+            });
+            
+            const resumeCompleteness = calculateResumeCompleteness(userProfile);
+            const workExperience = userProfile.workExperience || [];
+            const workYears = calculateWorkYears(workExperience);
+            const canJoin = hasHighScore;
+            const level = calculateTalentLevel(maxScore, resumeCompleteness, workYears);
+            
+            renderTalentPoolStatus(canJoin, level, {
+                hasHighScore,
+                maxScore,
+                assessmentCount,
+                resumeCompleteness,
+                workYears
+            });
+        }
+        
+        // 计算简历完善度
+        function calculateResumeCompleteness(profile) {
+            let completeness = 0;
+            const fields = ['name', 'email', 'phone', 'gender', 'birthDate', 'education', 'workExperience', 'skills', 'selfIntroduction'];
+            fields.forEach(field => {
+                if (profile[field] && (Array.isArray(profile[field]) ? profile[field].length > 0 : profile[field] !== '')) {
+                    completeness += 100 / fields.length;
+                }
+            });
+            return Math.round(completeness);
+        }
+        
+        // 计算工作年限
+        function calculateWorkYears(workExperience) {
+            if (!Array.isArray(workExperience) || workExperience.length === 0) {
+                return 0;
+            }
+            let totalMonths = 0;
+            workExperience.forEach(exp => {
+                if (exp.startDate && exp.endDate) {
+                    const start = new Date(exp.startDate);
+                    const end = exp.endDate === '至今' ? new Date() : new Date(exp.endDate);
+                    const months = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());
+                    totalMonths += months;
+                }
+            });
+            return Math.floor(totalMonths / 12);
+        }
+        
+        // 计算人才等级
+        function calculateTalentLevel(maxScore, resumeCompleteness, workYears) {
+            let score = 0;
+            if (maxScore >= 95) score += 40;
+            else if (maxScore >= 90) score += 35;
+            else if (maxScore >= 85) score += 30;
+            else if (maxScore >= 80) score += 25;
+            
+            if (resumeCompleteness >= 95) score += 30;
+            else if (resumeCompleteness >= 90) score += 25;
+            else if (resumeCompleteness >= 80) score += 20;
+            else if (resumeCompleteness >= 70) score += 15;
+            else if (resumeCompleteness >= 60) score += 10;
+            
+            if (workYears >= 10) score += 30;
+            else if (workYears >= 7) score += 25;
+            else if (workYears >= 5) score += 20;
+            else if (workYears >= 3) score += 15;
+            else if (workYears >= 1) score += 10;
+            else if (workYears > 0) score += 5;
+            
+            if (score >= 85) return { name: '专家级', badge: 'bg-purple-100 text-purple-800', icon: 'fa-star' };
+            else if (score >= 70) return { name: '高级', badge: 'bg-blue-100 text-blue-800', icon: 'fa-trophy' };
+            else if (score >= 55) return { name: '中级', badge: 'bg-green-100 text-green-800', icon: 'fa-medal' };
+            else return { name: '初级', badge: 'bg-yellow-100 text-yellow-800', icon: 'fa-certificate' };
+        }
+        
+        // 渲染人才池状态
+        function renderTalentPoolStatus(canJoin, level, details) {
+            const container = document.getElementById('talent-pool-status-section');
+            if (!container) return;
+            
+            if (canJoin) {
+                container.innerHTML = `
+                    <div class="flex flex-col md:flex-row items-center justify-between mb-6">
+                        <div class="flex items-center mb-4 md:mb-0">
+                            <div class="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mr-4">
+                                <i class="fa ${level.icon} text-2xl text-green-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-medium text-gray-800">已加入人才池</h3>
+                                <p class="text-gray-500 mt-1">当前等级：<span class="${level.badge} px-2 py-1 rounded-full text-sm font-semibold">${level.name}</span></p>
+                            </div>
+                        </div>
+                        <a href="talent-pool.html" class="bg-primary hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition">
+                            查看详情
+                        </a>
+                    </div>
+                    <div class="bg-gray-50 p-6 rounded-lg">
+                        <h4 class="font-medium text-gray-700 mb-4">评定信息</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="bg-white p-4 rounded-lg">
+                                <div class="text-sm text-gray-500 mb-1">最高测评分数</div>
+                                <div class="text-2xl font-bold text-primary">${details.maxScore}</div>
+                                <div class="text-xs text-gray-400 mt-1">已完成 ${details.assessmentCount} 项测评</div>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg">
+                                <div class="text-sm text-gray-500 mb-1">简历完善度</div>
+                                <div class="text-2xl font-bold text-primary">${details.resumeCompleteness}%</div>
+                                <div class="text-xs text-gray-400 mt-1">${details.resumeCompleteness >= 90 ? '优秀' : details.resumeCompleteness >= 70 ? '良好' : '待完善'}</div>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg">
+                                <div class="text-sm text-gray-500 mb-1">工作经验</div>
+                                <div class="text-2xl font-bold text-primary">${details.workYears}</div>
+                                <div class="text-xs text-gray-400 mt-1">年</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div class="flex flex-col md:flex-row items-center justify-between mb-6">
+                        <div class="flex items-center mb-4 md:mb-0">
+                            <div class="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mr-4">
+                                <i class="fa fa-users text-primary text-3xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-bold text-gray-800">专业人才对接</h3>
+                                <p class="text-gray-600 mt-2">我们根据您的专业工作经历和测评结果，将您精准匹配到合适的企业人才池</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 p-6 rounded-lg">
+                        <h4 class="font-medium text-gray-700 mb-4">申请条件</h4>
+                        <ul class="space-y-3">
+                            <li class="flex items-start">
+                                <i class="fa ${details.hasHighScore ? 'fa-check-circle text-green-600' : 'fa-times-circle text-red-600'} mt-1 mr-3"></i>
+                                <span>专业能力测评一次达到80分以上</span>
+                                ${details.maxScore > 0 ? `<span class="ml-2 text-sm text-gray-500">（当前最高：${details.maxScore}分）</span>` : ''}
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-info-circle text-blue-600 mt-1 mr-3"></i>
+                                <span>无需面试评审，系统将根据简历、测评分数、工作经验综合评定等级</span>
+                            </li>
+                        </ul>
+                        <div class="mt-6 text-center">
+                            <a href="talent-pool.html" class="inline-block bg-primary hover:bg-blue-700 text-white font-medium py-3 px-8 rounded-lg transition transform hover:-translate-y-1">
+                                立即加入人才池
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        // 加载项目数据：优先从 API 获取，失败时回退到 localStorage
+        const API_BASE_PROJECTS = window.API_BASE_URL || 'http://127.0.0.1:3001/api/v1';
+        async function loadTalentPoolProjects() {
+            try {
+                const r = await fetch(API_BASE_PROJECTS + '/projects');
+                if (r.ok) {
+                    const j = await r.json();
+                    if (j.success && Array.isArray(j.data)) {
+                        try {
+                            localStorage.removeItem('allUserProjectData');
+                            localStorage.removeItem('userProjectData');
+                        } catch (_) {}
+                        let availableProjectsData = j.data.map(project => {
+                            const level = determineProjectLevel(project);
+                            const budget = (project.budgetMin != null || project.budgetMax != null)
+                                ? '¥' + (project.budgetMin || 0).toLocaleString() + '-' + (project.budgetMax || 0).toLocaleString()
+                                : generateBudgetRange(level);
+                            return {
+                                id: project.id,
+                                name: project.name,
+                                company: project.company || '企业',
+                                type: project.type,
+                                requiredTalentType: project.requiredTalentType,
+                                status: project.status || 'recruiting',
+                                publishDate: (project.publishDate || '').toString().slice(0, 10),
+                                level: level,
+                                budget: budget,
+                                description: project.description || generateProjectDescription(project),
+                                skills: generateProjectSkills(project.requiredTalentType || project.type)
+                            };
+                        });
+                        availableProjectsData = availableProjectsData.filter(p =>
+                            p.status === '招聘中' || p.status === 'recruiting' || !p.status
+                        );
+                        availableProjectsData.sort((a, b) => new Date(b.publishDate) - new Date(a.publishDate));
+                        return availableProjectsData.slice(0, 4);
+                    }
+                }
+                return [];
+            } catch (e) {
+                console.warn('从 API 加载项目失败:', e);
+                return [];
+            }
+        }
+        
+        // 确定项目等级
+        function determineProjectLevel(project) {
+            const type = project.type || '';
+            const talentType = project.requiredTalentType || '';
+            if (type.includes('专家') || type.includes('高级') || talentType === 'tech') {
+                return Math.random() > 0.5 ? '高级' : '专家级';
+            } else if (type.includes('中级') || talentType === 'design' || talentType === 'product') {
+                return '中级';
+            } else {
+                return '初级';
+            }
+        }
+        
+        // 生成预算范围
+        function generateBudgetRange(level) {
+            const ranges = {
+                '初级': { min: 5000, max: 15000 },
+                '中级': { min: 15000, max: 30000 },
+                '高级': { min: 30000, max: 50000 },
+                '专家级': { min: 50000, max: 100000 }
+            };
+            const range = ranges[level] || ranges['中级'];
+            return `¥${range.min.toLocaleString()}-${range.max.toLocaleString()}`;
+        }
+        
+        // 生成项目描述
+        function generateProjectDescription(project) {
+            const descriptions = {
+                'tech': '负责技术研发工作，包括系统设计、开发、测试等全流程。',
+                'design': '负责产品设计和用户体验优化，提供高质量的设计方案。',
+                'product': '负责产品规划和运营，推动产品迭代和优化。',
+                'marketing': '负责市场推广和品牌建设，提升产品知名度和用户增长。',
+                'finance': '负责财务分析和风险控制，提供专业的金融咨询服务。',
+                'operation': '负责运营管理和数据分析，优化业务流程和效率。'
+            };
+            return descriptions[project.requiredTalentType] || '负责项目相关工作，提供专业服务。';
+        }
+        
+        // 生成项目技能标签
+        function generateProjectSkills(talentType) {
+            const skillsMap = {
+                'tech': ['React', 'TypeScript', 'Node.js'],
+                'design': ['Figma', 'UI设计', '用户研究'],
+                'product': ['产品规划', '数据分析', '用户研究'],
+                'marketing': ['市场推广', '品牌建设', '内容运营'],
+                'finance': ['财务分析', '风险控制', '投资分析'],
+                'operation': ['运营管理', '数据分析', '流程优化']
+            };
+            return skillsMap[talentType] || ['专业技能', '团队协作', '沟通能力'];
+        }
+        
+        // 渲染项目列表
+        async function renderTalentPoolProjects() {
+            const container = document.getElementById('talent-pool-projects-container');
+            if (!container) return;
+            
+            const projects = await loadTalentPoolProjects();
+            
+            if (projects.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full bg-white rounded-lg shadow-md p-12 text-center">
+                        <i class="fa fa-inbox text-gray-400 text-5xl mb-4"></i>
+                        <p class="text-gray-500 text-lg">暂无可承接项目</p>
+                        <p class="text-gray-400 text-sm mt-2">请稍后再来查看</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = projects.map(project => {
+                const daysAgo = getDaysAgo(project.publishDate);
+                return `
+                    <div class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition">
+                        <div class="relative">
+                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Cdefs%3E%3ClinearGradient id='cardGradient' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%231E40AF;stop-opacity:0.8'/%3E%3Cstop offset='100%25' style='stop-color:%233B82F6;stop-opacity:0.6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23cardGradient)'/%3E%3C/svg%3E" 
+                                 alt="${project.name}" class="w-full h-32 object-cover">
+                            <div class="absolute top-2 left-2 bg-primary text-white text-xs font-medium px-2 py-0.5 rounded-full">
+                                ${project.level}
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="text-base font-bold text-gray-800">${project.name}</h3>
+                                <span class="text-primary font-semibold text-sm">${project.budget}</span>
+                            </div>
+                            <p class="text-gray-600 text-xs line-clamp-2 mb-3">${project.description}</p>
+                            <div class="flex justify-between items-center text-gray-500 text-xs">
+                                <span><i class="fa fa-building mr-1"></i> ${project.company}</span>
+                                <span><i class="fa fa-clock-o mr-1"></i> ${daysAgo}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // 初始化人才池
+        document.addEventListener('DOMContentLoaded', function() {
+            evaluateTalentPoolStatus();
+            renderTalentPoolProjects();
+            
+            // 监听项目数据更新
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'allUserProjectData' || e.key === 'userProjectData') {
+                    renderTalentPoolProjects();
+                }
+                if (e.key === 'assessmentResults' || e.key === 'userProfile') {
+                    evaluateTalentPoolStatus();
+                }
+            });
+        });
+        
+        // ========== 会员体系模块 - 关联付费服务 ==========
+        function mapHomeMembershipPlansToServices(plans) {
+            if (!Array.isArray(plans) || plans.length === 0) return null;
+            const periodMap = { month: '/月', quarter: '/季度', year: '/年' };
+            const iconMap = { 1: 'fa-user', 2: 'fa-crown', 3: 'fa-star' };
+            return plans.map((plan) => ({
+                id: `membership-${plan.id}`,
+                title: plan.name,
+                description: getMembershipDescription(plan.name),
+                price: `¥${plan.price}`,
+                period: periodMap[plan.period] || '/月',
+                features: plan.features || [],
+                popular: plan.id === 2,
+                icon: iconMap[plan.id] || 'fa-user'
+            }));
+        }
+        // 从付费服务模块加载会员套餐数据（优先服务端，与求职者付费页一致）
+        function loadMembershipServices() {
+            try {
+                var pub = window.__publicSiteSettings;
+                if (pub && Array.isArray(pub.membershipPlans) && pub.membershipPlans.length > 0) {
+                    var fromSrv = mapHomeMembershipPlansToServices(pub.membershipPlans);
+                    if (fromSrv) return fromSrv;
+                }
+                const savedPlans = localStorage.getItem('membershipPlans');
+                if (savedPlans) {
+                    const plans = JSON.parse(savedPlans);
+                    if (Array.isArray(plans) && plans.length > 0) {
+                        var fromLocal = mapHomeMembershipPlansToServices(plans);
+                        if (fromLocal) return fromLocal;
+                    }
+                }
+            } catch (e) {
+                console.error('加载会员套餐数据失败:', e);
+            }
+            return getDefaultMembershipServices();
+        }
+        
+        // 获取会员描述
+        function getMembershipDescription(name) {
+            const descriptions = {
+                '普通会员': '适合刚入门的求职者，享受基础会员权益',
+                '高级会员': '享受无限次测评、专属客服、简历优化等特权',
+                '尊享会员': '最高级别会员服务，享受全部特权'
+            };
+            return descriptions[name] || '享受专业会员服务';
+        }
+        
+        // 默认会员服务数据
+        function getDefaultMembershipServices() {
+            return [
+                {
+                    id: 'membership-1',
+                    title: '普通会员',
+                    description: '适合刚入门的求职者，享受基础会员权益',
+                    price: '¥39',
+                    period: '/月',
+                    features: ['基础简历模板', '职位推送', '每月5次测评'],
+                    popular: false,
+                    icon: 'fa-user'
+                },
+                {
+                    id: 'membership-2',
+                    title: '高级会员',
+                    description: '享受无限次测评、专属客服、简历优化等特权',
+                    price: '¥99',
+                    period: '/月',
+                    features: ['高级简历模板', '优先职位推送', '每月20次测评', '简历优化服务'],
+                    popular: true,
+                    icon: 'fa-crown'
+                },
+                {
+                    id: 'membership-3',
+                    title: '尊享会员',
+                    description: '最高级别会员服务，享受全部特权',
+                    price: '¥199',
+                    period: '/月',
+                    features: ['全部简历模板', '专属职位推送', '无限次测评', '简历优化服务', '每月2次职业咨询'],
+                    popular: false,
+                    icon: 'fa-star'
+                }
+            ];
+        }
+        
+        // 渲染会员服务列表
+        function renderMembershipServices() {
+            const container = document.getElementById('membership-services-container');
+            if (!container) return;
+            
+            const services = loadMembershipServices();
+            
+            if (services.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-8 text-gray-500">
+                        暂无会员服务数据
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = services.map(service => `
+                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 ${service.popular ? 'ring-2 ring-primary' : ''}">
+                    ${service.popular ? `
+                        <div class="bg-primary text-white text-center py-1 text-sm font-medium">
+                            推荐
+                        </div>
+                    ` : ''}
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <i class="fa ${service.icon} text-primary text-xl"></i>
+                            </div>
+                            ${service.popular ? '<span class="bg-red-500 text-white text-xs font-medium px-2 py-1 rounded-full">热门</span>' : ''}
+                        </div>
+                        
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">${service.title}</h3>
+                        <p class="text-gray-600 text-sm mb-4">${service.description}</p>
+                        
+                        <div class="mb-4">
+                            <span class="text-3xl font-bold text-primary">${service.price}</span>
+                            <span class="text-gray-500">${service.period}</span>
+                        </div>
+                        
+                        <ul class="space-y-2 mb-6">
+                            ${service.features.map(feature => `
+                                <li class="flex items-start text-sm text-gray-600">
+                                    <i class="fa fa-check-circle text-green-500 mr-2 mt-0.5"></i>
+                                    <span>${feature}</span>
+                                </li>
+                            `).join('')}
+                        </ul>
+                        
+                        <button onclick="openPayment('${service.id}')" class="w-full bg-primary hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-lg transition">
+                            立即购买
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // 初始化会员体系（先拉公开站点设置，再渲染）
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                var base = (window.API_BASE_URL && String(window.API_BASE_URL).trim()) ? String(window.API_BASE_URL).replace(/\/$/, '') : '';
+                if (!base && window.location && window.location.origin) {
+                    base = window.location.origin.replace(/\/$/, '') + '/api/v1';
+                }
+                if (base) {
+                    var res = await fetch(base + '/public/site-settings', { cache: 'no-store' });
+                    var json = await res.json().catch(function () { return null; });
+                    if (json && json.success && json.data) window.__publicSiteSettings = json.data;
+                }
+            } catch (e) {
+                console.warn('加载站点公开设置失败', e);
+            }
+            renderMembershipServices();
+            
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'membershipPlans') {
+                    renderMembershipServices();
+                }
+            });
+        });
+        
+        // ========== 统一数据同步 ==========
+        // 监听所有相关数据的storage事件，确保首页数据与子模块数据实时同步
+        document.addEventListener('DOMContentLoaded', function() {
+            // 使用自定义事件监听同页面的localStorage变化（管理端在同一浏览器中修改时）
+            const originalSetItem = localStorage.setItem;
+            localStorage.setItem = function(key, value) {
+                // 触发storage事件，确保跨标签页同步
+                originalSetItem.apply(this, arguments);
+                window.dispatchEvent(new StorageEvent('storage', {
+                    key: key,
+                    newValue: value,
+                    oldValue: localStorage.getItem(key)
+                }));
+            };
+            
+            // 统一监听所有数据更新
+            window.addEventListener('storage', function(e) {
+                // 测评包数据更新
+                if (e.key === 'assessmentPackages') {
+                    const filterBtns = document.querySelectorAll('.assessment-filter-btn');
+                    const activeBtn = Array.from(filterBtns).find(btn => btn.classList.contains('bg-primary'));
+                    const currentFilter = activeBtn ? activeBtn.getAttribute('data-filter') : 'all';
+                    renderAssessmentPackages(currentFilter);
+                }
+                
+                // 岗位数据仅以后台 API 为准，不再监听 allCompanyJobsData
+                
+                // 公告数据更新
+                if (e.key === 'announcementsData') {
+                    loadAnnouncementsData();
+                }
+                
+                // 项目数据更新
+                if (e.key === 'allUserProjectData' || e.key === 'userProjectData') {
+                    renderTalentPoolProjects();
+                }
+                
+                // 用户信息更新（影响人才池状态和岗位匹配）
+                if (e.key === 'assessmentResults' || e.key === 'resumeData' || e.key === 'userProfile') {
+                    evaluateTalentPoolStatus();
+                    renderMatchedJobs();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>跳转笔试系统 - 圣举人才网</title>
+  <style>
+    body { font-family: sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; background: #f0f2f5; }
+    .box { text-align: center; padding: 2rem; }
+    .spinner { width: 40px; height: 40px; border: 3px solid #eee; border-top-color: #4F46E5; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1rem; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .msg { color: #666; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <div class="spinner"></div>
+    <p class="msg" id="msg">正在跳转到笔试系统...</p>
+  </div>
+  <script>
+    (function () {
+      function getToken() {
+        try {
+          if (typeof AuthHelper !== 'undefined' && AuthHelper.get && AuthHelper.get('enterprise')) {
+            var e = AuthHelper.get('enterprise');
+            if (e && e.token) return e.token;
+          }
+        } catch (_) {}
+        return localStorage.getItem('authToken') || sessionStorage.getItem('authToken') || '';
+      }
+      function getReturnUrl() {
+        var m = /return_url=([^&]+)/.exec(window.location.search);
+        return m ? decodeURIComponent(m[1]) : '';
+      }
+      var returnUrl = getReturnUrl();
+      if (!returnUrl) {
+        document.getElementById('msg').textContent = '缺少 return_url 参数';
+        return;
+      }
+      var token = getToken();
+      if (!token) {
+        var backTo = window.location.href;
+        // 同目录企业登录页（勿用不存在的 enterprise-login.html，否则 404 会回到站首页造成「无限跳首页」）
+        window.location.href = 'login.html?return_to=' + encodeURIComponent(backTo);
+        return;
+      }
+      var sep = returnUrl.indexOf('?') >= 0 ? '&' : '?';
+      window.location.replace(returnUrl + sep + 'token=' + encodeURIComponent(token));
+    })();
+  </script>
+</body>
+</html>

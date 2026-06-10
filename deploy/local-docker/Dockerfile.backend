@@ -1,0 +1,26 @@
+# 笔试系统后端 + 由同一进程托管的各前端 dist（server.js 的 projectRoot 为仓库根目录）
+FROM node:20-bookworm
+
+# canvas / 部分原生模块编译依赖
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 make g++ pkg-config \
+    libcairo2-dev libjpeg62-turbo-dev libpango1.0-dev libgif-dev librsvg2-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# 减小镜像体积：跳过 Puppeteer 自带 Chromium（本地演示多数场景不需要；需要时再改 Dockerfile 去掉此行并重建）
+ENV PUPPETEER_SKIP_DOWNLOAD=true
+
+WORKDIR /workspace
+
+COPY backend/package.json backend/package-lock.json ./backend/
+WORKDIR /workspace/backend
+RUN npm ci --omit=dev
+
+WORKDIR /workspace
+COPY backend ./backend
+COPY frontend ./frontend
+
+WORKDIR /workspace/backend
+ENV NODE_ENV=production
+EXPOSE 3000
+CMD ["node", "server.js"]

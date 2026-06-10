@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>系统测评 - 圣举人才网</title>
+    <script>(function(){var w=console.warn;console.warn=function(){var m=(arguments[0]!=null&&typeof arguments[0]==='string')?arguments[0]:'';if(m.indexOf('cdn.tailwindcss.com')!==-1||m.indexOf('Tracking Prevention')!==-1)return;return w.apply(console,arguments);};})();</script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../js/api-config.js"></script>
+    <script src="../js/auth-helper.js"></script>
+    <script src="../js/user-navbar.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="/js/system-assessment-questions.js"></script>
+    <script>
+        tailwind.config = { theme: { extend: { colors: { primary: '#3B82F6', secondary: '#1E40AF' }, fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] } } } };
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .bg-gradient-blue { background: linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%); }
+            .progress-bar { height: 0.5rem; background-color: #e5e7eb; border-radius: 9999px; overflow: hidden; }
+            .progress-value { height: 100%; background-color: #1E40AF; transition: all 0.3s; }
+            .option-card { border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 1rem; cursor: pointer; transition: all 0.15s; }
+            .option-card:hover { border-color: #1E40AF; background-color: #eff6ff; }
+            .option-card.selected { border-color: #1E40AF; background-color: #eff6ff; }
+        }
+    </style>
+</head>
+<body class="font-sans bg-gray-50">
+    <!-- 导航栏（与首页一致） -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <a href="../index.html" class="flex items-center space-x-2">
+                    <img data-site-brand-logo src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%231E40AF' rx='4'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-size='24' font-weight='bold' fill='white'%3E圣%3C/text%3E%3C/svg%3E" alt="圣举人才网" class="h-10 w-10 rounded-full">
+                    <h1 class="text-2xl font-bold text-primary">圣举人才网</h1>
+                </a>
+                <span class="text-gray-400">|</span>
+                <span class="text-gray-600 font-medium">求职者中心</span>
+            </div>
+            <nav class="hidden md:flex items-center space-x-8">
+                <a href="index.html" class="text-gray-700 hover:text-primary font-medium border-b-2 border-transparent">首页</a>
+                <a href="assessment.html" class="text-gray-700 hover:text-primary font-medium border-b-2 border-transparent">测评中心</a>
+                <a href="recommendation.html" class="text-gray-700 hover:text-primary font-medium border-b-2 border-transparent">岗位推荐</a>
+                <a href="announcements.html" class="text-gray-700 hover:text-primary font-medium border-b-2 border-transparent">招聘公告</a>
+                <a href="talent-pool.html" class="text-gray-700 hover:text-primary font-medium border-b-2 border-transparent">人才池</a>
+                <a href="payment.html" class="text-gray-700 hover:text-primary font-medium border-b-2 border-transparent">付费服务</a>
+                <a href="profile.html" class="text-gray-700 hover:text-primary font-medium border-b-2 border-transparent">个人中心</a>
+            </nav>
+            <div class="flex items-center space-x-4">
+                <div class="hidden md:flex items-center space-x-2" id="user-menu">
+                    <img id="user-avatar-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="" class="h-8 w-8 rounded-full">
+                    <span class="text-gray-700" id="user-name-display"></span>
+                </div>
+                <button type="button" onclick="showLogoutModal()" class="hidden md:flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition"><i class="fa fa-sign-out"></i> 退出</button>
+                <button class="md:hidden text-gray-700 focus:outline-none" id="menu-toggle"><i class="fa fa-bars text-xl"></i></button>
+            </div>
+        </div>
+        <div class="md:hidden hidden bg-white border-t border-gray-200" id="mobile-menu">
+            <div class="container mx-auto px-4 py-2">
+                <a href="index.html" class="block py-2 text-gray-700 hover:text-primary pl-2">首页</a>
+                <a href="assessment.html" class="block py-2 text-gray-700 hover:text-primary pl-2">测评中心</a>
+                <a href="recommendation.html" class="block py-2 text-gray-700 hover:text-primary pl-2">岗位推荐</a>
+                <a href="announcements.html" class="block py-2 text-gray-700 hover:text-primary pl-2">招聘公告</a>
+                <a href="talent-pool.html" class="block py-2 text-gray-700 hover:text-primary pl-2">人才池</a>
+                <a href="payment.html" class="block py-2 text-gray-700 hover:text-primary pl-2">付费服务</a>
+                <a href="profile.html" class="block py-2 text-gray-700 hover:text-primary pl-2">个人中心</a>
+                <div class="border-t border-gray-200 my-2"></div>
+                <button type="button" onclick="showLogoutModal()" class="block w-full text-left py-2 text-primary font-medium pl-2"><i class="fa fa-sign-out mr-2"></i>退出</button>
+            </div>
+        </div>
+    </header>
+
+    <div id="logout-modal" class="fixed inset-0 z-50 hidden">
+        <div class="fixed inset-0 bg-black bg-opacity-50" onclick="closeLogoutModal()"></div>
+        <div class="fixed inset-0 flex items-center justify-center p-4">
+            <div class="bg-white rounded-xl shadow-xl max-w-sm w-full p-6">
+                <p class="text-center text-gray-800 mb-6">确定要退出登录吗？</p>
+                <div class="flex gap-3">
+                    <button type="button" onclick="closeLogoutModal()" class="flex-1 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">取消</button>
+                    <button type="button" onclick="confirmLogout()" class="flex-1 py-2 bg-primary text-white rounded-lg hover:bg-blue-700">确定退出</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+    function showLogoutModal(){ document.getElementById('logout-modal').classList.remove('hidden'); }
+    function closeLogoutModal(){ document.getElementById('logout-modal').classList.add('hidden'); }
+    function confirmLogout(){
+        if(typeof AuthHelper!=='undefined') AuthHelper.clear('jobseeker');
+        else { localStorage.removeItem('authToken'); sessionStorage.removeItem('authToken'); localStorage.removeItem('userId'); localStorage.removeItem('userType'); localStorage.removeItem('username'); }
+        closeLogoutModal(); window.location.href = 'login.html';
+    }
+    </script>
+
+    <main>
+        <section class="bg-gradient-blue text-white py-8" id="section-title">
+            <div class="container mx-auto px-4">
+                <h1 class="text-3xl font-bold text-center" id="page-title">系统测评</h1>
+                <p class="text-center mt-2" id="page-subtitle">请完成测评并查看专业报告</p>
+            </div>
+        </section>
+
+        <section class="py-8">
+            <div class="container mx-auto px-4">
+                <div class="bg-white rounded-lg shadow-md p-6 mb-8 hidden" id="progress-block">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-gray-700 font-medium">测评进度</span>
+                        <span class="text-primary font-medium" id="progress-text">1/50</span>
+                    </div>
+                    <div class="progress-bar"><div class="progress-value" id="progress-value" style="width: 2%"></div></div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6 mb-8" id="assessment-intro">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">测评说明</h2>
+                    <div id="intro-content"></div>
+                    <div class="flex justify-center mt-6">
+                        <button id="start-assessment" class="bg-primary hover:bg-blue-700 text-white font-medium py-3 px-8 rounded-lg transition">开始测评</button>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6 mb-8 hidden" id="assessment-questions">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-bold text-gray-800" id="question-number">问题 1</h2>
+                        <div class="text-sm text-gray-500"><i class="fa fa-clock-o mr-1"></i><span id="question-timer">00:00</span></div>
+                    </div>
+                    <div id="question-container">
+                        <h3 class="text-lg font-medium text-gray-800 mb-6" id="question-text"></h3>
+                        <div class="space-y-4" id="options-container"></div>
+                    </div>
+                    <div class="flex justify-between mt-8">
+                        <button id="prev-question" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 px-6 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed" disabled>上一题</button>
+                        <button id="next-question" class="bg-primary hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed" disabled>下一题</button>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6 mb-8 hidden" id="assessment-result">
+                    <h2 class="text-xl font-bold text-gray-800 mb-6 text-center">测评结果</h2>
+                    <div id="result-content"></div>
+                    <div class="mt-8 flex flex-wrap gap-4">
+                        <a href="assessment.html" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 px-6 rounded-lg transition">返回测评中心</a>
+                        <button id="btn-view-report" class="bg-primary hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition">查看完整报告</button>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-8 hidden" id="report-section">
+                    <div class="flex justify-between items-center mb-6">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-800" id="report-title">测评报告</h1>
+                            <p class="text-gray-600 text-sm" id="report-meta"></p>
+                        </div>
+                        <div class="flex space-x-3">
+                            <button type="button" id="btn-export-pdf" class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition flex items-center"><i class="fa fa-file-pdf-o mr-2"></i>导出PDF</button>
+                            <a href="assessment.html" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg transition inline-flex items-center"><i class="fa fa-list mr-2"></i>测评中心</a>
+                        </div>
+                    </div>
+                    <div class="border-t border-gray-200 pt-6" id="report-content"></div>
+                    <div class="border-t border-gray-200 mt-8 pt-8 hidden" id="report-job-recommendations-wrap">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4"><i class="fa fa-briefcase mr-2 text-primary"></i>基于测评结果的适合岗位推荐</h2>
+                        <p class="text-gray-600 mb-4">根据您的测评结果，从在招岗位中匹配推荐以下适合的职位，点击可前往岗位详情或申请。</p>
+                        <div id="report-job-recommendations" class="space-y-4"></div>
+                        <div class="mt-4">
+                            <a href="recommendation.html" class="inline-flex items-center text-primary hover:text-blue-700 font-medium"><i class="fa fa-list mr-2"></i>查看岗位推荐</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+    (function() {
+        var urlParams = new URLSearchParams(window.location.search);
+        var viewMode = urlParams.get('view');
+        var reportType = urlParams.get('type');
+        var reportId = urlParams.get('id');
+
+        var SYSTEM_TYPES = {
+            stress: { name: '专业抗压能力测试', key: 'stress' },
+            personality: { name: '性格测试', key: 'personality' },
+            intelligence: { name: '智力测试', key: 'intelligence' },
+            ability: { name: '职业能力测试', key: 'ability' },
+            interest: { name: '兴趣测试', key: 'interest' }
+        };
+
+        var questions = [];
+        var currentType = '';
+        var currentQuestionIndex = 0;
+        var userAnswers = {};
+        var timer = null;
+        var seconds = 0;
+        var currentRecordId = null;
+
+        var QUESTIONS_PER_ASSESSMENT = 15;
+
+        function getQuestions() {
+            if (typeof STRESS_QUESTIONS === 'undefined') return [];
+            if (currentType === 'stress') return STRESS_QUESTIONS;
+            if (currentType === 'personality') return PERSONALITY_QUESTIONS;
+            if (currentType === 'intelligence') return INTELLIGENCE_QUESTIONS;
+            if (currentType === 'ability') return typeof ABILITY_QUESTIONS !== 'undefined' ? ABILITY_QUESTIONS : [];
+            if (currentType === 'interest') return typeof INTEREST_QUESTIONS !== 'undefined' ? INTEREST_QUESTIONS : [];
+            return [];
+        }
+
+        function pickRandomQuestions(all, count) {
+            if (!Array.isArray(all) || !all.length) return [];
+            var arr = all.slice();
+            var n = Math.min(count, arr.length);
+            for (var i = arr.length - 1; i > 0; i--) {
+                var j = Math.floor(Math.random() * (i + 1));
+                var tmp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = tmp;
+            }
+            return arr.slice(0, n);
+        }
+
+        function getIntroHtml() {
+            if (currentType === 'stress') {
+                return '<p class="text-gray-600 mb-4">本测评从情绪调节、工作负荷承受、挫折恢复、时间压力与人际压力等维度评估您的抗压能力，题库约 200 题，每次随机抽取 15 题，请根据最近半年的实际感受选择。</p><p class="text-gray-600">预计用时约 10–15 分钟。完成后将生成抗压能力专业报告。</p>';
+            }
+            if (currentType === 'personality') {
+                return '<p class="text-gray-600 mb-4">基于 MBTI 四维度（外向-内向、感觉-直觉、思考-情感、判断-知觉）的职业性格测评，题库约 200 题，每次随机抽取 15 题。</p><p class="text-gray-600">请根据真实情况和第一反应选择，预计 10–15 分钟。完成后将得到您的性格类型与职业建议。</p>';
+            }
+            if (currentType === 'intelligence') {
+                return '<p class="text-gray-600 mb-4">本测评涵盖逻辑推理、数字运算与语言理解，题库约 200 题，每次随机抽取 15 题，用于系统了解您的认知能力。</p><p class="text-gray-600">请独立完成、一次性作答，预计 10–15 分钟。完成后将生成智力测评报告。</p>';
+            }
+            if (currentType === 'ability') {
+                return '<p class="text-gray-600 mb-4">本测评从沟通协作、团队合作、领导力、执行与落实、学习与适应等维度评估您的职业能力，题库约 200 题，每次随机抽取 15 题。</p><p class="text-gray-600">请根据实际工作表现选择，预计 10–15 分钟。完成后将生成职业能力测评报告。</p>';
+            }
+            if (currentType === 'interest') {
+                return '<p class="text-gray-600 mb-4">基于霍兰德职业兴趣类型（实际型、研究型、艺术型、社会型、企业型、常规型），题库约 200 题，每次随机抽取 15 题，探索您的兴趣倾向。</p><p class="text-gray-600">请根据真实偏好选择，预计 10–15 分钟。完成后将生成兴趣测评报告及适合职业方向。</p>';
+            }
+            return '';
+        }
+
+        function initPage() {
+            if (viewMode === 'report' && reportType && reportId) {
+                showReportView(reportType, reportId);
+                return;
+            }
+            currentType = urlParams.get('type') || 'stress';
+            if (!SYSTEM_TYPES[currentType]) currentType = 'stress';
+            if (currentType === 'ability' && typeof ABILITY_QUESTIONS === 'undefined') currentType = 'stress';
+            if (currentType === 'interest' && typeof INTEREST_QUESTIONS === 'undefined') currentType = 'stress';
+            var meta = SYSTEM_TYPES[currentType];
+            document.getElementById('page-title').textContent = meta.name;
+            document.getElementById('page-subtitle').textContent = '完成测评后即可生成专业测试报告';
+            document.getElementById('intro-content').innerHTML = getIntroHtml();
+            document.title = meta.name + ' - 圣举人才网';
+            var allQuestions = getQuestions();
+            if (!allQuestions.length) {
+                document.getElementById('intro-content').innerHTML += '<p class="text-red-500 mt-4">题目数据未加载，请刷新页面或检查网络。</p>';
+                return;
+            }
+            questions = pickRandomQuestions(allQuestions, QUESTIONS_PER_ASSESSMENT);
+        }
+
+        function showReportView(type, id) {
+            document.getElementById('assessment-intro').classList.add('hidden');
+            document.getElementById('assessment-questions').classList.add('hidden');
+            document.getElementById('assessment-result').classList.add('hidden');
+            document.getElementById('progress-block').classList.add('hidden');
+            var list = JSON.parse(localStorage.getItem('systemAssessmentRecords') || '[]');
+            var record = list.find(function(r) { return String(r.id) === String(id) && r.systemType === type; });
+            if (!record) {
+                document.getElementById('report-section').classList.remove('hidden');
+                document.getElementById('report-content').innerHTML = '<p class="text-gray-600">未找到该测评记录。</p><a href="assessment.html" class="text-primary">返回测评中心</a>';
+                return;
+            }
+            currentType = type;
+            renderReportHtml(record);
+            document.getElementById('report-section').classList.remove('hidden');
+            document.getElementById('report-title').textContent = (SYSTEM_TYPES[type] && SYSTEM_TYPES[type].name) ? SYSTEM_TYPES[type].name + ' - 测评报告' : '测评报告';
+            document.getElementById('report-meta').textContent = '完成时间：' + (record.completedDate || record.date || '');
+        }
+
+        document.getElementById('menu-toggle').addEventListener('click', function() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        });
+
+        document.getElementById('start-assessment').addEventListener('click', function() {
+            document.getElementById('assessment-intro').classList.add('hidden');
+            document.getElementById('progress-block').classList.remove('hidden');
+            document.getElementById('assessment-questions').classList.remove('hidden');
+            currentQuestionIndex = 0;
+            userAnswers = {};
+            loadQuestion(0);
+            updateProgress();
+            seconds = 0;
+            if (timer) clearInterval(timer);
+            timer = setInterval(function() {
+                seconds++;
+                var m = Math.floor(seconds / 60);
+                var s = seconds % 60;
+                document.getElementById('question-timer').textContent = (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+            }, 1000);
+        });
+
+        document.getElementById('prev-question').addEventListener('click', function() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion(currentQuestionIndex);
+                updateProgress();
+            }
+        });
+
+        document.getElementById('next-question').addEventListener('click', function() {
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion(currentQuestionIndex);
+                updateProgress();
+            } else {
+                finishAssessment();
+            }
+        });
+
+        function loadQuestion(index) {
+            var q = questions[index];
+            document.getElementById('question-number').textContent = '第 ' + (index + 1) + ' 题';
+            document.getElementById('question-text').textContent = q.text;
+            var container = document.getElementById('options-container');
+            container.innerHTML = '';
+            var self = this;
+            q.options.forEach(function(opt) {
+                var card = document.createElement('div');
+                card.className = 'option-card' + (userAnswers[q.id] === opt.value ? ' selected' : '');
+                card.dataset.value = opt.value;
+                card.innerHTML = '<div class="flex items-center"><div class="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center mr-3"><div class="w-3 h-3 rounded-full bg-primary ' + (userAnswers[q.id] === opt.value ? '' : 'hidden') + '"></div></div><span>' + opt.text + '</span></div>';
+                card.addEventListener('click', function() {
+                    document.querySelectorAll('#options-container .option-card').forEach(function(c) {
+                        c.classList.remove('selected');
+                        var dot = c.querySelector('.w-3');
+                        if (dot) dot.classList.add('hidden');
+                    });
+                    this.classList.add('selected');
+                    var d = this.querySelector('.w-3');
+                    if (d) d.classList.remove('hidden');
+                    userAnswers[q.id] = opt.value;
+                    document.getElementById('next-question').disabled = false;
+                });
+                container.appendChild(card);
+            });
+            document.getElementById('prev-question').disabled = index === 0;
+            document.getElementById('next-question').disabled = !userAnswers[q.id];
+            document.getElementById('next-question').textContent = index === questions.length - 1 ? '完成测评' : '下一题';
+        }
+
+        function updateProgress() {
+            var pct = questions.length ? ((currentQuestionIndex + 1) / questions.length) * 100 : 0;
+            document.getElementById('progress-value').style.width = pct + '%';
+            document.getElementById('progress-text').textContent = (currentQuestionIndex + 1) + '/' + questions.length;
+        }
+
+        function calculateResult() {
+            if (currentType === 'stress') {
+                var dims = { emotion: [], workload: [], recovery: [], time: [], social: [] };
+                var dimNames = { emotion: '情绪调节', workload: '工作负荷', recovery: '挫折恢复', time: '时间压力', social: '人际压力' };
+                questions.forEach(function(q) {
+                    var d = q.dimension;
+                    var v = userAnswers[q.id];
+                    if (d && dims[d] !== undefined && v !== undefined) dims[d].push(Number(v) || 0);
+                });
+                var scores = {};
+                var total = 0;
+                var count = 0;
+                Object.keys(dims).forEach(function(k) {
+                    var arr = dims[k];
+                    var sum = arr.length ? arr.reduce(function(a,b){ return a+b; }, 0) : 0;
+                    var avg = arr.length ? (sum / arr.length) : 0;
+                    scores[k] = { name: dimNames[k], score: Math.round(avg * 10) / 10, max: 5 };
+                    total += sum;
+                    count += arr.length;
+                });
+                var avgTotal = count ? total / count : 0;
+                var level = avgTotal >= 4 ? '高' : avgTotal >= 3 ? '中等' : '待提升';
+                return { type: 'stress', dimensions: scores, totalScore: Math.round(avgTotal * 100) / 100, level: level, suggestions: [
+                    '保持规律作息与适度运动，有助于稳定情绪。',
+                    '将大任务拆解为小步骤，减少 overwhelm。',
+                    '遇到挫折时先接纳情绪，再聚焦下一步行动。',
+                    '重要事项预留缓冲时间，减少时间压力。',
+                    '练习在冲突中表达边界与需求，减少人际压力。'
+                ] };
+            }
+            if (currentType === 'personality') {
+                var counts = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
+                for (var k in userAnswers) counts[userAnswers[k]] = (counts[userAnswers[k]] || 0) + 1;
+                var typeStr = (counts.E >= counts.I ? 'E' : 'I') + (counts.S >= counts.N ? 'S' : 'N') + (counts.T >= counts.F ? 'T' : 'F') + (counts.J >= counts.P ? 'J' : 'P');
+                var personalityTypes = window.PERSONALITY_TYPES || {};
+                var res = personalityTypes[typeStr] || {
+                    title: typeStr + ' 型',
+                    description: '您的性格类型为 ' + typeStr + '。建议结合职业兴趣进一步探索适合的方向。',
+                    energy: { type: (counts.E >= counts.I ? '外向 (E)' : '内向 (I)'), value: 60 },
+                    info: { type: (counts.S >= counts.N ? '感觉 (S)' : '直觉 (N)'), value: 60 },
+                    decision: { type: (counts.T >= counts.F ? '思考 (T)' : '情感 (F)'), value: 60 },
+                    lifestyle: { type: (counts.J >= counts.P ? '判断 (J)' : '知觉 (P)'), value: 60 },
+                    jobs: ['根据性格类型可匹配多种职业'],
+                    advice: ['发挥自身偏好，在适合的环境中发展', '适当补足相对较弱的维度']
+                };
+                return { type: 'personality', mbti: typeStr, personality: res };
+            }
+            if (currentType === 'intelligence') {
+                var logical = 0, number = 0, verbal = 0;
+                questions.forEach(function(q) {
+                    var correct = q.correct;
+                    var u = userAnswers[q.id];
+                    if (correct === undefined || u === undefined) return;
+                    if (u === correct) {
+                        if (q.dimension === 'logical') logical++;
+                        else if (q.dimension === 'number') number++;
+                        else if (q.dimension === 'verbal') verbal++;
+                    }
+                });
+                var totalRight = logical + number + verbal;
+                var totalQ = questions.length;
+                var score = totalQ ? Math.round((totalRight / totalQ) * 100) : 0;
+                var level = score >= 80 ? '优秀' : score >= 60 ? '良好' : score >= 40 ? '中等' : '待提升';
+                return {
+                    type: 'intelligence',
+                    dimensions: [
+                        { name: '逻辑推理', score: logical, max: questions.filter(function(q){ return q.dimension==='logical'; }).length || 1 },
+                        { name: '数字运算', score: number, max: questions.filter(function(q){ return q.dimension==='number'; }).length || 1 },
+                        { name: '语言理解', score: verbal, max: questions.filter(function(q){ return q.dimension==='verbal'; }).length || 1 }
+                    ],
+                    totalScore: score,
+                    totalRight: totalRight,
+                    totalQuestions: totalQ,
+                    level: level
+                };
+            }
+            if (currentType === 'ability') {
+                var dims = { communication: [], teamwork: [], leadership: [], execution: [], learning: [] };
+                var dimNames = { communication: '沟通协作', teamwork: '团队合作', leadership: '领导力', execution: '执行与落实', learning: '学习与适应' };
+                questions.forEach(function(q) {
+                    var d = q.dimension;
+                    var v = userAnswers[q.id];
+                    if (d && dims[d] !== undefined && v !== undefined) dims[d].push(Number(v) || 0);
+                });
+                var scores = {};
+                var total = 0, count = 0;
+                Object.keys(dims).forEach(function(k) {
+                    var arr = dims[k];
+                    var sum = arr.length ? arr.reduce(function(a,b){ return a+b; }, 0) : 0;
+                    var avg = arr.length ? (sum / arr.length) : 0;
+                    scores[k] = { name: dimNames[k], score: Math.round(avg * 10) / 10, max: 5 };
+                    total += sum; count += arr.length;
+                });
+                var avgTotal = count ? total / count : 0;
+                var level = avgTotal >= 4 ? '高' : avgTotal >= 3 ? '中等' : '待提升';
+                return { type: 'ability', dimensions: scores, totalScore: Math.round(avgTotal * 100) / 100, level: level, suggestions: [
+                    '加强书面与口头表达练习，提升沟通效率。',
+                    '多参与跨部门或跨团队项目，锻炼协作与领导力。',
+                    '设定小目标并按时完成，强化执行与落实习惯。',
+                    '定期学习新技能，保持学习与适应能力。'
+                ] };
+            }
+            if (currentType === 'interest') {
+                var counts = { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 };
+                for (var k in userAnswers) { var v = userAnswers[k]; if (counts[v] !== undefined) counts[v] = (counts[v] || 0) + 1; }
+                var codes = ['R','I','A','S','E','C'];
+                var sorted = codes.slice().sort(function(a,b){ return (counts[b] || 0) - (counts[a] || 0); });
+                var dominant = sorted[0] || 'R';
+                var secondary = sorted[1] || 'I';
+                var interestTypes = window.INTEREST_TYPES || {};
+                var res = interestTypes[dominant] || { name: '实际型', description: '您倾向于动手与操作类活动，适合技术、机械、户外等相关职业。', jobs: ['技术员','工程师','驾驶员','技工'], advice: ['发挥动手与实操优势','可考取相关技能证书'] };
+                return { type: 'interest', dominant: dominant, secondary: secondary, counts: counts, interest: res };
+            }
+            return {};
+        }
+
+        function displayResult(result) {
+            var html = '';
+            if (result.type === 'stress') {
+                html += '<div class="bg-amber-50 rounded-lg p-4 mb-6"><p class="text-lg font-medium text-gray-800">综合等级：<span class="text-amber-600">' + result.level + '</span></p><p class="text-gray-600">各维度得分（满分5）：</p></div>';
+                html += '<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">';
+                for (var k in result.dimensions) {
+                    var d = result.dimensions[k];
+                    var pct = d.max ? (d.score / d.max) * 100 : 0;
+                    html += '<div><div class="flex justify-between mb-1"><span class="text-gray-700">' + d.name + '</span><span class="font-medium">' + d.score + '</span></div><div class="progress-bar"><div class="progress-value" style="width:' + pct + '%"></div></div></div>';
+                }
+                html += '</div><h3 class="text-lg font-medium text-gray-800 mb-2">建议</h3><ul class="list-disc list-inside space-y-1 text-gray-600">';
+                result.suggestions.forEach(function(s){ html += '<li>' + s + '</li>'; });
+                html += '</ul>';
+            } else if (result.type === 'personality') {
+                var p = result.personality;
+                html += '<div class="bg-blue-50 rounded-lg p-4 mb-6"><p class="text-2xl font-bold text-primary">' + result.mbti + '</p><p class="text-gray-700">' + p.title + '</p></div>';
+                html += '<p class="text-gray-600 mb-6">' + p.description + '</p>';
+                html += '<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">';
+                ['energy','info','decision','lifestyle'].forEach(function(key) {
+                    var v = p[key];
+                    if (!v) return;
+                    html += '<div><div class="flex justify-between mb-1"><span class="text-gray-700">' + v.type + '</span></div><div class="progress-bar"><div class="progress-value" style="width:' + (v.value||0) + '%"></div></div></div>';
+                });
+                html += '</div>';
+                if (p.jobs && p.jobs.length) {
+                    html += '<h3 class="text-lg font-medium text-gray-800 mb-2">适合职业</h3><div class="flex flex-wrap gap-2 mb-4">';
+                    p.jobs.forEach(function(j){ html += '<span class="bg-gray-100 px-3 py-1 rounded">' + j + '</span>'; });
+                    html += '</div>';
+                }
+                if (p.advice && p.advice.length) {
+                    html += '<h3 class="text-lg font-medium text-gray-800 mb-2">发展建议</h3><ul class="list-disc list-inside text-gray-600">';
+                    p.advice.forEach(function(a){ html += '<li>' + a + '</li>'; });
+                    html += '</ul>';
+                }
+            } else if (result.type === 'intelligence') {
+                html += '<div class="bg-emerald-50 rounded-lg p-4 mb-6"><p class="text-lg font-medium text-gray-800">正确题数：' + result.totalRight + ' / ' + result.totalQuestions + '</p><p class="text-lg">综合等级：<span class="text-emerald-600">' + result.level + '</span></p></div>';
+                html += '<div class="grid grid-cols-1 md:grid-cols-3 gap-4">';
+                result.dimensions.forEach(function(d) {
+                    var max = d.max || 1;
+                    html += '<div class="border rounded-lg p-4"><p class="font-medium text-gray-800">' + d.name + '</p><p class="text-2xl text-primary">' + d.score + ' / ' + max + '</p></div>';
+                });
+                html += '</div>';
+            } else if (result.type === 'ability') {
+                html += '<div class="bg-sky-50 rounded-lg p-4 mb-6"><p class="text-lg font-medium text-gray-800">综合等级：<span class="text-sky-600">' + result.level + '</span></p><p class="text-gray-600">各维度得分（满分5）：</p></div>';
+                html += '<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">';
+                for (var k in result.dimensions) {
+                    var d = result.dimensions[k];
+                    var pct = d.max ? (d.score / d.max) * 100 : 0;
+                    html += '<div><div class="flex justify-between mb-1"><span class="text-gray-700">' + d.name + '</span><span class="font-medium">' + d.score + '</span></div><div class="progress-bar"><div class="progress-value" style="width:' + pct + '%"></div></div></div>';
+                }
+                html += '</div><h3 class="text-lg font-medium text-gray-800 mb-2">建议</h3><ul class="list-disc list-inside space-y-1 text-gray-600">';
+                result.suggestions.forEach(function(s){ html += '<li>' + s + '</li>'; });
+                html += '</ul>';
+            } else if (result.type === 'interest') {
+                var ir = result.interest || {};
+                html += '<div class="bg-purple-50 rounded-lg p-4 mb-6"><p class="text-2xl font-bold text-primary">' + result.dominant + ' 型 · ' + (ir.name || '') + '</p><p class="text-gray-700 mt-2">' + (ir.description || '') + '</p></div>';
+                if (ir.jobs && ir.jobs.length) {
+                    html += '<h3 class="text-lg font-medium text-gray-800 mb-2">适合职业方向</h3><div class="flex flex-wrap gap-2 mb-4">';
+                    ir.jobs.forEach(function(j){ html += '<span class="bg-gray-100 px-3 py-1 rounded">' + j + '</span>'; });
+                    html += '</div>';
+                }
+                if (ir.advice && ir.advice.length) {
+                    html += '<h3 class="text-lg font-medium text-gray-800 mb-2">发展建议</h3><ul class="list-disc list-inside text-gray-600">';
+                    ir.advice.forEach(function(a){ html += '<li>' + a + '</li>'; });
+                    html += '</ul>';
+                }
+            }
+            document.getElementById('result-content').innerHTML = html;
+        }
+
+        function finishAssessment() {
+            if (timer) clearInterval(timer);
+            document.getElementById('assessment-questions').classList.add('hidden');
+            document.getElementById('progress-block').classList.add('hidden');
+            document.getElementById('assessment-result').classList.remove('hidden');
+            var result = calculateResult();
+            displayResult(result);
+            var meta = SYSTEM_TYPES[currentType];
+            var record = {
+                id: 'sys_' + currentType + '_' + Date.now(),
+                systemType: currentType,
+                packageName: meta.name,
+                packageId: currentType,
+                completedDate: new Date().toISOString().split('T')[0],
+                date: new Date().toISOString(),
+                result: result.type === 'personality' ? result.mbti : result.type === 'interest' ? result.dominant : (result.level || result.totalScore),
+                score: result.totalScore !== undefined ? result.totalScore : (result.type === 'personality' ? 0 : null),
+                raw: result,
+                duration: seconds
+            };
+            currentRecordId = record.id;
+            var list = JSON.parse(localStorage.getItem('systemAssessmentRecords') || '[]');
+            list.unshift(record);
+            localStorage.setItem('systemAssessmentRecords', JSON.stringify(list));
+            var userRecords = JSON.parse(localStorage.getItem('userAssessmentRecords') || '[]');
+            userRecords.unshift({ id: record.id, packageId: record.packageId, packageName: record.packageName, completedDate: record.completedDate, result: record.result, score: record.score, systemType: currentType });
+            localStorage.setItem('userAssessmentRecords', JSON.stringify(userRecords));
+            // 已登录时同步提交到后端，便于「我的测评记录」跨设备展示
+            (function() {
+                var token = (typeof AuthHelper !== 'undefined' && AuthHelper.get && AuthHelper.get('jobseeker')) ? (AuthHelper.get('jobseeker').token || '') : (localStorage.getItem('authToken') || sessionStorage.getItem('authToken') || '');
+                if (!token || !currentType) return;
+                var apiBase = getApiBase();
+                var payload = { result: record.raw || {}, packageName: record.packageName || meta.name, duration: seconds };
+                if (typeof payload.result === 'object' && !payload.result.title && record.result) payload.result.title = record.result;
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', apiBase + '/assessments/' + encodeURIComponent(currentType) + '/submit');
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+                xhr.onload = function() { if (xhr.status >= 200 && xhr.status < 300 && window.showToast) window.showToast('测评已提交并保存', 'success'); };
+                xhr.onerror = function() { console.warn('提交测评到服务器失败'); };
+                try { xhr.send(JSON.stringify(payload)); } catch (e) { console.warn('提交测评失败', e); }
+            })();
+        }
+
+        document.getElementById('btn-view-report').addEventListener('click', function() {
+            if (!currentRecordId) return;
+            window.location.href = 'system-assessment.html?view=report&type=' + encodeURIComponent(currentType) + '&id=' + encodeURIComponent(currentRecordId);
+        });
+
+        function getApiBase() {
+            if (typeof window !== 'undefined' && window.API_BASE_URL) return window.API_BASE_URL;
+            try {
+                var u = localStorage.getItem('apiBaseUrl');
+                if (u) return u.replace(/\/$/, '');
+            } catch (e) {}
+            return 'http://127.0.0.1:3001/api/v1';
+        }
+
+        function renderReportHtml(record) {
+            var r = record.raw || {};
+            var html = '';
+            var reportTime = new Date().toLocaleString('zh-CN');
+
+            if (record.systemType === 'stress') {
+                html += '<div class="prose prose-gray max-w-none">';
+                html += '<p class="text-gray-600 mb-6">本报告根据您在专业抗压能力测评中的作答情况生成，从多维度分析您的抗压表现，并给出个性化建议。</p>';
+                html += '<h2 class="text-lg font-semibold text-gray-800 mt-6 mb-2">一、测评摘要</h2>';
+                html += '<p class="text-gray-600">综合等级：<strong class="text-primary">' + (r.level || '') + '</strong>。您的抗压能力在各维度的表现如下，可作为自我觉察与改进的参考。</p>';
+                html += '<h2 class="text-lg font-semibold text-gray-800 mt-6 mb-2">二、各维度得分与解读</h2>';
+                if (r.dimensions) {
+                    html += '<ul class="space-y-3">';
+                    for (var k in r.dimensions) {
+                        var d = r.dimensions[k];
+                        var pct = d.max ? Math.round((d.score / d.max) * 100) : 0;
+                        var desc = pct >= 80 ? '表现较好' : pct >= 60 ? '表现中等' : '有提升空间';
+                        html += '<li class="border-l-4 border-primary pl-4"><strong>' + d.name + '</strong>：' + d.score + ' / ' + d.max + '（约 ' + pct + '%）— ' + desc + '。</li>';
+                    }
+                    html += '</ul>';
+                }
+                html += '<h2 class="text-lg font-semibold text-gray-800 mt-6 mb-2">三、维度说明</h2>';
+                html += '<p class="text-gray-600">抗压能力测评从情绪调节、压力认知、应对方式、社会支持、时间管理等方面评估您在高强度环境下的表现。各维度得分越高，表示在该方面的能力越强，越有利于应对工作与生活中的压力。</p>';
+                html += '<h2 class="text-lg font-semibold text-gray-800 mt-6 mb-2">四、优势与待提升点</h2>';
+                if (r.dimensions) {
+                    var highs = [], lows = [];
+                    for (var k in r.dimensions) {
+                        var d = r.dimensions[k];
+                        var v = d.max ? (d.score / d.max) : 0;
+                        if (v >= 0.8) highs.push(d.name);
+                        else if (v < 0.6) lows.push(d.name);
+                    }
+                    html += '<p class="text-gray-600">优势维度：' + (highs.length ? highs.join('、') : '无明显突出维度，可均衡发展') + '。</p>';
+                    html += '<p class="text-gray-600 mt-2">建议关注：' + (lows.length ? lows.join('、') : '各维度较为均衡') + '。</p>';
+                }
+                // 按综合等级给出不同的个性化建议
+                var stressLevel = r.level || '';
+                var stressAdvices;
+                if (r.suggestions && r.suggestions.length) {
+                    stressAdvices = r.suggestions;
+                } else if (stressLevel === '高') {
+                    stressAdvices = [
+                        '保持现在有效的压力管理方式（如规律作息、运动、兴趣爱好），不要因为忙碌就全部放弃。',
+                        '可以在可控范围内尝试更具挑战性的任务，例如牵头项目或解决疑难问题，进一步释放潜力。',
+                        '适度帮助团队中抗压稍弱的同事，一方面支持他人，一方面巩固自己的压力管理经验。'
+                    ];
+                } else if (stressLevel === '中等') {
+                    stressAdvices = [
+                        '为重要任务预留缓冲时间，避免频繁临时赶工，把压力分散到日常。',
+                        '给自己设计 1–2 套固定的“减压流程”（如散步、深呼吸、听音乐），在紧张时主动启用。',
+                        '当感觉压力过大时，学会向领导或同事清晰表达工作量与资源需求，避免长期“默默硬扛”。'
+                    ];
+                } else {
+                    stressAdvices = [
+                        '先从睡眠和作息入手，保证基本体力和精力，再谈抗压能力的提升。',
+                        '遇到压力事件时不要一个人承受，尝试向可信任的家人、朋友或同事倾诉，寻求情绪支持。',
+                        '工作上优先选择节奏相对稳定、支持体系较完善的岗位，在较安全的环境里练习时间管理和情绪调节。'
+                    ];
+                }
+                html += '<h2 class="text-lg font-semibold text-gray-800 mt-6 mb-2">五、个性化建议</h2><ul class="list-disc list-inside space-y-1 text-gray-600">';
+                stressAdvices.forEach(function (s) { html += '<li>' + s + '</li>'; });
+                html += '</ul>';
+                html += '<h2 class="text-lg font-semibold text-gray-800 mt-6 mb-2">六、职业发展建议</h2>';
+                if (stressLevel === '高') {
+                    html += '<p class="text-gray-600">您的抗压能力整体较强，适合承担节奏快、任务重或变化较多的岗位，如项目管理、运营、前线业务等。但仍需注意劳逸结合，避免长期超负荷工作带来健康风险。</p>';
+                } else if (stressLevel === '中等') {
+                    html += '<p class="text-gray-600">当前抗压能力处于中等水平，适合多数常规岗位。建议在现有岗位上逐步尝试略有挑战的任务，同时通过时间管理和情绪管理练习，稳步提升抗压能力，再考虑更高压力岗位。</p>';
+                } else {
+                    html += '<p class="text-gray-600">当前抗压能力还有较大提升空间，建议暂时优先选择节奏相对稳定、支持体系完善的岗位（如后台支持、文职类工作），一边积累经验，一边按照本报告建议练习压力管理技能。</p>';
+                }
+                html += '<p class="text-gray-500 text-sm mt-8">报告生成时间：' + reportTime + '</p></div>';
+            } else if (record.systemType === 'personality') {
+                var p = r.personality || {};
+                html += '<div class="prose prose-gray max-w-none">';
+                html += '<p class="text-gray-600 mb-6">本报告根据您在 MBTI 性格测评中的作答生成，结合四维度结果对您的性格类型与职业适配进行解读。</p>';
+                html += '<h2 class="text-lg font-semibold text-gray-800 mt-6 mb-2">一、测评摘要</h2>';
+                html += '<p class="text-gray-600">您的性格类型为 <strong class="text-primary text-xl">' + (r.mbti || '') + '</strong> — ' + (p.title || '') + '。该类型在人群中具有一定的代表性，以下为基于您作答的详细解读。</p>';
+                html += '<h2 class="text-lg font-semibold text-gray-800 mt-6 mb-2">二、性格类型描述</h2>';
+                html += '<p class="text-gray-600">' + (p.description || '') + '</p>';
+                html += '<h2 class="text-lg font-semibold text-gray-800 mt-6 mb-2">三、四维度倾向</h2>';
+                html += '<p class="text-gray-600 mb-2">MBTI 从能量来源(E/I)、信息获取(S/N)、决策方式(T/F)、生活态度(J/P) 四个维度描述性格倾向，您的各维度倾向如下：</p>';
+                html += '<ul class="space-y-2 text-gray-600">';
+                ['energy','info','decision','lifestyle'].forEach(function(key) {
+                    var v = p[key];
+                    if (v) html += '<li><strong>' + (v.type || key) + '</strong>：倾向明显，在人际互动、信息处理、决策与时间管理等方面会有所体现。</li>';
+                });
+                html += '</ul>';
+                if (p.jobs && p.jobs.length) {
+                    html += '<h2 class="text-lg font-semibold text-gray-800 mt-6 mb-2">四、适合职业方向</h2>';
+                    html += '<p class="text-gray-600">结合您的性格类型，以下职业方向通常与您的特质较为匹配：' + p.jobs.join('、') + '。下方「适合岗位推荐」将基于此从平台岗位中为您筛选。</p>';
+                }
+                html += '<h2 class="text-lg font-semibold text-gray-800 mt-6 mb-2">五、职场行为与团队协作</h2>';
+                html += '<p class="text-gray-600">该性格类型在团队中通常表现出特定的沟通与协作风格。了解自己的倾向有助于在面试与工作中更好地发挥优势，并在需要时主动弥补短板（如更注重细节或更关注整体）。</p>';
+                html += '<h2 class="text-lg font-semibold text-gray-800 mt-6 mb-2">六、职业发展建议</h2><ul class="list-disc list-inside space-y-1 text-gray-600">';
+                if (p.advice && p.advice.length) p.advice.forEach(function(a){ html += '<li>' + a + '</li>'; });
+                else html += '<li>选择与性格倾向匹配的岗位与行业，更容易获得成就感与长期发展。</li><li>在保持本色的同时，可适当发展相对较弱的维度，以提升适应性。</li><li>面试与简历中可适度体现与目标岗位相符的性格优势。</li>';
+                html += '</ul>';
+                html += '<p class="text-gray-500 text-sm mt-8">报告生成时间：' + reportTime + '</p></div>';
+            } else if (record.systemType === 'intelligence') {
+                html += '<div class="prose prose-gray max-w-none">';
+                html += '<p class="text-gray-600 mb-6">本报告根据您在智力测评（逻辑、数字、语言）中的作答生成，用于反映您当前的认知能力表现。</p>';
+                html += '<h2 class="text-lg font-semibold text-gray-800 mt-6 mb-2">一、测评摘要</h2>';
+                html += '<p class="text-gray-600">您共答对 <strong class="text-primary">' + (r.totalRight || 0) + '</strong> 题，总分 ' + (r.totalQuestions || 0) + ' 题，综合等级：<strong>' + (r.level || '') + '</strong>。</p>';
+                html += '<h2 class="text-lg font-semibold text-gray-800 mt-6 mb-2">二、各维度表现</h2>';
+                html += '<ul class="space-y-2 text-gray-600">';
+                if (r.dimensions) r.dimensions.forEach(function(d) {
+                    var rate = d.max ? Math.round((d.score / d.max) * 100) : 0;
+                    var desc = rate >= 80 ? '表现较好' : rate >= 60 ? '表现中等' : '有提升空间';
+                    html += '<li><strong>' + d.name + '</strong>：' + d.score + ' / ' + d.max + '（约 ' + rate + '%）— ' + desc + '</li>';
+                });
+                html += '</ul>';
+                html += '<h2 class="text-lg font-semibold text-gray-800 mt-6 mb-2">三、维度说明</h2>';
+                html += '<p class="text-gray-600">逻辑推理考察分析问题、归纳与演绎的能力；数字运算反映基本数学与运算能力；语言理解考察阅读与语义把握。三者共同反映认知能力的基础水平，与学习能力、问题解决能力密切相关。</p>';
+                // 按等级给出不同的改进和职业建议
+                var intelLevel = r.level || '';
+                html += '<h2 class="text-lg font-semibold text-gray-800 mt-6 mb-2">四、能力解读与改进建议</h2>';
+                if (intelLevel === '优秀' || intelLevel === '良好') {
+                    html += '<p class="text-gray-600">您的整体认知能力处于较好水平，逻辑、数字或语言中至少有一项表现突出。建议结合自身兴趣，重点考虑技术研发、数据分析、策略规划等对思维要求较高的岗位。</p>';
+                } else if (intelLevel === '中等') {
+                    html += '<p class="text-gray-600">当前认知能力总体处于中等水平，通过有针对性的练习可以进一步提升。建议从自己感兴趣的维度入手（例如逻辑、数字或语言），每天安排一定时间做题或阅读，逐步提高。</p>';
+                } else {
+                    html += '<p class="text-gray-600">本次智力测评得分相对一般，可能与作答认真程度、题目不熟悉度等因素有关。建议先夯实基础（如基础数学、阅读理解），循序渐进地增加练习量，之后再进行一次测评观察变化。</p>';
+                }
+                html += '<h2 class="text-lg font-semibold text-gray-800 mt-6 mb-2">五、职业发展建议</h2>';
+                if (intelLevel === '优秀' || intelLevel === '良好') {
+                    html += '<p class="text-gray-600">您适合应聘对认知能力要求较高的岗位，如技术研发、工程、数据分析、咨询、研究等。在求职过程中，可在简历与面试中适度展示自己的逻辑思维和学习能力。</p>';
+                } else if (intelLevel === '中等') {
+                    html += '<p class="text-gray-600">可优先考虑对认知要求适中、强调执行与协作的岗位，如运营、实施、客服、项目助理等。同时通过在职学习或业余训练逐步提升，为未来转向更高要求岗位打基础。</p>';
+                } else {
+                    html += '<p class="text-gray-600">建议先选择流程相对清晰、培训支持较好的岗位，在实践中强化基础能力。待通过系统训练和工作经验提升后，再考虑需要较强逻辑与分析能力的职位。</p>';
+                }
+                html += '<p class="text-gray-500 text-sm mt-8">报告生成时间：' + reportTime + '</p></div>';
+            } else if (record.systemType === 'ability') {
+                html += '<div class="prose prose-gray max-w-none">';
+                html += '<p class="text-gray-600 mb-6">本报告根据您在职业能力测评中的作答生成，从沟通协作、团队合作、领导力、执行与落实、学习与适应等维度进行分析。</p>';
+                html += '<h2 class="text-lg font-semibold text-gray-800 mt-6 mb-2">一、测评摘要</h2>';
+                html += '<p class="text-gray-600">综合等级：<strong class="text-primary">' + (r.level || '') + '</strong>。您的职业能力在各维度的表现如下。</p>';
+                html += '<h2 class="text-lg font-semibold text-gray-800 mt-6 mb-2">二、各维度得分与解读</h2>';
+                if (r.dimensions) {
+                    html += '<ul class="space-y-3">';
+                    for (var k in r.dimensions) {
+                        var d = r.dimensions[k];
+                        var pct = d.max ? Math.round((d.score / d.max) * 100) : 0;
+                        var desc = pct >= 80 ? '表现较好' : pct >= 60 ? '表现中等' : '有提升空间';
+                        html += '<li class="border-l-4 border-primary pl-4"><strong>' + d.name + '</strong>：' + d.score + ' / ' + d.max + ' — ' + desc + '。</li>';
+                    }
+                    html += '</ul>';
+                }
+                html += '<h2 class="text-lg font-semibold text-gray-800 mt-6 mb-2">三、维度说明</h2>';
+                html += '<p class="text-gray-600">职业能力测评涵盖沟通协作、团队合作、领导力、执行与落实、学习与适应等维度，反映您在职场中的综合表现潜力。各维度均衡或突出者，更易适应多类岗位要求。</p>';
+                html += '<h2 class="text-lg font-semibold text-gray-800 mt-6 mb-2">四、优势与待提升点</h2>';
+                if (r.dimensions) {
+                    var highs = [], lows = [];
+                    for (var k in r.dimensions) {
+                        var d = r.dimensions[k];
+                        var v = d.max ? (d.score / d.max) : 0;
+                        if (v >= 0.8) highs.push(d.name);
+                        else if (v < 0.6) lows.push(d.name);
+                    }
+                    html += '<p class="text-gray-600">优势维度：' + (highs.length ? highs.join('、') : '可均衡发展各维度') + '。</p>';
+                    html += '<p class="text-gray-600 mt-2">建议关注：' + (lows.length ? lows.join('、') : '各维度较为均衡') + '。</p>';
+                }
+                var abilityLevel = r.level || '';
+                var abilityAdvices;
+                if (r.suggestions && r.suggestions.length) {
+                    abilityAdvices = r.suggestions;
+                } else if (abilityLevel === '高') {
+                    abilityAdvices = [
+                        '可以主动争取跨部门项目或小团队带队机会，在实践中放大沟通、协作和领导优势。',
+                        '为自己设定更高标准，例如在项目中承担关键节点或负责对外沟通，持续拉升职业上限。',
+                        '在保持高标准的同时，注意培养耐心与同理心，避免因节奏快而忽略团队成员的节奏。'
+                    ];
+                } else if (abilityLevel === '中等') {
+                    abilityAdvices = [
+                        '在日常工作中多做“主动沟通”：提前对齐目标、及时反馈进度、主动汇报问题，提升协作效率。',
+                        '可以选择一个相对薄弱的维度（如领导力或执行力），刻意练习，例如承担会议纪要、跟进事项等角色。',
+                        '通过阅读、培训或向优秀同事学习，总结出一两套适合自己的工作方法并坚持使用。'
+                    ];
+                } else {
+                    abilityAdvices = [
+                        '从基础执行力入手，为每天和每周列出清单，按优先级完成，并在下班前做简单复盘。',
+                        '在团队沟通中先从“听清楚、说清楚”做起，可以用笔记或复述方式确认任务要求，减少误解。',
+                        '建议暂时选择任务相对明确、流程清晰的岗位，在稳定环境中一点点练习沟通、协作和责任心。'
+                    ];
+                }
+                html += '<h2 class="text-lg font-semibold text-gray-800 mt-6 mb-2">五、个性化建议</h2><ul class="list-disc list-inside space-y-1 text-gray-600">';
+                abilityAdvices.forEach(function (s) { html += '<li>' + s + '</li>'; });
+                html += '</ul>';
+                html += '<h2 class="text-lg font-semibold text-gray-800 mt-6 mb-2">六、职业发展建议</h2>';
+                if (abilityLevel === '高') {
+                    html += '<p class="text-gray-600">您的职业能力整体较强，适合应聘对综合素质和协作能力要求较高的岗位，如项目管理、运营管理、团队负责人等。可以在面试中重点展示团队协作、沟通推进和解决问题的经历。</p>';
+                } else if (abilityLevel === '中等') {
+                    html += '<p class="text-gray-600">当前职业能力处于中等水平，适合多数岗位。建议优先选择有清晰培养路径和导师支持的岗位，一边做事一边学方法，逐步向骨干或管理方向发展。</p>';
+                } else {
+                    html += '<p class="text-gray-600">建议优先考虑任务边界较清晰、由经验同事带教的岗位（如助理、文员、基层客服等），在熟悉流程的同时，按照本报告中的建议逐步提升沟通、执行与学习能力。</p>';
+                }
+                html += '<p class="text-gray-500 text-sm mt-8">报告生成时间：' + reportTime + '</p></div>';
+            } else if (record.systemType === 'interest') {
+                var ir = r.interest || {};
+                html += '<div class="prose prose-gray max-w-none">';
+                html += '<p class="text-gray-600 mb-6">本报告根据您在兴趣测评中的作答生成，基于霍兰德职业兴趣类型对您的兴趣倾向与适合职业方向进行解读。</p>';
+                html += '<h2 class="text-lg font-semibold text-gray-800 mt-6 mb-2">一、测评摘要</h2>';
+                html += '<p class="text-gray-600">您的主导兴趣类型为 <strong class="text-primary text-xl">' + (r.dominant || '') + ' 型 · ' + (ir.name || '') + '</strong>，次要类型为 ' + (r.secondary || '') + ' 型。以下为详细解读。</p>';
+                html += '<h2 class="text-lg font-semibold text-gray-800 mt-6 mb-2">二、兴趣类型描述</h2>';
+                html += '<p class="text-gray-600">' + (ir.description || '') + '</p>';
+                html += '<h2 class="text-lg font-semibold text-gray-800 mt-6 mb-2">三、霍兰德六型简要说明</h2>';
+                html += '<p class="text-gray-600">实际型(R)偏好动手与工具；研究型(I)偏好分析与探索；艺术型(A)偏好创意与表达；社会型(S)偏好与人交往与助人；企业型(E)偏好影响他人与组织；常规型(C)偏好条理与数据。您的类型组合反映了兴趣重心，可据此选择职业方向。</p>';
+                if (ir.jobs && ir.jobs.length) {
+                    html += '<h2 class="text-lg font-semibold text-gray-800 mt-6 mb-2">四、适合职业方向</h2>';
+                    html += '<p class="text-gray-600">结合您的兴趣类型，以下职业方向通常与您的倾向较为匹配：' + ir.jobs.join('、') + '。下方「适合岗位推荐」将基于此从平台岗位中为您筛选。</p>';
+                }
+                html += '<h2 class="text-lg font-semibold text-gray-800 mt-6 mb-2">五、职业发展建议</h2><ul class="list-disc list-inside space-y-1 text-gray-600">';
+                if (ir.advice && ir.advice.length) ir.advice.forEach(function(a){ html += '<li>' + a + '</li>'; });
+                else html += '<li>优先考虑与主导兴趣类型匹配的行业与岗位，有利于长期投入与成就感。</li><li>可结合次要类型拓展相邻领域，增加选择面。</li><li>面试与求职时可将兴趣与岗位要求结合，体现动机与匹配度。</li>';
+                html += '</ul>';
+                html += '<p class="text-gray-500 text-sm mt-8">报告生成时间：' + reportTime + '</p></div>';
+            } else {
+                var typeName = (record.systemType && (SYSTEM_TYPES[record.systemType] && SYSTEM_TYPES[record.systemType].name)) ? SYSTEM_TYPES[record.systemType].name : '系统测评';
+                html += '<div class="prose prose-gray max-w-none">';
+                html += '<p class="text-gray-600 mb-6">您已完成本测评，以下是基于当前数据的综合测评报告。若部分数据缺失，将显示摘要与通用建议。</p>';
+                html += '<h2 class="text-lg font-semibold text-gray-800 mt-6 mb-2">一、测评摘要</h2>';
+                html += '<p class="text-gray-600">测评类型：<strong class="text-primary">' + typeName + '</strong>。完成时间：' + (record.completedDate || record.date || '—') + '。</p>';
+                if (r.level) html += '<p class="text-gray-600 mt-2">综合等级/结果：<strong>' + r.level + '</strong>。</p>';
+                if (r.totalRight !== undefined || r.totalQuestions) html += '<p class="text-gray-600 mt-2">答题情况：' + (r.totalRight !== undefined ? '答对 ' + r.totalRight + ' 题' : '') + (r.totalQuestions ? '，共 ' + r.totalQuestions + ' 题' : '') + '。</p>';
+                if (r.mbti) html += '<p class="text-gray-600 mt-2">性格类型：<strong>' + r.mbti + '</strong>。</p>';
+                if (r.dominant) html += '<p class="text-gray-600 mt-2">兴趣类型：<strong>' + r.dominant + '</strong>' + (r.secondary ? '，次要类型 ' + r.secondary : '') + '。</p>';
+                html += '<h2 class="text-lg font-semibold text-gray-800 mt-6 mb-2">二、综合建议</h2>';
+                html += '<ul class="list-disc list-inside space-y-1 text-gray-600">';
+                html += '<li>建议结合本报告与岗位推荐，选择与自身特质和兴趣匹配的岗位投递。</li>';
+                html += '<li>若希望报告更细化，可重新进入对应测评完成全部题目后再次查看报告。</li>';
+                html += '<li>定期复盘测评结果，有助于明确职业方向与成长重点。</li>';
+                html += '</ul>';
+                html += '<p class="text-gray-500 text-sm mt-8">报告生成时间：' + reportTime + '</p></div>';
+            }
+            document.getElementById('report-content').innerHTML = html;
+
+            var wrap = document.getElementById('report-job-recommendations-wrap');
+            if (wrap) {
+                wrap.classList.remove('hidden');
+                loadAndRenderReportJobs(record);
+            }
+        }
+
+        function scoreJobByAssessment(job, record) {
+            var r = record.raw || {};
+            var score = 0;
+            var reasons = [];
+            if (record.systemType === 'personality' && r.personality && r.personality.jobs) {
+                var jobName = (job.name || '').toLowerCase();
+                var jobType = (job.jobType || '') + (job.industry || '');
+                r.personality.jobs.forEach(function(recJob) {
+                    if (jobName.indexOf(recJob.toLowerCase()) !== -1 || jobType.indexOf(recJob) !== -1) {
+                        score += 35;
+                        reasons.push('与测评推荐职业方向一致');
+                    }
+                });
+                var typeMap = { '技术类': ['工程师','开发','技术'], '产品类': ['产品','经理'], '运营类': ['运营'], '设计类': ['设计','UI'], '市场类': ['市场','营销'], '教育类': ['教师','教育'], '咨询类': ['咨询'], '金融类': ['金融','财务'] };
+                for (var t in typeMap) {
+                    if (typeMap[t].some(function(kw){ return jobName.indexOf(kw) !== -1 || (job.jobType === t); })) {
+                        score += 20;
+                        if (reasons.indexOf('职位类型匹配') === -1) reasons.push('职位类型匹配');
+                        break;
+                    }
+                }
+            } else if (record.systemType === 'stress' && r.level) {
+                if (r.level === '高') { score += 25; reasons.push('抗压能力较强，适合挑战性岗位'); }
+                else if (r.level === '中等') { score += 15; reasons.push('抗压能力中等，适合多数岗位'); }
+            } else if (record.systemType === 'intelligence' && r.level) {
+                if (r.level === '优秀' || r.level === '良好') { score += 25; reasons.push('认知能力较好，适合技术/分析类岗位'); }
+                var jobName = (job.name || '').toLowerCase();
+                if (jobName.indexOf('工程师') !== -1 || jobName.indexOf('开发') !== -1 || jobName.indexOf('分析') !== -1) { score += 20; reasons.push('岗位与智力测评维度匹配'); }
+            } else if (record.systemType === 'ability' && r.level) {
+                if (r.level === '高') { score += 25; reasons.push('职业能力较强，适合综合要求较高的岗位'); }
+                else if (r.level === '中等') { score += 15; reasons.push('职业能力中等，适合多数岗位'); }
+                var jobName = (job.name || '').toLowerCase();
+                if (r.dimensions && r.dimensions.leadership && r.dimensions.leadership.score >= 4 && (jobName.indexOf('管理') !== -1 || jobName.indexOf('主管') !== -1 || jobName.indexOf('经理') !== -1)) { score += 20; reasons.push('领导力与岗位匹配'); }
+            } else if (record.systemType === 'interest' && r.dominant) {
+                var jobName = (job.name || '').toLowerCase();
+                var jobType = (job.jobType || '') + (job.industry || '');
+                var hollandJobs = (window.INTEREST_TYPES && window.INTEREST_TYPES[r.dominant] && window.INTEREST_TYPES[r.dominant].jobs) ? window.INTEREST_TYPES[r.dominant].jobs : [];
+                hollandJobs.forEach(function(recJob) {
+                    if (jobName.indexOf(recJob.toLowerCase()) !== -1 || jobType.indexOf(recJob) !== -1) { score += 35; reasons.push('与兴趣测评推荐职业一致'); }
+                });
+                if (score === 0) { score += 20; reasons.push('可根据兴趣类型探索更多岗位'); }
+            }
+            if (score === 0) score = 50;
+            return { score: Math.min(100, score), reasons: reasons };
+        }
+
+        function loadAndRenderReportJobs(record) {
+            var container = document.getElementById('report-job-recommendations');
+            if (!container) return;
+            container.innerHTML = '<div class="text-gray-500 py-4"><i class="fa fa-spinner fa-spin mr-2"></i>正在加载适合岗位…</div>';
+            var base = getApiBase();
+            fetch(base + '/jobs', { method: 'GET', headers: { 'Content-Type': 'application/json' } })
+                .then(function(res) { return res.json(); })
+                .then(function(json) {
+                    var list = (json && json.success && Array.isArray(json.data)) ? json.data : [];
+                    if (list.length === 0) {
+                        container.innerHTML = '<p class="text-gray-500">暂无在招岗位，请稍后到<a href="recommendation.html" class="text-primary underline">岗位推荐</a>查看。</p>';
+                        return;
+                    }
+                    var scored = list.map(function(job) {
+                        var o = scoreJobByAssessment(job, record);
+                        return { job: job, matchScore: o.score, matchReasons: o.reasons };
+                    });
+                    scored.sort(function(a, b) { return b.matchScore - a.matchScore; });
+                    var top = scored.slice(0, 8);
+                    container.innerHTML = top.map(function(item) {
+                        var j = item.job;
+                        var name = j.name || j.title || '岗位';
+                        var company = j.companyName || j.company_name || '企业';
+                        var salary = j.salary || j.salaryRange || '面议';
+                        var location = j.location || '';
+                        var id = j.id;
+                        var reasons = (item.matchReasons && item.matchReasons.length) ? item.matchReasons.map(function(r){ return '<span class="text-xs text-green-600">' + r + '</span>'; }).join('、') : '';
+                        return '<div class="bg-gray-50 rounded-lg p-4 border border-gray-100">' +
+                            '<div class="flex justify-between items-start"><div><h3 class="font-medium text-gray-800">' + name + '</h3>' +
+                            '<p class="text-sm text-gray-500 mt-1">' + company + (location ? ' · ' + location : '') + ' · ' + salary + '</p>' +
+                            (reasons ? '<p class="text-xs mt-2">' + reasons + '</p>' : '') + '</div>' +
+                            '<span class="bg-primary/10 text-primary text-xs font-medium px-2 py-1 rounded">匹配 ' + item.matchScore + '%</span></div>' +
+                            '<a href="recommendation.html" class="inline-block mt-3 text-primary text-sm hover:underline">查看详情 / 申请</a></div>';
+                    }).join('');
+                })
+                .catch(function() {
+                    container.innerHTML = '<p class="text-gray-500">岗位加载失败，请<a href="recommendation.html" class="text-primary underline">前往岗位推荐</a>查看。</p>';
+                });
+        }
+
+        document.getElementById('btn-export-pdf').addEventListener('click', function() {
+            var title = document.getElementById('report-title').textContent;
+            var content = document.getElementById('report-content');
+            if (!content) return;
+            var JsPDF = (typeof jspdf !== 'undefined' && jspdf.jsPDF) ? jspdf.jsPDF : (window.jspdf && window.jspdf.jsPDF);
+            if (!JsPDF) { alert('PDF 库未加载，请刷新页面后重试'); return; }
+            try {
+                var doc = new JsPDF();
+                doc.setFont('Helvetica');
+                doc.text(title, 14, 20);
+                var y = 28;
+                var text = (content.innerText || content.textContent || '').replace(/\s+/g, ' ').trim();
+                var lines = doc.splitTextToSize(text, 180);
+                lines.forEach(function(line) { doc.text(line, 14, y); y += 6; });
+                doc.save('系统测评报告_' + (currentType || 'report') + '.pdf');
+            } catch (e) {
+                alert('导出 PDF 失败：' + (e.message || e));
+            }
+        });
+
+        window.PERSONALITY_TYPES = {
+            ESTJ: { title: '监督者型', description: '高效的组织者，务实、逻辑、果断，善于组织人与资源。', energy: { type: '外向 (E)', value: 70 }, info: { type: '感觉 (S)', value: 60 }, decision: { type: '思考 (T)', value: 80 }, lifestyle: { type: '判断 (J)', value: 75 }, jobs: ['项目经理','行政主管','运营总监'], advice: ['发挥组织与领导能力','学习灵活应对变化'] },
+            INFP: { title: '调停者型', description: '理想主义者，重视价值观与内在和谐，富有同理心。', energy: { type: '内向 (I)', value: 75 }, info: { type: '直觉 (N)', value: 80 }, decision: { type: '情感 (F)', value: 70 }, lifestyle: { type: '知觉 (P)', value: 65 }, jobs: ['心理咨询师','作家','设计师'], advice: ['寻找表达创造力的工作','发展实际执行能力'] },
+            INTJ: { title: '建筑师型', description: '战略思考者，独立、有目标，善于长远规划。', energy: { type: '内向 (I)', value: 70 }, info: { type: '直觉 (N)', value: 75 }, decision: { type: '思考 (T)', value: 80 }, lifestyle: { type: '判断 (J)', value: 70 }, jobs: ['战略顾问','工程师','科学家'], advice: ['发挥分析优势','适当倾听他人意见'] },
+            ENFP: { title: '竞选者型', description: '热情、富有创意，善于激励他人，喜欢新可能。', energy: { type: '外向 (E)', value: 80 }, info: { type: '直觉 (N)', value: 75 }, decision: { type: '情感 (F)', value: 70 }, lifestyle: { type: '知觉 (P)', value: 65 }, jobs: ['营销','培训师','创意策划'], advice: ['聚焦重点避免分散','落实计划与跟进'] }
+        };
+        var mbtiList = ['ESTJ','ESFJ','ENTJ','ENTP','ESTP','ESFP','ENFJ','ENFP','ISTJ','ISFJ','INTJ','INTP','ISTP','ISFP','INFJ','INFP'];
+        mbtiList.forEach(function(t) {
+            if (window.PERSONALITY_TYPES[t]) return;
+            window.PERSONALITY_TYPES[t] = {
+                title: t + ' 型',
+                description: '您的性格类型为 ' + t + '，具有该类型的典型特征。建议结合职业兴趣探索适合方向。',
+                energy: { type: t[0]==='E'?'外向 (E)':'内向 (I)', value: 60 },
+                info: { type: t[1]==='S'?'感觉 (S)':'直觉 (N)', value: 60 },
+                decision: { type: t[2]==='T'?'思考 (T)':'情感 (F)', value: 60 },
+                lifestyle: { type: t[3]==='J'?'判断 (J)':'知觉 (P)', value: 60 },
+                jobs: ['根据性格匹配多种职业'],
+                advice: ['发挥自身偏好','在适合环境中发展']
+            };
+        });
+
+        window.INTEREST_TYPES = {
+            R: { name: '实际型', description: '您喜欢动手操作、使用工具或机器，偏好具体、可触摸的成果，适合技术、机械、户外、体力与实操结合的工作。', jobs: ['技术员','工程师','技工','驾驶员','维修','建筑','农业'], advice: ['发挥动手与实操优势','可考取相关技能或职业证书','在技术路线或一线岗位中积累经验'] },
+            I: { name: '研究型', description: '您喜欢分析、研究与探索规律，偏好独立钻研与逻辑推理，适合研发、分析、学术、数据与深度思考类工作。', jobs: ['研究员','分析师','程序员','科学家','工程师','医生'], advice: ['持续深化专业能力','关注行业与学术前沿','适合在专业领域做深做精'] },
+            A: { name: '艺术型', description: '您喜欢创作、表达与审美，偏好独特性与美感，适合设计、写作、艺术、策划与创意类工作。', jobs: ['设计师','编剧','策划','编辑','艺术指导','音乐'], advice: ['保持创作与表达习惯','建立作品集与个人风格','可结合商业或教育场景发挥'] },
+            S: { name: '社会型', description: '您喜欢与人交往、帮助他人与促进和谐，偏好教育、服务与关怀，适合教育、医疗、咨询、人力资源与服务类工作。', jobs: ['教师','护士','咨询师','HR','社工','培训师'], advice: ['发挥同理心与沟通优势','可考取教育或咨询相关资质','在与人打交道的工作中成长'] },
+            E: { name: '企业型', description: '您喜欢影响他人、争取资源与达成目标，偏好领导、销售与创业，适合管理、销售、创业、谈判与资源整合类工作。', jobs: ['经理','销售','创业','管理','市场','公关'], advice: ['发挥目标感与说服力','积累人脉与资源','可尝试带团队或创业'] },
+            C: { name: '常规型', description: '您喜欢秩序、规范与可预期，偏好数据处理、流程与细节，适合行政、财务、文秘、合规与流程类工作。', jobs: ['会计','文员','行政','出纳','审计','档案'], advice: ['发挥细致与条理优势','可考取财会或行政类证书','在规范明确的环境中稳定发展'] }
+        };
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initPage);
+        } else {
+            initPage();
+        }
+    })();
+    </script>
+</body>
+</html>

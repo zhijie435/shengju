@@ -1,0 +1,30 @@
+{
+  "name": "sjrcw-load-test",
+  "version": "1.0.0",
+  "description": "圣举人才网在线考试系统 — 压测工具套件",
+  "private": true,
+  "scripts": {
+    "test:light": "PRESET=light node loadtest.js",
+    "test:medium": "PRESET=medium node loadtest.js",
+    "test:heavy": "PRESET=heavy node loadtest.js",
+    "test:register": "PRESET=register node loadtest.js",
+    "test:custom": "node loadtest.js",
+    "test:no-register": "SKIP_REGISTER=true node loadtest.js",
+    "monitor": "node -e \"const m = require('./monitor'); const s = m.startContinuousMonitor(2000, m.printSnapshot); process.on('SIGINT', () => { s.stop(); console.log('Peak:', s.getPeak()); process.exit(0); }); console.log('监控中，按 Ctrl+C 停止...');\"",
+    "health": "node -e \"const axios = require('axios'); const { config } = require('./config'); axios.get(config.BASE_URL + '/api/v1/health').then(r => console.log('OK', r.status)).catch(e => console.error('FAIL', e.message));\""
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "axios": "^1.7.2",
+    "cli-table3": "^0.6.5",
+    "playwright": "^1.45.0"
+  },
+  "devDependencies": {},
+  "keywords": [
+    "load-test",
+    "performance",
+    "stress-test"
+  ]
+}

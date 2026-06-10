@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人中心登录 - 圣举人才网</title>
+    <link rel="stylesheet" href="/static/css/tailwind-local.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <script src="../js/api-config.js"></script>
+    <script src="../js/auth-helper.js"></script>
+    <script>
+        tailwind.config = { theme: { extend: { colors: { primary: '#3B82F6' } } } };
+    </script>
+</head>
+<body class="font-sans bg-gray-50 min-h-screen flex flex-col">
+    <header class="bg-white shadow-md">
+        <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+            <a href="../index.html" class="flex items-center space-x-2" title="返回网站首页">
+                <img id="login-brand-logo" src="" alt="" class="h-10 w-10 rounded-full hidden">
+                <span id="login-brand-title" class="text-xl font-bold text-primary">圣举人才网</span>
+            </a>
+            <a href="../index.html" class="text-sm text-gray-600 hover:text-primary" title="返回网站首页">网站首页</a>
+        </div>
+    </header>
+    <main class="flex-grow flex items-center justify-center py-12 px-4">
+        <div class="bg-white rounded-xl shadow-lg max-w-md w-full p-8">
+            <h1 class="text-2xl font-bold text-primary mb-2" id="login-page-title">个人中心登录</h1>
+            <p class="text-gray-600 text-sm mb-2" id="login-page-subtitle">企业导入考生无需注册，登录后查看准考证与通知</p>
+            <p id="login-announcement-hint" class="hidden text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mb-4"></p>
+            <div class="flex border-b border-gray-200 mb-4" role="tablist">
+                <button type="button" id="loginTabPwd" class="flex-1 py-2 text-sm font-medium text-primary border-b-2 border-primary">密码登录</button>
+                <button type="button" id="loginTabSms" class="flex-1 py-2 text-sm font-medium text-gray-500 border-b-2 border-transparent hover:text-primary">短信登录</button>
+            </div>
+            <form id="loginForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">登录账号</label>
+                    <input type="text" id="loginIdentifier" required placeholder="手机号（与导入名单一致）"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">密码</label>
+                    <div class="relative">
+                        <input type="password" id="loginPassword" required placeholder="身份证后6位（未填身份证则为123456）"
+                            class="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <button type="button" id="toggleLoginPassword" aria-label="显示/隐藏密码"
+                            class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none">
+                            <i class="fa fa-eye" id="loginPasswordIcon"></i>
+                        </button>
+                    </div>
+                </div>
+                <div id="loginError" class="hidden text-sm text-red-600"></div>
+                <p class="text-xs text-gray-500">企业导入名单中的考生：<strong>无需注册</strong>，使用名单中的<strong>手机号</strong>（或身份证号）+ <strong>身份证后6位</strong> 登录；也可使用已注册邮箱/原密码。</p>
+                <button type="submit" id="loginBtn" class="w-full bg-primary hover:bg-blue-700 text-white font-medium py-3 rounded-lg transition">
+                    登录进入个人中心
+                </button>
+            </form>
+            <div id="loginFormSms" class="space-y-4 hidden">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">手机号</label>
+                    <input type="tel" id="smsPhone" maxlength="11" inputmode="numeric" placeholder="11 位手机号"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">短信验证码</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="smsCode" maxlength="6" inputmode="numeric" autocomplete="one-time-code" placeholder="验证码"
+                            class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <button type="button" id="smsSendBtn" class="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm whitespace-nowrap">获取验证码</button>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">须与导入名单手机号一致；收不到验证码时请改用「密码登录」。</p>
+                </div>
+                <div id="loginSmsError" class="hidden text-sm text-red-600"></div>
+                <button type="button" id="smsLoginBtn" class="w-full bg-primary hover:bg-blue-700 text-white font-medium py-3 rounded-lg transition">登录进入个人中心</button>
+            </div>
+            <p id="register-hint" class="text-center text-sm text-gray-600 mt-6 hidden">
+                尚未在人才网注册？企业导入考生<strong>无需注册</strong>，请使用上方密码登录。
+            </p>
+            <p id="register-link-wrap" class="text-center text-sm text-gray-600 mt-6">
+                需要完整求职服务？<a id="register-from-login" href="register.html" class="text-primary hover:underline">注册账号</a>
+            </p>
+        </div>
+    </main>
+    <script>
+        (function() {
+            document.getElementById('toggleLoginPassword').addEventListener('click', function() {
+                var input = document.getElementById('loginPassword');
+                var icon = document.getElementById('loginPasswordIcon');
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            });
+            const API_BASE_URL = (typeof window !== 'undefined' && window.API_BASE_URL) ? window.API_BASE_URL : (window.location.origin && (window.location.origin.indexOf('http') === 0) ? window.location.origin + '/api/v1' : 'http://127.0.0.1:3001/api/v1');
+            const TEST_ACCOUNTS = [
+                { identifier: 'job1@test.com', password: '123456', username: '张三' },
+                { identifier: 'jobseeker@test.com', password: '123456', username: '求职者1' },
+                { identifier: '13800138000', password: '123456', username: '求职者2' },
+                { identifier: 'user@example.com', password: '123456', username: '测试用户' }
+            ];
+            function findTestAccount(identifier, password) {
+                return TEST_ACCOUNTS.find(function(acc) {
+                    return (acc.identifier && acc.identifier.toLowerCase() === identifier.toLowerCase() || acc.username === identifier) && acc.password === password;
+                }) || null;
+            }
+            function showError(msg) {
+                var el = document.getElementById('loginError');
+                if (el) { el.textContent = msg || ''; el.classList.toggle('hidden', !msg); }
+            }
+            try {
+                var q0 = new URLSearchParams(window.location.search);
+                if (q0.get('reason') === 'wrong_portal') {
+                    showError('当前为企业端登录会话，求职者功能请使用本页「个人登录」');
+                }
+            } catch (e0) {}
+
+            function getAnnouncementIdFromUrl() {
+                try {
+                    var q = new URLSearchParams(window.location.search);
+                    var raw = q.get('announcementId') || q.get('announcement');
+                    var n = parseInt(String(raw || '').trim(), 10);
+                    return Number.isFinite(n) && n > 0 ? n : null;
+                } catch (e) { return null; }
+            }
+
+            var pageAnnouncementId = getAnnouncementIdFromUrl();
+
+            function persistAnnouncementContext(id) {
+                if (!id) return;
+                try {
+                    sessionStorage.setItem('jobseeker_announcement_id', String(id));
+                    window.__ANNOUNCEMENT_NAV_ID = String(id);
+                } catch (e) {}
+            }
+
+            function getDefaultAfterLoginPath() {
+                return pageAnnouncementId
+                    ? '/user/profile.html?announcementId=' + encodeURIComponent(String(pageAnnouncementId)) + '#messages'
+                    : '/user/profile.html#messages';
+            }
+
+            function getSafeRedirectTarget() {
+                try {
+                    var params = new URLSearchParams(window.location.search);
+                    var raw = params.get('redirect') || params.get('next');
+                    if (!raw) return getDefaultAfterLoginPath();
+                    var dec = decodeURIComponent(raw);
+                    if (dec.indexOf('://') >= 0 || dec.indexOf('//') === 0 || dec.indexOf('javascript:') === 0) return getDefaultAfterLoginPath();
+                    if (!/^[\w\-\.\/?&=%#]+$/.test(dec)) return getDefaultAfterLoginPath();
+                    return dec;
+                } catch (e) { return getDefaultAfterLoginPath(); }
+            }
+
+            function finishLogin(result) {
+                if (typeof AuthHelper !== 'undefined') {
+                    AuthHelper.set('jobseeker', {
+                        token: result.token,
+                        userId: result.userId || '',
+                        username: result.username,
+                        userType: 'jobseeker',
+                        email: result.email || ''
+                    });
+                } else {
+                    localStorage.setItem('authToken', result.token);
+                    localStorage.setItem('userId', result.userId || '');
+                    localStorage.setItem('username', result.username);
+                    localStorage.setItem('userType', 'jobseeker');
+                }
+                persistAnnouncementContext(pageAnnouncementId);
+                var next = getSafeRedirectTarget();
+                if (next.indexOf('/') === 0 && window.location.origin) {
+                    window.location.href = window.location.origin.replace(/\/$/, '') + next;
+                } else {
+                    window.location.href = next;
+                }
+            }
+
+            async function loadAnnouncementBranding() {
+                if (!pageAnnouncementId) return;
+                persistAnnouncementContext(pageAnnouncementId);
+                var hint = document.getElementById('login-announcement-hint');
+                if (hint) {
+                    hint.classList.remove('hidden');
+                    hint.textContent = '本公告报名考生：请使用导入名单中的手机号与身份证后6位登录，无需注册。';
+                }
+                document.getElementById('register-link-wrap').classList.add('hidden');
+                document.getElementById('register-hint').classList.remove('hidden');
+                try {
+                    var res = await fetch(API_BASE_URL.replace(/\/$/, '') + '/announcements/' + pageAnnouncementId + '/navbar-branding');
+                    var j = await res.json().catch(function() { return {}; });
+                    var b = j && j.success && j.data ? j.data : null;
+                    if (b && b.title) {
+                        document.title = b.title + ' - 个人中心登录';
+                        var t = document.getElementById('login-brand-title');
+                        var pt = document.getElementById('login-page-title');
+                        if (t) t.textContent = b.title;
+                        if (pt) pt.textContent = b.title;
+                    }
+                    if (b && b.logo) {
+                        var img = document.getElementById('login-brand-logo');
+                        if (img) {
+                            img.src = b.logo;
+                            img.alt = (b.title || 'Logo');
+                            img.classList.remove('hidden');
+                        }
+                    }
+                    var isIvAnn = b && b.admitCardTemplate === 'interview_official';
+                    var sub = document.getElementById('login-page-subtitle');
+                    if (sub && isIvAnn) {
+                        sub.textContent = '登录后在个人中心「消息」中打印面试通知书';
+                    }
+                    if (hint && isIvAnn) {
+                        hint.textContent = '面试公告考生：请使用导入名单中的手机号与身份证后6位登录，登录后点击「消息」打印准考证。';
+                    }
+                } catch (e) {}
+            }
+            loadAnnouncementBranding();
+
+            (function syncRegisterLink() {
+                var reg = document.getElementById('register-from-login');
+                if (!reg) return;
+                var r = getSafeRedirectTarget();
+                reg.href = r ? ('register.html?return=' + encodeURIComponent(r)) : 'register.html';
+            })();
+            function normalizeLoginIdentifier(raw) {
+                var t = String(raw || '').trim();
+                if (!t) return t;
+                var d = t.replace(/\D/g, '');
+                if (d.length === 11 && d.charAt(0) === '1') return d;
+                if (d.length === 13 && d.indexOf('86') === 0) return d;
+                if (d.length >= 15) return t.replace(/\s/g, '').toUpperCase();
+                return t;
+            }
+            async function doLogin(identifier, password) {
+                try {
+                    var idNorm = normalizeLoginIdentifier(identifier);
+                    var body = { identifier: idNorm, password: password, userType: 'jobseeker' };
+                    if (pageAnnouncementId) body.announcementId = pageAnnouncementId;
+                    var res = await fetch(API_BASE_URL + '/auth/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(body)
+                    });
+                    var data = await res.json().catch(function() { return {}; });
+                    if (res.ok && data.success) {
+                        var tok = data.token || (data.data && (data.data.accessToken || data.data.token));
+                        if (!tok) {
+                            if (data.message) throw new Error(data.message);
+                            throw new Error('登录失败');
+                        }
+                        var du = data.user || {};
+                        var dd = data.data || {};
+                        return {
+                            success: true,
+                            token: tok,
+                            userId: du.id != null ? du.id : dd.userId,
+                            username: du.username || dd.username,
+                            userType: 'jobseeker',
+                            email: du.email || dd.email || ''
+                        };
+                    }
+                    if (data.message) throw new Error(data.message);
+                    throw new Error('登录失败');
+                } catch (e) {
+                    if (e.message && !e.message.includes('fetch') && !e.message.includes('Network')) throw e;
+                    var idTry = normalizeLoginIdentifier(identifier);
+                    var acc = findTestAccount(idTry, password) || findTestAccount(identifier, password);
+                    if (acc) {
+                        return {
+                            success: true,
+                            token: 'mock_token_' + Date.now(),
+                            userId: 'mock_' + Date.now(),
+                            username: acc.username,
+                            userType: 'jobseeker',
+                            email: acc.identifier
+                        };
+                    }
+                    throw new Error('账号或密码错误，或后端服务未启动');
+                }
+            }
+            document.getElementById('loginForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                var id = document.getElementById('loginIdentifier').value.trim();
+                var pwd = document.getElementById('loginPassword').value;
+                showError('');
+                var btn = document.getElementById('loginBtn');
+                btn.disabled = true;
+                btn.textContent = '登录中...';
+                try {
+                    var result = await doLogin(id, pwd);
+                    if (result && result.success) {
+                        finishLogin(result);
+                        return;
+                    }
+                    showError(result.message || '登录失败');
+                } catch (err) {
+                    showError(err.message || '登录失败，请稍后重试');
+                }
+                btn.disabled = false;
+                btn.textContent = '登录进入个人中心';
+            });
+            if (typeof AuthHelper !== 'undefined' && AuthHelper.get('jobseeker') && AuthHelper.get('jobseeker').token) {
+                persistAnnouncementContext(pageAnnouncementId);
+                var next0 = getSafeRedirectTarget();
+                if (next0.indexOf('/') === 0 && window.location.origin) {
+                    window.location.href = window.location.origin.replace(/\/$/, '') + next0;
+                } else {
+                    window.location.href = next0;
+                }
+            }
+
+            function showSmsError(msg) {
+                var el = document.getElementById('loginSmsError');
+                if (el) { el.textContent = msg || ''; el.classList.toggle('hidden', !msg); }
+            }
+            function switchLoginMode(isSms) {
+                var f = document.getElementById('loginForm');
+                var s = document.getElementById('loginFormSms');
+                var t1 = document.getElementById('loginTabPwd');
+                var t2 = document.getElementById('loginTabSms');
+                if (isSms) {
+                    f.classList.add('hidden');
+                    s.classList.remove('hidden');
+                    t2.classList.add('text-primary', 'border-primary');
+                    t2.classList.remove('text-gray-500', 'border-transparent');
+                    t1.classList.remove('text-primary', 'border-primary');
+                    t1.classList.add('text-gray-500', 'border-transparent');
+                } else {
+                    s.classList.add('hidden');
+                    f.classList.remove('hidden');
+                    t1.classList.add('text-primary', 'border-primary');
+                    t1.classList.remove('text-gray-500', 'border-transparent');
+                    t2.classList.remove('text-primary', 'border-primary');
+                    t2.classList.add('text-gray-500', 'border-transparent');
+                }
+                showSmsError('');
+            }
+            document.getElementById('loginTabPwd').addEventListener('click', function () { switchLoginMode(false); });
+            document.getElementById('loginTabSms').addEventListener('click', function () { switchLoginMode(true); });
+
+            var jobSmsTimer = null;
+            document.getElementById('smsSendBtn').addEventListener('click', async function () {
+                var phone = (document.getElementById('smsPhone').value || '').replace(/\D/g, '');
+                var btn = document.getElementById('smsSendBtn');
+                if (phone.length < 11) {
+                    showSmsError('请输入正确手机号');
+                    return;
+                }
+                showSmsError('');
+                btn.disabled = true;
+                btn.textContent = '发送中...';
+                try {
+                    var res = await fetch(API_BASE_URL + '/auth/send-sms', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ phone: phone })
+                    });
+                    var data = await res.json().catch(function () { return {}; });
+                    if (!res.ok || !data.success) {
+                        showSmsError((data && data.message) ? data.message : '发送失败');
+                        btn.disabled = false;
+                        btn.textContent = '获取验证码';
+                        return;
+                    }
+                    var sec = 60;
+                    if (jobSmsTimer) clearInterval(jobSmsTimer);
+                    jobSmsTimer = setInterval(function () {
+                        sec--;
+                        btn.textContent = sec + '秒后重试';
+                        if (sec <= 0) {
+                            clearInterval(jobSmsTimer);
+                            jobSmsTimer = null;
+                            btn.disabled = false;
+                            btn.textContent = '获取验证码';
+                        }
+                    }, 1000);
+                } catch (e) {
+                    showSmsError(e.message || '网络错误');
+                    btn.disabled = false;
+                    btn.textContent = '获取验证码';
+                }
+            });
+
+            document.getElementById('smsLoginBtn').addEventListener('click', async function () {
+                var phone = (document.getElementById('smsPhone').value || '').replace(/\D/g, '');
+                var code = (document.getElementById('smsCode').value || '').trim();
+                showSmsError('');
+                if (phone.length < 11 || !code) {
+                    showSmsError('请填写手机号和验证码');
+                    return;
+                }
+                var btn = document.getElementById('smsLoginBtn');
+                btn.disabled = true;
+                btn.textContent = '登录中...';
+                try {
+                    var smsBody = { phone: phone, code: code, userType: 'jobseeker' };
+                    if (pageAnnouncementId) smsBody.announcementId = pageAnnouncementId;
+                    var res = await fetch(API_BASE_URL + '/auth/login-by-phone', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(smsBody)
+                    });
+                    var data = await res.json().catch(function () { return {}; });
+                    if (data.needFaceVerify && data.tempToken) {
+                        showSmsError('该账号需完成人脸核验，请使用「考生端」短信登录并按提示扫脸，或使用密码登录。');
+                        btn.disabled = false;
+                        btn.textContent = '登录进入个人中心';
+                        return;
+                    }
+                    if (!res.ok || !data.success) {
+                        showSmsError((data && data.message) ? data.message : '登录失败');
+                        btn.disabled = false;
+                        btn.textContent = '登录进入个人中心';
+                        return;
+                    }
+                    var tok = data.token || (data.data && (data.data.accessToken || data.data.token));
+                    var du = data.user || {};
+                    if (!tok) {
+                        showSmsError('登录失败');
+                        btn.disabled = false;
+                        btn.textContent = '登录进入个人中心';
+                        return;
+                    }
+                    finishLogin({
+                        success: true,
+                        token: tok,
+                        userId: du.id != null ? du.id : '',
+                        username: du.username || '',
+                        userType: 'jobseeker',
+                        email: du.email || ''
+                    });
+                } catch (e) {
+                    showSmsError(e.message || '登录失败');
+                    btn.disabled = false;
+                    btn.textContent = '登录进入个人中心';
+                }
+            });
+        })();
+    </script>
+</body>
+</html>

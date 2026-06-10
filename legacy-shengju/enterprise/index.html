@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>圣举人才网 - 政企端</title>
+    <!-- Tailwind CSS -->
+    <script>(function(){var w=console.warn;console.warn=function(){var m=(arguments[0]!=null&&typeof arguments[0]==='string')?arguments[0]:'';if(m.indexOf('cdn.tailwindcss.com')!==-1||m.indexOf('Tracking Prevention')!==-1)return;return w.apply(console,arguments);};})();</script>
+    <link rel="stylesheet" href="/static/css/tailwind-local.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../js/api-config.js"></script>
+    <script src="../js/auth-helper.js"></script>
+    <script src="../js/enterprise-navbar.js"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4F46E5',
+                        secondary: '#1E3A8A',
+                        accent: '#818CF8',
+                        light: '#EEF2FF',
+                        dark: '#1E293B'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow {
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            }
+            .bg-gradient-indigo {
+                background: linear-gradient(135deg, #4F46E5 0%, #1E3A8A 100%);
+            }
+        }
+    </style>
+</head>
+<body class="font-sans bg-gray-50">
+    <!-- 导航栏：与各业务模块保持统一 -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+            <!-- Logo -->
+            <div class="flex items-center space-x-2">
+                <a href="../index.html" class="flex items-center space-x-2">
+                    <img data-site-logo src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%231E40AF' rx='4'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-size='24' font-weight='bold' fill='white'%3E圣%3C/text%3E%3C/svg%3E" 
+                         alt="圣举人才网" class="h-10 w-10">
+                    <h1 class="text-2xl font-bold text-primary">圣举人才网</h1>
+                </a>
+                <span class="text-gray-400">|</span>
+                <span class="text-gray-600 font-medium">企业招聘中心</span>
+            </div>
+            
+            <!-- 导航链接（与其他政企端模块统一，高亮当前首页） -->
+            <nav class="hidden md:flex items-center space-x-8">
+                <a href="index.html" class="text-primary font-medium border-b-2 border-primary">首页</a>
+                <a href="tests.html" class="text-gray-700 hover:text-primary font-medium">测评管理</a>
+                <a href="talent.html" class="text-gray-700 hover:text-primary font-medium">人才池</a>
+                <a href="company-center.html" class="text-gray-700 hover:text-primary font-medium">企业中心</a>
+                <a href="custom-solutions.html" class="text-gray-700 hover:text-primary font-medium">定制服务方案</a>
+            </nav>
+            
+            <!-- 用户菜单：右上侧仅退出按钮（与 custom-solutions 一致） -->
+            <div class="flex items-center space-x-4">
+                <!-- 移动端菜单按钮 -->
+                <button class="md:hidden text-gray-700 focus:outline-none" id="menu-toggle">
+                    <i class="fa fa-bars text-xl"></i>
+                </button>
+                <!-- 退出按钮（弹窗式） -->
+                <button type="button" onclick="showLogoutModal()" class="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition">
+                    <i class="fa fa-sign-out"></i> 退出
+                </button>
+            </div>
+        </div>
+        
+        <!-- 移动端菜单 -->
+        <div class="md:hidden hidden bg-white border-t border-gray-200" id="mobile-menu">
+            <div class="container mx-auto px-4 py-2">
+                <a href="index.html" class="block py-2 text-primary font-medium border-l-4 border-primary pl-2">首页</a>
+                <a href="tests.html" class="block py-2 text-gray-700 hover:text-primary pl-2">测评管理</a>
+                <a href="talent.html" class="block py-2 text-gray-700 hover:text-primary pl-2">人才池</a>
+                <a href="company-center.html" class="block py-2 text-gray-700 hover:text-primary pl-2">企业中心</a>
+                <a href="custom-solutions.html" class="block py-2 text-gray-700 hover:text-primary pl-2">定制服务方案</a>
+                <button type="button" onclick="showLogoutModal()" class="block w-full text-left py-2 text-primary font-medium pl-2"><i class="fa fa-sign-out mr-2"></i>退出</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 退出确认弹窗 -->
+    <div id="logout-modal" class="fixed inset-0 z-[60] hidden">
+        <div class="fixed inset-0 bg-black bg-opacity-50" onclick="closeLogoutModal()"></div>
+        <div class="fixed inset-0 flex items-center justify-center p-4">
+            <div class="bg-white rounded-xl shadow-xl max-w-sm w-full p-6">
+                <p class="text-center text-gray-800 mb-6">确定要退出登录吗？</p>
+                <div class="flex gap-3">
+                    <button type="button" onclick="closeLogoutModal()" class="flex-1 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">取消</button>
+                    <button type="button" onclick="confirmLogout()" class="flex-1 py-2 bg-primary text-white rounded-lg hover:bg-primary/90">确定退出</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 从公开接口拉取系统设置并写入 localStorage，再应用
+        async function fetchPublicSettingsAndApply() {
+            const API_BASE = (window.API_BASE_URL || 'http://127.0.0.1:3001/api/v1').replace(/\/$/, '');
+            const urls = [API_BASE + '/public/site-settings', API_BASE + '/admin/settings/public'];
+            try {
+                let json = null;
+                for (let i = 0; i < urls.length; i++) {
+                    try {
+                        const res = await fetch(urls[i]);
+                        if (!res.ok) continue;
+                        const j = await res.json();
+                        if (j && j.success && j.data) { json = j; break; }
+                    } catch (e) {}
+                }
+                if (json && json.data) {
+                    const d = json.data;
+                    if (d.siteName != null) localStorage.setItem('siteName', typeof d.siteName === 'string' ? d.siteName : JSON.stringify(d.siteName));
+                    if (d.siteLogo != null) localStorage.setItem('siteLogo', typeof d.siteLogo === 'string' ? d.siteLogo : JSON.stringify(d.siteLogo));
+                    if (d.contactInfo != null) localStorage.setItem('contactInfo', JSON.stringify(typeof d.contactInfo === 'object' ? d.contactInfo : {}));
+                    const sys = JSON.parse(localStorage.getItem('systemSettings') || '{}');
+                    if (d.siteName != null) sys.siteName = d.siteName;
+                    if (d.siteLogo != null) sys.siteLogo = d.siteLogo;
+                    if (d.contactInfo != null) sys.contactInfo = d.contactInfo;
+                    localStorage.setItem('systemSettings', JSON.stringify(sys));
+                }
+            } catch (e) {
+                console.warn('拉取公开系统设置失败，使用本地缓存:', e);
+            }
+            loadSystemSettings();
+        }
+        
+        // 加载系统设置
+        function loadSystemSettings() {
+            const systemSettings = JSON.parse(localStorage.getItem('systemSettings') || '{}');
+            const siteName = localStorage.getItem('siteName') || systemSettings.siteName || '圣举人才网';
+            const siteLogo = localStorage.getItem('siteLogo') || systemSettings.siteLogo || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%231E40AF' rx='4'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-size='24' font-weight='bold' fill='white'%3E圣%3C/text%3E%3C/svg%3E";
+            const contactInfo = JSON.parse(localStorage.getItem('contactInfo') || localStorage.getItem('sj_contact_config') || '{}');
+            
+            // 更新Logo
+            const logoImg = document.querySelector('header img[alt*="圣举"]');
+            if (logoImg) {
+                logoImg.src = siteLogo;
+            }
+            
+            // 更新网站名称
+            const siteNameEl = document.querySelector('header h1');
+            if (siteNameEl) {
+                siteNameEl.textContent = siteName;
+            }
+            
+            // 更新页面标题
+            document.title = siteName + ' - 企业招聘中心';
+            
+            // 更新页脚站点名与联系方式
+            const footerSiteName = document.getElementById('footer-site-name');
+            if (footerSiteName) footerSiteName.textContent = siteName;
+            const footerPhone = document.getElementById('footer-contact-phone');
+            if (footerPhone && contactInfo.phone) footerPhone.textContent = contactInfo.phone;
+            const footerEmail = document.getElementById('footer-contact-email');
+            if (footerEmail && contactInfo.email) footerEmail.textContent = contactInfo.email;
+            const footerAddress = document.getElementById('footer-contact-address');
+            if (footerAddress && contactInfo.address) footerAddress.textContent = contactInfo.address;
+            const footerCopyright = document.getElementById('footer-copyright');
+            if (footerCopyright) footerCopyright.textContent = '© ' + new Date().getFullYear() + ' ' + siteName + ' 版权所有';
+        }
+        
+        // 监听系统设置更新
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'siteName' || e.key === 'siteLogo' || e.key === 'contactInfo' || e.key === 'sj_contact_config') {
+                loadSystemSettings();
+            }
+            if (e.key === 'enterpriseShowPaidModule') {
+                applyEnterprisePaidSectionVisibility();
+            }
+        });
+        
+        window.addEventListener('siteNameUpdated', function(e) {
+            loadSystemSettings();
+        });
+        
+        window.addEventListener('logoUpdated', function(e) {
+            loadSystemSettings();
+        });
+        
+        // 页面加载时先拉取公开设置再应用
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchPublicSettingsAndApply();
+        });
+        
+        // 移动端菜单切换
+        document.getElementById('menu-toggle').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        // 定制服务方案已改为直接链接，无需下拉菜单交互
+    </script>
+
+    <!-- 主内容区 -->
+    <main>
+        <!-- 英雄区 -->
+        <section class="bg-gradient-indigo text-white py-16">
+            <div class="container mx-auto px-4">
+                <div class="flex flex-col md:flex-row items-center">
+                    <div class="md:w-1/2 mb-8 md:mb-0">
+                        <h1 class="text-3xl md:text-4xl font-bold mb-4">科学招聘，精准选人</h1>
+                        <p class="text-lg mb-6">
+                            通过AI驱动的测评工具和人才匹配系统，帮助企业高效筛选优质人才，降低招聘成本，提高招聘成功率。
+                        </p>
+
+                        <div class="flex flex-wrap gap-4">
+                            <a href="tests.html" class="bg-white text-primary hover:bg-gray-100 font-medium py-3 px-6 rounded-lg transition">
+                                开始使用
+                            </a>
+                            <a href="#features" class="bg-transparent border border-white text-white hover:bg-white hover:bg-opacity-10 font-medium py-3 px-6 rounded-lg transition">
+                                了解更多
+                            </a>
+                        </div>
+                    </div>
+                    <div class="md:w-1/2">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='600' viewBox='0 0 800 600'%3E%3Cdefs%3E%3ClinearGradient id='heroGradient' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%231E40AF;stop-opacity:0.8'/%3E%3Cstop offset='100%25' style='stop-color:%233B82F6;stop-opacity:0.6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23heroGradient)'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-size='48' font-weight='bold' fill='white'%3E企业招聘%3C/text%3E%3C/svg%3E" 
+                             alt="企业招聘" class="w-full h-auto rounded-lg shadow-lg">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 核心功能 -->
+        <section class="py-16 bg-white">
+            <div class="container mx-auto px-4">
+                <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">核心功能</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- 岗位测评定制 -->
+                    <div class="bg-light rounded-xl shadow-md overflow-hidden transform transition hover:scale-105 hover:shadow-lg">
+                        <div class="h-48 bg-indigo-100 flex items-center justify-center">
+                            <i class="fa fa-file-text text-primary text-6xl"></i>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-gray-800 mb-3">岗位测评定制</h3>
+                            <p class="text-gray-600 mb-4">
+                                支持拖拽式编辑问卷、行业模板库、测评时效与防作弊管理，快速创建符合岗位需求的测评。
+                            </p>
+                            <a href="tests.html" class="text-primary hover:text-indigo-700 font-medium flex items-center">
+                                了解更多 <i class="fa fa-angle-right ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- AI人才池 -->
+                    <div class="bg-light rounded-xl shadow-md overflow-hidden transform transition hover:scale-105 hover:shadow-lg">
+                        <div class="h-48 bg-indigo-100 flex items-center justify-center">
+                            <i class="fa fa-users text-primary text-6xl"></i>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-gray-800 mb-3">AI人才池</h3>
+                            <p class="text-gray-600 mb-4">
+                                自动分层（金/银/潜力池）、智能推荐（每周5名高匹配候选人）、自定义人才标签，高效管理候选人。
+                            </p>
+                            <a href="talent.html" class="text-primary hover:text-indigo-700 font-medium flex items-center">
+                                了解更多 <i class="fa fa-angle-right ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- 企业运营分析 -->
+                    <div class="bg-light rounded-xl shadow-md overflow-hidden transform transition hover:scale-105 hover:shadow-lg">
+                        <div class="h-48 bg-indigo-100 flex items-center justify-center">
+                            <i class="fa fa-bar-chart text-primary text-6xl"></i>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-gray-800 mb-3">企业运营分析</h3>
+                            <p class="text-gray-600 mb-4">
+                                提供人才结构看板、招聘ROI计算、竞品人才对标，辅助企业招聘决策，优化招聘策略。
+                            </p>
+                            <a href="company-center.html" class="text-primary hover:text-indigo-700 font-medium flex items-center">
+                                了解更多 <i class="fa fa-angle-right ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 平台特色 -->
+        <section id="features" class="py-16 bg-gray-50">
+            <div class="container mx-auto px-4">
+                <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">平台特色</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <!-- 特色1 -->
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <div class="w-14 h-14 bg-indigo-100 rounded-full flex items-center justify-center mb-4">
+                            <i class="fa fa-magic text-primary text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3 text-gray-800">AI智能匹配</h3>
+                        <p class="text-gray-600">
+                            基于岗位需求和候选人测评结果，AI智能匹配最适合的候选人，提高招聘效率。
+                        </p>
+                    </div>
+                    
+                    <!-- 特色2 -->
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <div class="w-14 h-14 bg-indigo-100 rounded-full flex items-center justify-center mb-4">
+                            <i class="fa fa-puzzle-piece text-primary text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3 text-gray-800">模块化定制</h3>
+                        <p class="text-gray-600">
+                            支持拖拽式编辑问卷、自定义人才标签、报告模板个性化配置，满足不同企业的差异化需求。
+                        </p>
+                    </div>
+                    
+                    <!-- 特色3 -->
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <div class="w-14 h-14 bg-indigo-100 rounded-full flex items-center justify-center mb-4">
+                            <i class="fa fa-lock text-primary text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3 text-gray-800">防作弊机制</h3>
+                        <p class="text-gray-600">
+                            多种防作弊手段，确保测评结果真实可靠，帮助企业识别真正的人才。
+                        </p>
+                    </div>
+                    
+                    <!-- 特色4 -->
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <div class="w-14 h-14 bg-indigo-100 rounded-full flex items-center justify-center mb-4">
+                            <i class="fa fa-line-chart text-primary text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3 text-gray-800">数据驱动决策</h3>
+                        <p class="text-gray-600">
+                            多维度数据分析与可视化展示，为企业提供招聘决策支持，优化招聘策略。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 定制化服务：与定制服务方案页互通 -->
+        <section class="py-16 bg-white">
+            <div class="container mx-auto px-4">
+                <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">定制化服务</h2>
+                
+                <!-- 模块导航 -->
+                <div class="mb-16">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <a href="custom-solutions.html#proposition" class="bg-light rounded-xl shadow-md p-6 text-center transition hover:shadow-lg hover:bg-white">
+                            <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fa fa-file-text-o text-primary text-2xl"></i>
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">人事考试命题服务</h3>
+                            <p class="text-gray-600 text-sm">专业的题库建设与命题服务</p>
+                        </a>
+                        
+                        <a href="custom-solutions.html#registration" class="bg-light rounded-xl shadow-md p-6 text-center transition hover:shadow-lg hover:bg-white">
+                            <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fa fa-user-plus text-primary text-2xl"></i>
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">人事报名系统</h3>
+                            <p class="text-gray-600 text-sm">便捷的在线报名与资格审核</p>
+                        </a>
+                        
+                        <a href="custom-solutions.html#interview" class="bg-light rounded-xl shadow-md p-6 text-center transition hover:shadow-lg hover:bg-white">
+                            <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fa fa-comments text-primary text-2xl"></i>
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">面试评分系统</h3>
+                            <p class="text-gray-600 text-sm">智能化面试评价与管理</p>
+                        </a>
+                        
+                        <a href="custom-solutions.html#online-test" class="bg-light rounded-xl shadow-md p-6 text-center transition hover:shadow-lg hover:bg-white">
+                            <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fa fa-laptop text-primary text-2xl"></i>
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">线上笔试系统</h3>
+                            <p class="text-gray-600 text-sm">安全高效的在线考试平台</p>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- 人事考试命题服务简介 -->
+                <div class="bg-light rounded-xl shadow-md overflow-hidden mb-12">
+                    <div class="p-8">
+                        <div class="border-l-4 border-primary pl-4 mb-6">
+                            <h3 class="text-2xl font-bold text-gray-800">人事考试命题服务</h3>
+                            <p class="text-gray-600 mt-2">根据企业需求定制专业的考试题库与命题方案</p>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <div>
+                                <h4 class="text-xl font-semibold text-gray-800 mb-4">核心优势</h4>
+                                <ul class="space-y-4">
+                                    <li class="flex items-start">
+                                        <div class="flex-shrink-0 w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center mr-3 mt-1">
+                                            <i class="fa fa-check text-primary text-xs"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-800">岗位能力模型构建</p>
+                                            <p class="text-gray-600 text-sm mt-1">基于企业岗位需求，构建科学的能力素质模型，确保测评内容与岗位要求高度匹配。</p>
+                                        </div>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <div class="flex-shrink-0 w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center mr-3 mt-1">
+                                            <i class="fa fa-check text-primary text-xs"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-800">专业题库开发</p>
+                                            <p class="text-gray-600 text-sm mt-1">涵盖专业知识、通用能力、职业性格等多维度的高质量试题库开发。</p>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-semibold text-gray-800 mb-4">服务流程</h4>
+                                <ol class="relative border-l border-gray-300 ml-3">
+                                    <li class="mb-6 ml-6">
+                                        <span class="absolute flex items-center justify-center w-8 h-8 bg-primary text-white rounded-full -left-4 ring-4 ring-light">
+                                            1
+                                        </span>
+                                        <h5 class="font-medium text-gray-800">需求分析</h5>
+                                        <p class="text-sm text-gray-600">深入了解企业招聘需求和岗位要求</p>
+                                    </li>
+                                    <li class="mb-6 ml-6">
+                                        <span class="absolute flex items-center justify-center w-8 h-8 bg-primary text-white rounded-full -left-4 ring-4 ring-light">
+                                            2
+                                        </span>
+                                        <h5 class="font-medium text-gray-800">方案设计</h5>
+                                        <p class="text-sm text-gray-600">制定专业的命题方案和测评体系</p>
+                                    </li>
+                                </ol>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-8 text-right">
+                            <a href="custom-solutions.html#proposition" class="bg-primary hover:bg-indigo-700 text-white font-medium py-2 px-6 rounded-lg transition">
+                                了解详情
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 线上笔试系统简介 -->
+                <div class="bg-light rounded-xl shadow-md overflow-hidden">
+                    <div class="p-8">
+                        <div class="border-l-4 border-primary pl-4 mb-6">
+                            <h3 class="text-2xl font-bold text-gray-800">线上笔试系统</h3>
+                            <p class="text-gray-600 mt-2">安全高效的在线考试平台，支持多种题型和防作弊功能</p>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <div>
+                                <h4 class="text-xl font-semibold text-gray-800 mb-4">核心功能</h4>
+                                <ul class="space-y-4">
+                                    <li class="flex items-start">
+                                        <div class="flex-shrink-0 w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center mr-3 mt-1">
+                                            <i class="fa fa-check text-primary text-xs"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-800">多种题型支持</p>
+                                            <p class="text-gray-600 text-sm mt-1">支持选择题、填空题、简答题、编程题等多种题型，满足不同考试需求。</p>
+                                        </div>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <div class="flex-shrink-0 w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center mr-3 mt-1">
+                                            <i class="fa fa-check text-primary text-xs"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-800">智能防作弊</p>
+                                            <p class="text-gray-600 text-sm mt-1">通过人脸识别、切屏监控、随机出题等技术，有效防止作弊行为。</p>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-semibold text-gray-800 mb-4">技术优势</h4>
+                                <ul class="space-y-4">
+                                    <li class="flex items-start">
+                                        <div class="flex-shrink-0 w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center mr-3 mt-1">
+                                            <i class="fa fa-check text-primary text-xs"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-800">高性能架构</p>
+                                            <p class="text-gray-600 text-sm mt-1">分布式架构设计，支持万人同时在线考试，稳定可靠。</p>
+                                        </div>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <div class="flex-shrink-0 w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center mr-3 mt-1">
+                                            <i class="fa fa-check text-primary text-xs"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-800">智能评分</p>
+                                            <p class="text-gray-600 text-sm mt-1">客观题自动评分，主观题辅助评分，提高评分效率和准确性。</p>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-8 text-right">
+                            <a href="custom-solutions.html#online-test" class="bg-primary hover:bg-indigo-700 text-white font-medium py-2 px-6 rounded-lg transition">
+                                了解详情
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-12">
+                    <a href="custom-solutions.html" class="inline-block bg-primary hover:bg-indigo-700 text-white font-medium py-3 px-6 rounded-lg transition">
+                        查看全部定制服务方案
+                    </a>
+                </div>
+            </div>
+        </section>
+
+
+
+        <!-- 客户案例 -->
+        <section class="py-16 bg-white">
+            <div class="container mx-auto px-4">
+                <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">客户案例</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- 案例1 -->
+                    <div class="bg-light p-6 rounded-lg shadow-md">
+                        <div class="flex items-center mb-4">
+                            <img src="https://ui-avatars.com/api/?name=科技公司&background=4F46E5&color=fff" 
+                                 alt="企业Logo" class="h-12 w-12 rounded-full mr-4">
+                            <div>
+                                <h4 class="font-semibold text-gray-800">科技创新有限公司</h4>
+                                <p class="text-gray-500 text-sm">互联网行业</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 mb-4">
+                            "使用圣举人才网的AI人才匹配系统后，我们的招聘效率提升了40%，候选人质量显著提高，招聘成本降低了25%。"
+                        </p>
+                        <div class="flex items-center text-gray-500 text-sm">
+                            <span class="mr-4">招聘效率提升 40%</span>
+                            <span>招聘成本降低 25%</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 案例2 -->
+                    <div class="bg-light p-6 rounded-lg shadow-md">
+                        <div class="flex items-center mb-4">
+                            <img src="https://ui-avatars.com/api/?name=金融集团&background=4F46E5&color=fff" 
+                                 alt="企业Logo" class="h-12 w-12 rounded-full mr-4">
+                            <div>
+                                <h4 class="font-semibold text-gray-800">金融投资集团</h4>
+                                <p class="text-gray-500 text-sm">金融行业</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 mb-4">
+                            "圣举人才网的风控岗压力测试和合规岗知识测评非常专业，帮助我们筛选出了真正符合要求的风控人才。"
+                        </p>
+                        <div class="flex items-center text-gray-500 text-sm">
+                            <span class="mr-4">候选人合格率 90%</span>
+                            <span>试用期通过率 85%</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 案例3 -->
+                    <div class="bg-light p-6 rounded-lg shadow-md">
+                        <div class="flex items-center mb-4">
+                            <img src="https://ui-avatars.com/api/?name=制造企业&background=4F46E5&color=fff" 
+                                 alt="企业Logo" class="h-12 w-12 rounded-full mr-4">
+                            <div>
+                                <h4 class="font-semibold text-gray-800">智能制造企业</h4>
+                                <p class="text-gray-500 text-sm">制造业</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 mb-4">
+                            "行业解决方案非常贴合我们的需求，人才池管理功能帮助我们建立了自己的人才储备，大大缩短了招聘周期。"
+                        </p>
+                        <div class="flex items-center text-gray-500 text-sm">
+                            <span class="mr-4">招聘周期缩短 35%</span>
+                            <span>人才储备增加 50%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 企业付费模块：价格方案（是否显示由管理端「企业会员管理」-「显示在政企端」控制） -->
+        <section id="enterprise-paid-section" class="py-16 bg-gray-50">
+            <div class="container mx-auto px-4">
+                <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">价格方案</h2>
+                
+                <div id="price-plans-container" class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                    <!-- 价格方案将通过JavaScript动态加载 -->
+                </div>
+                
+                <div class="text-center mt-12">
+                    <p class="text-gray-600 mb-4">需要更多定制化解决方案？</p>
+                    <a href="#" class="inline-block bg-white border border-primary text-primary hover:bg-indigo-50 font-medium py-3 px-6 rounded-lg transition">
+                        联系我们获取定制方案
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 常见问题 -->
+        <section class="py-16 bg-white">
+            <div class="container mx-auto px-4">
+                <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">常见问题</h2>
+                
+                <div class="max-w-3xl mx-auto space-y-4">
+                    <!-- 问题1 -->
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
+                        <button class="w-full flex items-center justify-between p-4 text-left focus:outline-none" onclick="toggleFAQ(this)">
+                            <span class="font-medium text-gray-800">如何创建定制化测评？</span>
+                            <i class="fa fa-angle-down text-gray-500 transition-transform"></i>
+                        </button>
+                        <div class="hidden p-4 border-t border-gray-200">
+                            <p class="text-gray-600">
+                                您可以在"测评管理"页面，选择"创建测评"，然后使用我们的拖拽式问卷编辑器，从题库中选择适合的题目，或者自定义题目。我们还提供了多个行业的模板库，您可以直接使用或在此基础上进行修改。
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- 问题2 -->
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
+                        <button class="w-full flex items-center justify-between p-4 text-left focus:outline-none" onclick="toggleFAQ(this)">
+                            <span class="font-medium text-gray-800">如何邀请候选人参加测评？</span>
+                            <i class="fa fa-angle-down text-gray-500 transition-transform"></i>
+                        </button>
+                        <div class="hidden p-4 border-t border-gray-200">
+                            <p class="text-gray-600">
+                                创建测评后，您可以在"测评管理"页面找到对应的测评，点击"邀请候选人"，然后输入候选人的邮箱地址，系统会自动发送测评邀请邮件。您也可以生成测评链接，手动发送给候选人。
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- 问题3 -->
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
+                        <button class="w-full flex items-center justify-between p-4 text-left focus:outline-none" onclick="toggleFAQ(this)">
+                            <span class="font-medium text-gray-800">AI人才池是如何工作的？</span>
+                            <i class="fa fa-angle-down text-gray-500 transition-transform"></i>
+                        </button>
+                        <div class="hidden p-4 border-t border-gray-200">
+                            <p class="text-gray-600">
+                                AI人才池会根据候选人的测评结果、简历信息和岗位需求，自动对候选人进行分层（金/银/潜力池），并为您推荐最匹配的候选人。您可以设置自定义人才标签，进一步筛选和管理候选人。
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- 问题4 -->
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
+                        <button class="w-full flex items-center justify-between p-4 text-left focus:outline-none" onclick="toggleFAQ(this)">
+                            <span class="font-medium text-gray-800">如何保障测评结果的真实性？</span>
+                            <i class="fa fa-angle-down text-gray-500 transition-transform"></i>
+                        </button>
+                        <div class="hidden p-4 border-t border-gray-200">
+                            <p class="text-gray-600">
+                                我们采用多种防作弊手段，包括随机题序、时间限制、切屏检测、摄像头监控（可选）等，确保测评结果真实可靠。同时，我们的AI算法也会分析答题行为数据，识别潜在的作弊行为。
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- 问题5 -->
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
+                        <button class="w-full flex items-center justify-between p-4 text-left focus:outline-none" onclick="toggleFAQ(this)">
+                            <span class="font-medium text-gray-800">如何取消订阅？</span>
+                            <i class="fa fa-angle-down text-gray-500 transition-transform"></i>
+                        </button>
+                        <div class="hidden p-4 border-t border-gray-200">
+                            <p class="text-gray-600">
+                                您可以在"账户设置-订阅管理"中取消订阅。取消后，服务将持续到当前订阅周期结束，不会自动续费。如果您有任何问题，可以联系我们的客服团队获取帮助。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚：对齐政企端整体风格和模块结构 -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-6">
+                        <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
+                            <span class="text-primary font-bold text-xl">圣</span>
+                        </div>
+                        <span class="font-bold text-xl" id="footer-site-name">圣举人才网</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-4">
+                        专业的人才测评与招聘解决方案提供商，助力企业实现人才精准选拔。
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fa fa-weixin text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fa fa-weibo text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fa fa-linkedin text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-lg mb-4">企业服务</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="tests.html" class="hover:text-white transition-colors">测评管理</a></li>
+                        <li><a href="talent.html" class="hover:text-white transition-colors">人才池</a></li>
+                        <li><a href="company-center.html" class="hover:text-white transition-colors">企业中心</a></li>
+                        <li><a href="custom-solutions.html" class="hover:text-white transition-colors">定制服务方案</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-lg mb-4">关于我们</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">公司介绍</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">成功案例</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">合作伙伴</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">新闻动态</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-lg mb-4">联系我们</h4>
+                    <ul class="space-y-3 text-gray-400">
+                        <li class="flex items-start">
+                            <i class="fa fa-map-marker mt-1 mr-3"></i>
+                            <span id="footer-contact-address">北京市海淀区中关村科技园区8号楼</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fa fa-phone mr-3"></i>
+                            <span id="footer-contact-phone">400-123-4567</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fa fa-envelope mr-3"></i>
+                            <span id="footer-contact-email">contact@shengju.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-10 pt-6 text-center text-gray-500 text-sm">
+                <p id="footer-copyright">© 2025 圣举人才网 版权所有</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- 支付界面模态框 -->
+    <div id="payment-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white z-10">
+                <h3 class="text-lg font-semibold text-gray-900">会员套餐购买</h3>
+                <button onclick="closePaymentModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fa fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="px-6 py-6">
+                <!-- 套餐信息 -->
+                <div id="payment-plan-info" class="mb-6 p-4 bg-gray-50 rounded-lg">
+                    <!-- 套餐详情将通过JavaScript填充 -->
+                </div>
+                
+                <!-- 支付方式选择 -->
+                <div class="mb-6">
+                    <h4 class="text-md font-medium text-gray-900 mb-4">选择支付方式</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <button class="payment-method-btn active px-4 py-3 border-2 border-primary bg-primary/5 rounded-lg text-center" data-method="wechat">
+                            <i class="fa fa-weixin text-3xl text-green-500 mb-2"></i>
+                            <p class="font-medium">微信支付</p>
+                        </button>
+                        <button class="payment-method-btn px-4 py-3 border-2 border-gray-200 rounded-lg text-center hover:border-primary hover:bg-primary/5 transition" data-method="alipay">
+                            <i class="fa fa-credit-card text-3xl text-blue-500 mb-2"></i>
+                            <p class="font-medium">支付宝</p>
+                        </button>
+                        <button class="payment-method-btn px-4 py-3 border-2 border-gray-200 rounded-lg text-center hover:border-primary hover:bg-primary/5 transition" data-method="bank">
+                            <i class="fa fa-university text-3xl text-gray-500 mb-2"></i>
+                            <p class="font-medium">银行转账</p>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 支付内容区域 -->
+                <div id="payment-content">
+                    <!-- 支付方式内容将通过JavaScript动态切换 -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 检查企业登录状态（使用分端存储，与求职者端互不影响）
+        function checkEnterpriseAuth() {
+            var ent = (typeof AuthHelper !== 'undefined') ? AuthHelper.get('enterprise') : null;
+            if (!ent) ent = (localStorage.getItem('userType') === 'enterprise') ? { token: localStorage.getItem('authToken') } : null;
+            if (!ent || !ent.token) {
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 100);
+                return false;
+            }
+            return true;
+        }
+
+        // 退出登录弹窗（与 custom-solutions 一致）
+        function showLogoutModal() { document.getElementById('logout-modal').classList.remove('hidden'); }
+        function closeLogoutModal() { document.getElementById('logout-modal').classList.add('hidden'); }
+        function confirmLogout() {
+            if (typeof AuthHelper !== 'undefined') AuthHelper.clear('enterprise');
+            else { localStorage.removeItem('authToken'); sessionStorage.removeItem('authToken'); localStorage.removeItem('userId'); localStorage.removeItem('userType'); localStorage.removeItem('username'); localStorage.removeItem('enterpriseId'); sessionStorage.removeItem('enterpriseId'); sessionStorage.removeItem('currentCompanyId'); }
+            closeLogoutModal();
+            window.location.href = 'login.html';
+        }
+        
+        // 页面加载时检查登录状态（延迟执行，不阻塞渲染）
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', checkEnterpriseAuth);
+        } else {
+            // 页面已加载，延迟检查
+            setTimeout(checkEnterpriseAuth, 50);
+        }
+        
+        // 获取支付设置数据（使用localStorage模拟API）
+        function getPaymentSettings() {
+            let paymentData = JSON.parse(localStorage.getItem('paymentSettings') || 'null');
+            if (!paymentData) {
+                const systemSettings = JSON.parse(localStorage.getItem('systemSettings') || '{}');
+                if (systemSettings.payment) {
+                    paymentData = systemSettings.payment;
+                }
+            }
+            
+            return {
+                qrCodes: {
+                    wechat: paymentData?.wechat?.qrcode || paymentData?.qrCodes?.wechat || '',
+                    alipay: paymentData?.alipay?.qrcode || paymentData?.qrCodes?.alipay || ''
+                },
+                bankAccount: {
+                    bankName: paymentData?.bankAccount?.bankName || '',
+                    accountNumber: paymentData?.bankAccount?.accountNumber || '',
+                    accountName: paymentData?.bankAccount?.accountName || ''
+                },
+                paymentMethods: {
+                    wechat: paymentData?.wechat?.enabled !== false && paymentData?.paymentMethods?.wechat !== false,
+                    alipay: paymentData?.alipay?.enabled !== false && paymentData?.paymentMethods?.alipay !== false,
+                    bankTransfer: paymentData?.bank?.enabled !== false && paymentData?.paymentMethods?.bankTransfer !== false
+                }
+            };
+        }
+        
+        // 加载价格方案数据
+        function loadPricePlans() {
+            const container = document.getElementById('price-plans-container');
+            if (!container) return;
+            
+            // 从localStorage获取套餐数据
+            const plansData = localStorage.getItem('enterprisePricePlans');
+            let plans = [];
+            
+            if (plansData) {
+                plans = JSON.parse(plansData);
+            } else {
+                // 如果没有数据，尝试从会员管理数据中获取
+                const membershipPlans = localStorage.getItem('enterpriseMembershipPlans');
+                if (membershipPlans) {
+                    plans = JSON.parse(membershipPlans);
+                }
+            }
+            
+            // 过滤掉未启用的套餐
+            plans = plans.filter(p => p.enabled !== false);
+            
+            if (plans.length === 0) {
+                container.innerHTML = '<div class="col-span-full text-center py-12 text-gray-500"><p>暂无可用套餐</p></div>';
+                return;
+            }
+            
+            container.innerHTML = plans.map((plan, index) => {
+                const periodText = plan.period === 'year' ? '年' : plan.period === 'month' ? '月' : '季度';
+                const isPopular = index === 1; // 第二个套餐标记为最受欢迎
+                
+                return `
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200 ${isPopular ? 'transform scale-105 z-10' : ''}">
+                        ${isPopular ? '<div class="bg-primary text-white p-3 text-center text-sm font-medium">最受欢迎</div>' : ''}
+                        <div class="p-6 border-b border-gray-200">
+                            <h3 class="text-xl font-bold text-center text-primary">${plan.name}</h3>
+                            <div class="text-center mt-4">
+                                <span class="text-4xl font-bold">¥${plan.price.toLocaleString()}</span>
+                                <span class="text-gray-500">/${periodText}</span>
+                            </div>
+                            <p class="text-center text-gray-500 text-sm mt-2">限${plan.accountLimit}人账号</p>
+                        </div>
+                        <div class="p-6">
+                            <ul class="space-y-3">
+                                ${plan.features.map(feature => `
+                                    <li class="flex items-start">
+                                        <i class="fa fa-check text-green-500 mt-1 mr-2"></i>
+                                        <span>${feature}</span>
+                                    </li>
+                                `).join('')}
+                            </ul>
+                            <button onclick="openPaymentModal(${plan.id})" class="mt-6 w-full bg-primary hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg transition">
+                                立即购买
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // 打开支付模态框（若企业为免付费则提示无需支付）
+        window.openPaymentModal = async function(planId) {
+            const API_BASE = window.API_BASE_URL || 'http://127.0.0.1:3001/api/v1';
+            const token = (typeof AuthHelper !== 'undefined' && AuthHelper.get && AuthHelper.get('enterprise')) ? AuthHelper.get('enterprise').token : (localStorage.getItem('authToken') || sessionStorage.getItem('authToken'));
+            if (token) {
+                try {
+                    const res = await fetch(API_BASE + '/companies/me', { headers: { 'Authorization': 'Bearer ' + token } });
+                    const json = await res.json();
+                    if (json && json.success && json.data && json.data.freeMembership === true) {
+                        alert('您的企业已设为免付费，无需支付即可使用会员权益。');
+                        return;
+                    }
+                } catch (e) {}
+            }
+            const plansData = localStorage.getItem('enterprisePricePlans');
+            const membershipPlans = localStorage.getItem('enterpriseMembershipPlans');
+            let plans = [];
+            if (plansData) plans = JSON.parse(plansData);
+            else if (membershipPlans) plans = JSON.parse(membershipPlans);
+            const plan = plans.find(p => p.id === planId);
+            if (!plan) { alert('套餐信息不存在'); return; }
+            const modal = document.getElementById('payment-modal');
+            const planInfo = document.getElementById('payment-plan-info');
+            const periodText = plan.period === 'year' ? '年' : plan.period === 'month' ? '月' : '季度';
+            planInfo.innerHTML = `
+                <h4 class="text-lg font-semibold text-gray-900 mb-2">${plan.name}</h4>
+                <p class="text-gray-600 mb-1">价格：<span class="font-bold text-primary text-xl">¥${plan.price.toLocaleString()}</span>/${periodText}</p>
+                <p class="text-sm text-gray-500">账号限制：${plan.accountLimit}人</p>
+            `;
+            modal.setAttribute('data-plan-id', planId);
+            switchPaymentMethod('wechat');
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        };
+        
+        // 关闭支付模态框
+        window.closePaymentModal = function() {
+            const modal = document.getElementById('payment-modal');
+            modal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        };
+        
+        // 切换支付方式
+        function switchPaymentMethod(method) {
+            // 更新按钮样式
+            document.querySelectorAll('.payment-method-btn').forEach(btn => {
+                if (btn.getAttribute('data-method') === method) {
+                    btn.classList.add('active', 'border-primary', 'bg-primary/5');
+                    btn.classList.remove('border-gray-200');
+                } else {
+                    btn.classList.remove('active', 'border-primary', 'bg-primary/5');
+                    btn.classList.add('border-gray-200');
+                }
+            });
+            
+            // 更新支付内容
+            const paymentContent = document.getElementById('payment-content');
+            const paymentSettings = getPaymentSettings();
+            
+            if (method === 'wechat') {
+                const qrcode = paymentSettings.qrCodes.wechat;
+                paymentContent.innerHTML = `
+                    <div class="text-center">
+                        ${qrcode ? `
+                            <p class="text-sm text-gray-600 mb-4">请使用微信扫描下方二维码完成支付</p>
+                            <div class="flex justify-center mb-4">
+                                <img src="${qrcode}" alt="微信支付二维码" class="w-64 h-64 border border-gray-200 rounded-lg">
+                            </div>
+                        ` : `
+                            <div class="p-8 bg-gray-50 rounded-lg mb-4">
+                                <i class="fa fa-weixin text-6xl text-gray-300 mb-4"></i>
+                                <p class="text-gray-500">微信支付二维码未配置</p>
+                                <p class="text-sm text-gray-400 mt-2">请联系管理员配置支付信息</p>
+                            </div>
+                        `}
+                        <p class="text-xs text-gray-500">支付完成后，系统将自动开通服务</p>
+                    </div>
+                `;
+            } else if (method === 'alipay') {
+                const qrcode = paymentSettings.qrCodes.alipay;
+                paymentContent.innerHTML = `
+                    <div class="text-center">
+                        ${qrcode ? `
+                            <p class="text-sm text-gray-600 mb-4">请使用支付宝扫描下方二维码完成支付</p>
+                            <div class="flex justify-center mb-4">
+                                <img src="${qrcode}" alt="支付宝二维码" class="w-64 h-64 border border-gray-200 rounded-lg">
+                            </div>
+                        ` : `
+                            <div class="p-8 bg-gray-50 rounded-lg mb-4">
+                                <i class="fa fa-credit-card text-6xl text-gray-300 mb-4"></i>
+                                <p class="text-gray-500">支付宝二维码未配置</p>
+                                <p class="text-sm text-gray-400 mt-2">请联系管理员配置支付信息</p>
+                            </div>
+                        `}
+                        <p class="text-xs text-gray-500">支付完成后，系统将自动开通服务</p>
+                    </div>
+                `;
+            } else if (method === 'bank') {
+                const bankAccount = paymentSettings.bankAccount;
+                paymentContent.innerHTML = `
+                    <div class="bg-gray-50 rounded-lg p-6">
+                        <h5 class="font-medium text-gray-900 mb-4">银行对公账户信息</h5>
+                        ${bankAccount.accountName || bankAccount.accountNumber || bankAccount.bankName ? `
+                            <div class="space-y-3 text-left">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">开户名称：</span>
+                                    <span class="font-medium">${bankAccount.accountName || '未配置'}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">账号：</span>
+                                    <span class="font-medium">${bankAccount.accountNumber || '未配置'}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">开户银行：</span>
+                                    <span class="font-medium">${bankAccount.bankName || '未配置'}</span>
+                                </div>
+                            </div>
+                            <div class="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                                <p class="text-sm text-yellow-800 mb-2"><i class="fa fa-info-circle mr-2"></i>转账须知：</p>
+                                <ul class="text-xs text-yellow-700 space-y-1 list-disc list-inside">
+                                    <li>转账时请备注企业名称和套餐名称</li>
+                                    <li>转账完成后，请联系客服进行开通</li>
+                                    <li>客服电话：400-123-4567</li>
+                                </ul>
+                            </div>
+                        ` : `
+                            <div class="text-center py-8">
+                                <i class="fa fa-university text-6xl text-gray-300 mb-4"></i>
+                                <p class="text-gray-500">银行账户信息未配置</p>
+                                <p class="text-sm text-gray-400 mt-2">请联系管理员配置银行账户信息</p>
+                            </div>
+                        `}
+                    </div>
+                `;
+            }
+        }
+        
+        // 是否在政企端显示付费模块（由管理端 企业会员管理 - 显示在政企端 控制）
+        function getEnterpriseShowPaidModule() {
+            const v = localStorage.getItem('enterpriseShowPaidModule');
+            if (v === null) return true;
+            return v !== 'false' && v !== '0';
+        }
+        function applyEnterprisePaidSectionVisibility() {
+            var paidSection = document.getElementById('enterprise-paid-section');
+            var showPaid = getEnterpriseShowPaidModule();
+            if (paidSection) paidSection.style.display = showPaid ? '' : 'none';
+            if (showPaid) loadPricePlans();
+        }
+        
+        // 绑定支付方式按钮点击事件
+        document.addEventListener('DOMContentLoaded', function() {
+            applyEnterprisePaidSectionVisibility();
+            
+            // 绑定支付方式切换
+            document.querySelectorAll('.payment-method-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const method = this.getAttribute('data-method');
+                    switchPaymentMethod(method);
+                });
+            });
+        });
+        
+        // 重新绑定支付方式按钮（因为模态框是动态创建的）
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.payment-method-btn')) {
+                const btn = e.target.closest('.payment-method-btn');
+                const method = btn.getAttribute('data-method');
+                switchPaymentMethod(method);
+            }
+        });
+        
+        // FAQ展开/收起功能
+        window.toggleFAQ = function(button) {
+            const faqItem = button.closest('.bg-white.rounded-lg');
+            const content = faqItem.querySelector('div.hidden, div[class*="border-t"]');
+            const icon = button.querySelector('i.fa-angle-down');
+            
+            if (!content) return;
+            
+            // 切换显示/隐藏
+            const isHidden = content.classList.contains('hidden');
+            
+            if (isHidden) {
+                content.classList.remove('hidden');
+                if (icon) {
+                    icon.classList.add('transform', 'rotate-180');
+                }
+            } else {
+                content.classList.add('hidden');
+                if (icon) {
+                    icon.classList.remove('transform', 'rotate-180');
+                }
+            }
+        };
+    </script>
+</body>
+</html>

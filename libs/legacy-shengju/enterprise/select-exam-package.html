@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>正在进入考试系统…</title>
+    <style>
+        body { font-family: system-ui, sans-serif; margin: 0; padding: 40px; text-align: center; color: #555; background: #f5f5f5; }
+    </style>
+</head>
+<body>
+    <p>正在进入考试系统，请稍候…</p>
+    <script>
+        (function () {
+            var params = new URLSearchParams(window.location.search);
+            var enterpriseId =
+                params.get('enterprise_id') ||
+                sessionStorage.getItem('sjExamEnterpriseId') ||
+                localStorage.getItem('sjExamEnterpriseId') ||
+                sessionStorage.getItem('enterpriseId') ||
+                localStorage.getItem('enterpriseId') ||
+                '';
+            var talentApiBase = (params.get('talent_api_base') || params.get('api_base') || window.location.origin).replace(/\/+$/, '');
+            var examSystemBase = (params.get('exam_system_base') || localStorage.getItem('examEnterpriseBaseUrl') || '').replace(/\/+$/, '');
+            if (!examSystemBase) {
+                try {
+                    if (window.location && window.location.origin && /^https?:\/\//i.test(window.location.origin)) {
+                        examSystemBase = window.location.origin.replace(/\/+$/, '') + '/exam-admin';
+                    }
+                } catch (e) {}
+            }
+            if (!examSystemBase) examSystemBase = 'http://127.0.0.1:5174';
+            var batchId = params.get('batch_id') || '';
+            var batchName = params.get('batch_name') || '';
+            var packageId = params.get('package_id') || '';
+            var token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken') || '';
+
+            function goList() {
+                var qs = new URLSearchParams();
+                if (enterpriseId) qs.set('enterprise_id', enterpriseId);
+                if (batchId) qs.set('batch_id', batchId);
+                if (batchName) qs.set('batch_name', batchName);
+                qs.set('talent_api_base', talentApiBase);
+                if (token) qs.set('token', token);
+                window.location.replace(examSystemBase + '/exams?' + qs.toString());
+            }
+            function goCreate() {
+                var qs = new URLSearchParams();
+                if (enterpriseId) qs.set('enterprise_id', enterpriseId);
+                qs.set('talent_api_base', talentApiBase);
+                if (packageId) qs.set('package_id', packageId);
+                if (batchId) qs.set('batch_id', batchId);
+                if (batchName) qs.set('batch_name', batchName);
+                if (token) qs.set('token', token);
+                window.location.replace(examSystemBase + '/exams/create?' + qs.toString());
+            }
+            try {
+                if (enterpriseId && batchId) {
+                    var raw = localStorage.getItem('shengju_enterprise_batch_exam_map');
+                    if (raw) {
+                        var map = JSON.parse(raw);
+                        var key = String(enterpriseId) + '::' + String(batchId);
+                        if (map && map[key] && map[key].examId != null) {
+                            goList();
+                            return;
+                        }
+                    }
+                }
+            } catch (e) {}
+            goCreate();
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>扫码支付 - 圣举人才网</title>
+    <!-- Tailwind CSS -->
+    <script>(function(){var w=console.warn;console.warn=function(){var m=(arguments[0]!=null&&typeof arguments[0]==='string')?arguments[0]:'';if(m.indexOf('cdn.tailwindcss.com')!==-1||m.indexOf('Tracking Prevention')!==-1)return;return w.apply(console,arguments);};})();</script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#1E40AF',
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+        }
+    </style>
+</head>
+<body class="font-sans bg-white">
+    <!-- 简化版头部 -->
+    <header class="bg-primary text-white p-4 flex justify-between items-center">
+        <h1 class="text-xl font-bold">扫码支付</h1>
+        <button class="text-white hover:text-gray-200 transition" onclick="window.close()">
+            <i class="fa fa-times text-xl"></i>
+        </button>
+    </header>
+
+    <!-- 主内容区 - 简化为专注于支付 -->
+    <main class="p-6 max-w-md mx-auto">
+        <!-- 支付内容容器，根据URL参数动态显示 -->
+        <div id="payment-content" class="text-center mb-6">
+            <h2 id="service-title" class="text-xl font-bold text-gray-800 mb-2">服务名称</h2>
+            <p id="service-description" class="text-gray-600 mb-4">服务描述</p>
+            <div class="inline-block bg-gray-100 px-6 py-3 rounded-lg mb-6">
+                <span id="service-price" class="text-3xl font-bold text-primary">¥0.00</span>
+            </div>
+            
+            <!-- 支付方式选择 -->
+            <div class="mb-6">
+                <h3 class="text-base font-semibold text-gray-800 mb-3 text-left">支付方式</h3>
+                <div class="flex space-x-3">
+                    <label class="flex-1 flex items-center justify-center space-x-2 border border-primary rounded-lg p-3 cursor-pointer bg-blue-50">
+                        <input type="radio" name="payment-method" class="form-radio text-primary" checked>
+                        <span><i class="fa fa-weixin text-green-500 text-xl mr-2"></i>微信支付</span>
+                    </label>
+                    <label class="flex-1 flex items-center justify-center space-x-2 border border-gray-200 rounded-lg p-3 cursor-pointer hover:border-primary transition">
+                        <input type="radio" name="payment-method" class="form-radio text-primary">
+                        <span><i class="fa fa-credit-card text-blue-500 text-xl mr-2"></i>支付宝</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 二维码支付区域 -->
+        <div class="flex flex-col items-center justify-center">
+            <div class="bg-gray-100 p-6 rounded-lg mb-6 border border-gray-200">
+                <div class="w-56 h-56 bg-white flex items-center justify-center">
+                    <p class="text-gray-500 text-sm">二维码占位</p>
+                </div>
+                <div class="text-center mt-4">
+                    <p class="text-gray-700 font-medium">微信扫码支付</p>
+                </div>
+            </div>
+            
+            <div class="text-center">
+                <p class="text-gray-600 mb-4"><i class="fa fa-clock-o mr-1"></i>支付有效期：15分钟</p>
+                <button id="confirm-payment-btn" class="bg-primary text-white w-full py-3 rounded-lg hover:bg-blue-700 transition font-medium">
+                    确认支付完成
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- JavaScript -->
+    <script>
+        // 服务配置信息
+        const serviceConfig = {
+            'membership': {
+                title: '高级会员',
+                description: '享受无限次测评、专属客服、简历优化等特权',
+                price: '¥299/年'
+            },
+            'talent-pool': {
+                title: '精英人才池申请',
+                description: '加入精英人才池，获取更多优质项目机会',
+                price: '¥199/次'
+            },
+            'project-1': {
+                title: '前端开发项目申请',
+                description: '申请承接React前端开发项目',
+                price: '¥100/申请'
+            },
+            'project-2': {
+                title: '数据分析任务申请',
+                description: '申请承接市场数据统计分析任务',
+                price: '¥100/申请'
+            },
+            'project-platform': {
+                title: '项目平台访问',
+                description: '解锁全部项目承接平台功能',
+                price: '¥299/季度'
+            },
+            'industry': {
+                title: '行业测评包',
+                description: '包含多维度行业专属测评内容',
+                price: '¥129/套'
+            },
+            'internet-package': {
+                title: '互联网行业测评包',
+                description: '针对互联网行业的专属职业能力测评',
+                price: '¥129/套'
+            },
+            'finance-package': {
+                title: '金融行业测评包',
+                description: '针对金融行业的专属职业能力测评',
+                price: '¥129/套'
+            },
+            'education-package': {
+                title: '教育行业测评包',
+                description: '针对教育行业的专属职业能力测评',
+                price: '¥129/套'
+            },
+            'ai-report': {
+                title: 'AI职业报告',
+                description: '基于AI技术的个性化职业发展报告',
+                price: '¥99/份'
+            }
+        };
+        
+        // 根据URL参数显示相应的支付内容
+        window.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const serviceType = urlParams.get('service') || 'membership';
+            
+            // 获取配置信息，如果不存在则使用默认配置
+            const config = serviceConfig[serviceType] || serviceConfig['membership'];
+            
+            // 更新页面内容
+            document.getElementById('service-title').textContent = config.title;
+            document.getElementById('service-description').textContent = config.description;
+            document.getElementById('service-price').textContent = config.price;
+            
+            // 处理确认支付按钮点击（模拟支付成功，并记录到个人中心的「购买记录」）
+            document.getElementById('confirm-payment-btn').addEventListener('click', function() {
+                try {
+                    const raw = localStorage.getItem('purchases');
+                    const list = raw ? JSON.parse(raw) : [];
+                    const now = new Date();
+                    list.push({
+                        name: config.title,
+                        time: now.toLocaleString('zh-CN'),
+                        price: (config.price || '').replace(/^[^0-9.]*/, ''),
+                        status: '已完成',
+                        source: 'popup',
+                        action: null
+                    });
+                    localStorage.setItem('purchases', JSON.stringify(list));
+                } catch (e) {
+                    console.warn('记录购买记录失败', e);
+                }
+                alert('支付成功！页面将自动关闭。');
+                // 延迟关闭窗口，让用户看到提示
+                setTimeout(() => {
+                    window.close();
+                }, 1500);
+            });
+            
+            // 添加支付方式切换效果
+            document.querySelectorAll('input[name="payment-method"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    // 移除所有选中样式
+                    document.querySelectorAll('input[name="payment-method"]').forEach(r => {
+                        r.parentElement.classList.remove('border-primary', 'bg-blue-50');
+                        r.parentElement.classList.add('border-gray-200');
+                    });
+                    // 添加当前选中样式
+                    this.parentElement.classList.remove('border-gray-200');
+                    this.parentElement.classList.add('border-primary', 'bg-blue-50');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+

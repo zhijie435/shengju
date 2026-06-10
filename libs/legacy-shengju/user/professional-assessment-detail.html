@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>专业测评 - 圣举人才网</title>
+    <!-- Tailwind CSS -->
+    <script>(function(){var w=console.warn;console.warn=function(){var m=(arguments[0]!=null&&typeof arguments[0]==='string')?arguments[0]:'';if(m.indexOf('cdn.tailwindcss.com')!==-1||m.indexOf('Tracking Prevention')!==-1)return;return w.apply(console,arguments);};})();</script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <!-- 配置 Tailwind CSS -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#4080FF',
+                        success: '#00B42A',
+                        warning: '#FF7D00',
+                        danger: '#F53F3F',
+                        info: '#86909C',
+                        light: '#F2F3F5',
+                        dark: '#1D2129'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+            .anti-cheat-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(255, 0, 0, 0.3);
+                z-index: 100;
+                display: none;
+            }
+            .camera-preview-container {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                z-index: 90;
+            }
+            .camera-preview {
+                width: 120px;
+                height: 90px;
+                border: 2px solid #165DFF;
+                border-radius: 8px;
+                object-fit: cover;
+            }
+            .fullscreen-lock {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: white;
+                z-index: 999;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- 全屏锁定界面 -->
+    <div id="fullscreen-lock" class="fullscreen-lock">
+        <div class="text-center p-8">
+            <i class="fa fa-video-camera text-primary text-6xl mb-6"></i>
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">测评环境初始化</h2>
+            <p class="text-gray-600 mb-8 max-w-md">正在准备测评环境，将启用防作弊措施以确保测评公平公正。</p>
+            <div class="flex flex-col gap-4">
+                <button id="enable-camera-btn" class="bg-primary hover:bg-blue-700 text-white font-medium py-3 px-8 rounded-lg transition">
+                    启用摄像头
+                </button>
+                <button id="enter-fullscreen-btn" class="bg-secondary hover:bg-blue-600 text-white font-medium py-3 px-8 rounded-lg transition">
+                    进入全屏模式
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 防作弊警告覆盖层 -->
+    <div id="anti-cheat-overlay" class="anti-cheat-overlay">
+        <div class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-xl text-center">
+            <i class="fa fa-exclamation-triangle text-danger text-4xl mb-4"></i>
+            <h3 id="cheat-warning-title" class="text-xl font-bold text-danger mb-2">检测到异常行为</h3>
+            <p id="cheat-warning-message" class="text-gray-600 mb-4">您的行为可能影响测评公正性，请立即回到测评页面。</p>
+            <button id="continue-assessment-btn" class="bg-primary hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition">
+                继续测评
+            </button>
+        </div>
+    </div>
+
+    <!-- 主容器 -->
+    <div class="min-h-screen">
+        <!-- 顶部导航栏 -->
+        <header class="bg-white shadow-sm sticky top-0 z-80">
+            <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <a href="index.html" class="flex items-center">
+                        <i class="fa fa-user-circle text-primary text-2xl"></i>
+                        <span class="ml-2 text-xl font-bold text-primary">圣举人才网</span>
+                    </a>
+                </div>
+                
+                <!-- 测评计时器 -->
+                <div class="flex items-center space-x-6">
+                    <div class="flex items-center bg-warning/10 text-warning px-4 py-2 rounded-full">
+                        <i class="fa fa-clock-o mr-2"></i>
+                        <span id="timer" class="font-mono text-lg">59:59</span>
+                    </div>
+                    
+                    <!-- 进度指示器 -->
+                    <div class="hidden md:flex items-center space-x-1">
+                        <div class="h-1 w-16 bg-primary rounded-full"></div>
+                        <div class="h-1 w-16 bg-gray-200 rounded-full"></div>
+                        <div class="h-1 w-16 bg-gray-200 rounded-full"></div>
+                    </div>
+                    
+                    <!-- 提交按钮 -->
+                    <button id="submit-assessment-btn" class="bg-primary hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition">
+                        提交测评
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- 主内容区 -->
+        <main class="container mx-auto px-4 py-8">
+            <!-- 测评信息 -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-800">前端开发专业能力测评</h1>
+                        <div class="flex items-center mt-3 space-x-4 text-gray-600">
+                            <div class="flex items-center">
+                                <i class="fa fa-building-o mr-2"></i>
+                                <span>科技公司</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fa fa-tasks mr-2"></i>
+                                <span>30道题目</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fa fa-hourglass-half mr-2"></i>
+                                <span>60分钟</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 md:mt-0">
+                        <img src="https://ui-avatars.com/api/?name=科技公司&background=3B82F6&color=fff" 
+                             alt="企业Logo" class="w-16 h-16 rounded-lg">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 测评内容 -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <!-- 题目导航 -->
+                <div class="mb-8 pb-6 border-b border-gray-200">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-4">题目导航</h2>
+                    <div class="flex flex-wrap gap-3">
+                        <button class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-medium">1</button>
+                        <button class="w-10 h-10 rounded-full bg-gray-200 text-gray-700 flex items-center justify-center font-medium hover:bg-gray-300 transition">2</button>
+                        <button class="w-10 h-10 rounded-full bg-gray-200 text-gray-700 flex items-center justify-center font-medium hover:bg-gray-300 transition">3</button>
+                        <button class="w-10 h-10 rounded-full bg-gray-200 text-gray-700 flex items-center justify-center font-medium hover:bg-gray-300 transition">4</button>
+                        <button class="w-10 h-10 rounded-full bg-gray-200 text-gray-700 flex items-center justify-center font-medium hover:bg-gray-300 transition">5</button>
+                        <div class="w-10 h-10 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center font-medium">...</div>
+                        <button class="w-10 h-10 rounded-full bg-gray-200 text-gray-700 flex items-center justify-center font-medium hover:bg-gray-300 transition">30</button>
+                    </div>
+                </div>
+
+                <!-- 当前题目 -->
+                <div class="mb-8">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">第1题：前端性能优化</h2>
+                    <p class="text-gray-700 mb-6">请描述至少5种前端性能优化的方法，并详细解释其中3种方法的具体实现及其原理。</p>
+                    
+                    <!-- 答题区域 -->
+                    <div class="mb-6">
+                        <textarea 
+                            class="w-full border border-gray-300 rounded-lg p-4 min-h-[200px] focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition" 
+                            placeholder="请在此输入您的答案..."
+                        ></textarea>
+                    </div>
+                </div>
+
+                <!-- 题目导航按钮 -->
+                <div class="flex justify-between items-center">
+                    <button class="flex items-center text-gray-600 hover:text-primary transition disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                        <i class="fa fa-arrow-left mr-2"></i>
+                        <span>上一题</span>
+                    </button>
+                    <button class="flex items-center bg-primary hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition">
+                        <span>下一题</span>
+                        <i class="fa fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 摄像头预览 -->
+    <div class="camera-preview-container">
+        <div class="flex flex-col gap-3">
+            <div class="relative">
+                <video id="front-camera-preview" class="camera-preview" autoplay muted playsinline></video>
+                <div class="absolute -top-2 -right-2 w-4 h-4 bg-success rounded-full border-2 border-white"></div>
+            </div>
+            <div class="relative">
+                <video id="back-camera-preview" class="camera-preview" autoplay muted playsinline></video>
+                <div class="absolute -top-2 -right-2 w-4 h-4 bg-success rounded-full border-2 border-white"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 断网检测提示 -->
+    <div id="offline-notification" class="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-danger text-white px-4 py-3 rounded-lg shadow-lg z-90 hidden">
+        <div class="flex items-center">
+            <i class="fa fa-exclamation-circle mr-2"></i>
+            <span>检测到网络已断开，这是正常的防作弊措施</span>
+        </div>
+    </div>
+
+    <!-- 确认提交模态框 -->
+    <div id="confirm-submit-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl p-8 max-w-md w-full mx-4">
+            <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">确认提交测评？</h3>
+            <p class="text-gray-600 text-center mb-6">提交后将无法修改答案，请确认您已完成所有题目。</p>
+            <div class="flex justify-center gap-4">
+                <button id="cancel-submit-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-6 rounded-lg transition">
+                    取消
+                </button>
+                <button id="confirm-submit-btn" class="bg-primary hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition">
+                    确认提交
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 页面元素
+            const fullscreenLock = document.getElementById('fullscreen-lock');
+            const enableCameraBtn = document.getElementById('enable-camera-btn');
+            const enterFullscreenBtn = document.getElementById('enter-fullscreen-btn');
+            const timerElement = document.getElementById('timer');
+            const antiCheatOverlay = document.getElementById('anti-cheat-overlay');
+            const cheatWarningTitle = document.getElementById('cheat-warning-title');
+            const cheatWarningMessage = document.getElementById('cheat-warning-message');
+            const continueAssessmentBtn = document.getElementById('continue-assessment-btn');
+            const offlineNotification = document.getElementById('offline-notification');
+            const submitAssessmentBtn = document.getElementById('submit-assessment-btn');
+            const confirmSubmitModal = document.getElementById('confirm-submit-modal');
+            const cancelSubmitBtn = document.getElementById('cancel-submit-btn');
+            const confirmSubmitBtn = document.getElementById('confirm-submit-btn');
+            
+            // 全局状态
+            let isFullscreen = false;
+            let timeLeft = 60 * 60; // 60分钟，单位秒
+            let timerInterval = null;
+            let isCameraEnabled = false;
+            let isOfflineMode = false;
+            
+            // 初始化防作弊系统
+            function initializeAntiCheatSystem() {
+                // 1. 启用摄像头监控
+                enableCameraMonitoring();
+                
+                // 2. 进入全屏模式
+                enterFullscreenMode();
+                
+                // 3. 模拟断网状态
+                simulateOfflineMode();
+                
+                // 4. 启动桌面切换检测
+                setupVisibilityChangeDetection();
+                
+                // 5. 启动计时器
+                startTimer();
+                
+                // 6. 隐藏全屏锁定界面
+                fullscreenLock.classList.add('hidden');
+            }
+            
+            // 启用摄像头监控
+            function enableCameraMonitoring() {
+                if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                    // 尝试访问前置摄像头
+                    navigator.mediaDevices.getUserMedia({ 
+                        video: { facingMode: 'user' } 
+                    })
+                    .then(stream => {
+                        const frontCameraPreview = document.getElementById('front-camera-preview');
+                        frontCameraPreview.srcObject = stream;
+                        
+                        // 尝试访问后置摄像头（如果有）
+                        navigator.mediaDevices.getUserMedia({ 
+                            video: { facingMode: { exact: 'environment' } } 
+                        })
+                        .then(backStream => {
+                            const backCameraPreview = document.getElementById('back-camera-preview');
+                            backCameraPreview.srcObject = backStream;
+                            isCameraEnabled = true;
+                        })
+                        .catch(error => {
+                            console.warn('无法访问后置摄像头:', error);
+                            // 只有前置摄像头也算是启用成功
+                            isCameraEnabled = true;
+                        });
+                    })
+                    .catch(error => {
+                        console.error('无法访问摄像头:', error);
+                        alert('无法启用摄像头，请确保已授予权限并尝试刷新页面。');
+                    });
+                } else {
+                    alert('您的浏览器不支持摄像头访问，请使用现代浏览器。');
+                }
+            }
+            
+            // 进入全屏模式
+            function enterFullscreenMode() {
+                const docEl = document.documentElement;
+                
+                if (docEl.requestFullscreen) {
+                    docEl.requestFullscreen();
+                } else if (docEl.mozRequestFullScreen) { /* Firefox */
+                    docEl.mozRequestFullScreen();
+                } else if (docEl.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+                    docEl.webkitRequestFullscreen();
+                } else if (docEl.msRequestFullscreen) { /* IE/Edge */
+                    docEl.msRequestFullscreen();
+                }
+                
+                isFullscreen = true;
+            }
+            
+            // 模拟断网模式
+            function simulateOfflineMode() {
+                // 实际项目中，这里会使用网络请求拦截或代理来模拟断网环境
+                // 这里我们只是显示一个通知
+                offlineNotification.classList.remove('hidden');
+                isOfflineMode = true;
+                
+                // 模拟网络状态检测
+                setInterval(() => {
+                    if (navigator.onLine && isOfflineMode) {
+                        // 检测到真实网络连接，但应该保持断网模式
+                        console.warn('检测到网络连接，但测评应保持在断网模式');
+                    }
+                }, 5000);
+            }
+            
+            // 设置可见性变化检测
+            function setupVisibilityChangeDetection() {
+                // 监听页面可见性变化
+                document.addEventListener('visibilitychange', function() {
+                    if (document.visibilityState === 'hidden') {
+                        // 页面不可见，可能是用户切换了标签页或应用
+                        triggerAntiCheatWarning('检测到页面切换', '请不要在测评期间切换到其他应用或标签页。');
+                    }
+                });
+                
+                // 监听全屏状态变化
+                document.addEventListener('fullscreenchange', function() {
+                    isFullscreen = !!document.fullscreenElement;
+                    if (!isFullscreen) {
+                        triggerAntiCheatWarning('检测到全屏退出', '请保持在全屏模式下完成测评。');
+                        // 尝试重新进入全屏
+                        setTimeout(enterFullscreenMode, 1000);
+                    }
+                });
+                
+                // 监听鼠标离开页面
+                document.addEventListener('mouseleave', function(e) {
+                    // 只有当鼠标完全离开浏览器窗口时才触发
+                    if (e.clientY < 0 || e.clientX < 0 || 
+                        e.clientX > window.innerWidth || e.clientY > window.innerHeight) {
+                        triggerAntiCheatWarning('检测到鼠标离开', '请专注于测评内容，不要将鼠标移出页面。');
+                    }
+                });
+                
+                // 监听键盘事件
+                document.addEventListener('keydown', function(e) {
+                    // 禁止常见的可能用于作弊的快捷键
+                    const forbiddenKeys = [
+                        // Alt+Tab, Ctrl+Tab 等切换窗口/标签页的快捷键
+                        {key: 'Tab', altKey: true},
+                        {key: 'Tab', ctrlKey: true},
+                        // Windows+D 显示桌面
+                        {key: 'd', metaKey: true},
+                        // F11 切换全屏
+                        {key: 'F11'},
+                        // Ctrl+Shift+I 打开开发者工具
+                        {key: 'I', ctrlKey: true, shiftKey: true},
+                        // Ctrl+U 查看源代码
+                        {key: 'u', ctrlKey: true}
+                    ];
+                    
+                    for (const forbiddenKey of forbiddenKeys) {
+                        if (e.key === forbiddenKey.key && 
+                            e.altKey === !!forbiddenKey.altKey &&
+                            e.ctrlKey === !!forbiddenKey.ctrlKey &&
+                            e.shiftKey === !!forbiddenKey.shiftKey &&
+                            e.metaKey === !!forbiddenKey.metaKey) {
+                            e.preventDefault();
+                            triggerAntiCheatWarning('检测到禁用快捷键', '您使用了被禁止的快捷键组合。');
+                            return;
+                        }
+                    }
+                });
+            }
+            
+            // 启动计时器
+            function startTimer() {
+                updateTimerDisplay();
+                timerInterval = setInterval(() => {
+                    timeLeft--;
+                    updateTimerDisplay();
+                    
+                    if (timeLeft <= 0) {
+                        clearInterval(timerInterval);
+                        // 时间到，自动提交测评
+                        autoSubmitAssessment();
+                    }
+                }, 1000);
+            }
+            
+            // 更新计时器显示
+            function updateTimerDisplay() {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                // 当剩余时间少于10分钟时，计时器变红
+                if (timeLeft < 10 * 60) {
+                    timerElement.classList.add('text-danger');
+                    timerElement.classList.remove('text-warning');
+                }
+            }
+            
+            // 触发防作弊警告
+            function triggerAntiCheatWarning(title, message) {
+                cheatWarningTitle.textContent = title;
+                cheatWarningMessage.textContent = message;
+                antiCheatOverlay.classList.remove('hidden');
+                
+                // 记录作弊行为
+                console.warn(`防作弊警告: ${title} - ${message}`);
+                
+                // 实际项目中，这里会向服务器报告作弊行为
+            }
+            
+            // 自动提交测评
+            function autoSubmitAssessment() {
+                alert('测评时间已结束，系统将自动提交您的答案。');
+                // 实际项目中，这里会收集答案并提交到服务器
+                // 然后跳转到结果页面
+            }
+            
+            // 手动提交测评
+            function submitAssessment() {
+                // 显示确认对话框
+                confirmSubmitModal.classList.remove('hidden');
+            }
+            
+            // 确认提交测评
+            function confirmSubmit() {
+                clearInterval(timerInterval);
+                // 实际项目中，这里会收集答案并提交到服务器
+                alert('测评已提交成功！');
+                // 跳转到结果页面
+                // window.location.href = 'assessment-result.html';
+            }
+            
+            // 事件监听器
+            enableCameraBtn.addEventListener('click', function() {
+                enableCameraMonitoring();
+                if (isCameraEnabled) {
+                    this.disabled = true;
+                    this.classList.add('bg-gray-400', 'cursor-not-allowed');
+                    this.classList.remove('hover:bg-blue-700');
+                    this.textContent = '摄像头已启用';
+                }
+            });
+            
+            enterFullscreenBtn.addEventListener('click', function() {
+                enterFullscreenMode();
+            });
+            
+            continueAssessmentBtn.addEventListener('click', function() {
+                antiCheatOverlay.classList.add('hidden');
+            });
+            
+            submitAssessmentBtn.addEventListener('click', submitAssessment);
+            
+            cancelSubmitBtn.addEventListener('click', function() {
+                confirmSubmitModal.classList.add('hidden');
+            });
+            
+            confirmSubmitBtn.addEventListener('click', function() {
+                confirmSubmitModal.classList.add('hidden');
+                confirmSubmit();
+            });
+            
+            // 点击全屏锁定界面中的按钮时，尝试初始化防作弊系统
+            document.querySelectorAll('#fullscreen-lock button').forEach(button => {
+                button.addEventListener('click', function() {
+                    // 检查摄像头和全屏状态，然后初始化系统
+                    if (isCameraEnabled && isFullscreen) {
+                        initializeAntiCheatSystem();
+                    } else {
+                        // 强制初始化
+                        initializeAntiCheatSystem();
+                    }
+                });
+            });
+            
+            // 防止页面刷新或关闭
+            window.addEventListener('beforeunload', function(e) {
+                // 取消事件
+                e.preventDefault();
+                // Chrome需要设置returnValue
+                e.returnValue = '';
+                // 显示自定义消息
+                return '您确定要离开测评页面吗？未提交的答案将丢失。';
+            });
+        });
+    </script>
+</body>
+</html>

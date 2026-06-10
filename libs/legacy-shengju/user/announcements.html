@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>招聘公告 - 圣举人才网</title>
+    <script>(function(){var w=console.warn;console.warn=function(){var m=(arguments[0]!=null&&typeof arguments[0]==='string')?arguments[0]:'';if(m.indexOf('cdn.tailwindcss.com')!==-1||m.indexOf('Tracking Prevention')!==-1)return;return w.apply(console,arguments);};})();</script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../js/api-config.js"></script>
+    <script src="../js/auth-helper.js"></script>
+    <script src="../js/announcement-branding.js"></script>
+    <script src="../js/user-navbar.js"></script>
+    <script src="../js/registration-form-schema.js"></script>
+    <script src="../js/job-apply-form.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4F46E5',
+                        secondary: '#64748B',
+                        success: '#10B981',
+                        warning: '#F59E0B',
+                        danger: '#EF4444',
+                        info: '#3B82F6',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'card': '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
+                    }
+                },
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .transition-custom {
+                transition: all 0.3s ease;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+    <!-- 导航栏 -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+            <!-- Logo（data-brand-hold：等 loadHeaderBrand 完成再显示，避免先闪默认名再换企业配置） -->
+            <div class="flex items-center space-x-2 transition-opacity duration-200" data-brand-hold>
+                <a href="../index.html" class="flex items-center space-x-2">
+                    <img data-site-brand-logo src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%231E40AF' rx='4'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-size='24' font-weight='bold' fill='white'%3E圣%3C/text%3E%3C/svg%3E" 
+                         alt="圣举人才网" class="h-10 w-10 rounded-full">
+                    <h1 class="text-2xl font-bold text-primary">圣举人才网</h1>
+                </a>
+                <span class="text-gray-400">|</span>
+                <span class="text-gray-600 font-medium">求职者中心</span>
+            </div>
+            
+            <!-- 导航链接（与首页完全一致） -->
+            <nav class="hidden md:flex items-center space-x-8">
+                <a href="index.html" class="text-primary font-medium border-b-2 border-primary">首页</a>
+                <a href="assessment.html" class="text-gray-700 hover:text-primary font-medium">测评中心</a>
+                <a href="recommendation.html" class="text-gray-700 hover:text-primary font-medium">岗位推荐</a>
+                <a href="announcements.html" class="text-gray-700 hover:text-primary font-medium">招聘公告</a>
+                <a href="talent-pool.html" class="text-gray-700 hover:text-primary font-medium">人才池</a>
+                <a href="payment.html" class="text-gray-700 hover:text-primary font-medium">付费服务</a>
+                <a href="profile.html" class="text-gray-700 hover:text-primary font-medium">个人端</a>
+            </nav>
+            
+            <!-- 用户菜单 -->
+            <div class="flex items-center space-x-4">
+                <div class="hidden md:flex items-center space-x-2" id="user-menu">
+                    <img id="user-avatar-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="" class="h-8 w-8 rounded-full">
+                    <span class="text-gray-700" id="user-name-display"></span>
+                </div>
+                <button type="button" onclick="showLogoutModal()" class="hidden md:flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition">
+                    <i class="fa fa-sign-out"></i> 退出
+                </button>
+                <button class="md:hidden text-gray-700 focus:outline-none" id="menu-toggle">
+                    <i class="fa fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- 移动端菜单（与首页完全一致） -->
+        <div class="md:hidden hidden bg-white border-t border-gray-200" id="mobile-menu">
+            <div class="container mx-auto px-4 py-2">
+                <a href="index.html" class="block py-2 text-primary font-medium border-l-4 border-primary pl-2">首页</a>
+                <a href="assessment.html" class="block py-2 text-gray-700 hover:text-primary pl-2">测评中心</a>
+                <a href="recommendation.html" class="block py-2 text-gray-700 hover:text-primary pl-2">岗位推荐</a>
+                <a href="announcements.html" class="block py-2 text-gray-700 hover:text-primary pl-2">招聘公告</a>
+                <a href="talent-pool.html" class="block py-2 text-gray-700 hover:text-primary pl-2">人才池</a>
+                <a href="payment.html" class="block py-2 text-gray-700 hover:text-primary pl-2">付费服务</a>
+                <a href="profile.html" class="block py-2 text-gray-700 hover:text-primary pl-2">个人端</a>
+                <div class="border-t border-gray-200 my-2"></div>
+                <button type="button" onclick="showLogoutModal()" class="block w-full text-left py-2 text-primary font-medium pl-2"><i class="fa fa-sign-out mr-2"></i>退出</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 退出确认弹窗 -->
+    <div id="logout-modal" class="fixed inset-0 z-50 hidden">
+        <div class="fixed inset-0 bg-black bg-opacity-50" onclick="closeLogoutModal()"></div>
+        <div class="fixed inset-0 flex items-center justify-center p-4">
+            <div class="bg-white rounded-xl shadow-xl max-w-sm w-full p-6">
+                <p class="text-center text-gray-800 mb-6">确定要退出登录吗？</p>
+                <div class="flex gap-3">
+                    <button type="button" onclick="closeLogoutModal()" class="flex-1 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">取消</button>
+                    <button type="button" onclick="confirmLogout()" class="flex-1 py-2 bg-primary text-white rounded-lg hover:bg-blue-700">确定退出</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+    function showLogoutModal() { document.getElementById('logout-modal').classList.remove('hidden'); }
+    function closeLogoutModal() { document.getElementById('logout-modal').classList.add('hidden'); }
+    function confirmLogout() {
+        if (typeof AuthHelper !== 'undefined') AuthHelper.clear('jobseeker');
+        else { localStorage.removeItem('authToken'); sessionStorage.removeItem('authToken'); localStorage.removeItem('userId'); localStorage.removeItem('userType'); localStorage.removeItem('username'); }
+        closeLogoutModal();
+        window.location.href = 'login.html';
+    }
+    </script>
+
+    <!-- 主内容区 -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- 页面标题 -->
+        <div class="mb-8 text-center">
+            <h2 class="text-3xl font-bold text-gray-900">招聘公告</h2>
+            <p class="text-gray-600 mt-2">最新、最全面的招聘信息，助您找到理想工作</p>
+        </div>
+
+        <!-- 招聘类型选项卡 -->
+        <div class="flex flex-wrap justify-center mb-8 border-b">
+            <button class="tab-btn px-6 py-3 font-medium text-primary border-b-2 border-primary" data-tab="all">全部公告</button>
+            <button class="tab-btn px-6 py-3 font-medium text-gray-600 hover:text-primary border-b-2 border-transparent" data-tab="government">事业单位</button>
+            <button class="tab-btn px-6 py-3 font-medium text-gray-600 hover:text-primary border-b-2 border-transparent" data-tab="education">教育类</button>
+            <button class="tab-btn px-6 py-3 font-medium text-gray-600 hover:text-primary border-b-2 border-transparent" data-tab="healthcare">卫生类</button>
+            <button class="tab-btn px-6 py-3 font-medium text-gray-600 hover:text-primary border-b-2 border-transparent" data-tab="soe">国企</button>
+            <button class="tab-btn px-6 py-3 font-medium text-gray-600 hover:text-primary border-b-2 border-transparent" data-tab="official">官方活动</button>
+            <button class="tab-btn px-6 py-3 font-medium text-gray-600 hover:text-primary border-b-2 border-transparent" data-tab="private">民营企业</button>
+        </div>
+
+        <!-- 搜索筛选区 -->
+        <div class="bg-white p-6 rounded-lg shadow-card mb-8">
+            <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+                <div class="relative flex-1">
+                    <input type="text" placeholder="搜索公告标题或关键词" class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
+                    <i class="fa fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                </div>
+                <select class="w-full md:w-auto px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
+                    <option>全部地区</option>
+                    <option>北京</option>
+                    <option>上海</option>
+                    <option>广州</option>
+                    <option>深圳</option>
+                    <option>其他</option>
+                </select>
+                <select class="w-full md:w-auto px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
+                    <option>全部行业</option>
+                    <option>互联网</option>
+                    <option>金融</option>
+                    <option>教育</option>
+                    <option>医疗</option>
+                    <option>其他</option>
+                </select>
+                <button class="w-full md:w-auto bg-primary hover:bg-indigo-600 text-white font-medium py-2 px-6 rounded-lg transition">
+                    <i class="fa fa-filter mr-2"></i>筛选
+                </button>
+            </div>
+        </div>
+
+        <!-- 公告列表容器 -->
+        <div id="announcements-container" class="space-y-6">
+            <!-- 公告数据将通过JavaScript动态加载 -->
+        </div>
+        
+        <!-- 分页 -->
+        <div id="announcements-pagination" class="flex justify-center mt-10">
+            <!-- 分页内容将通过JavaScript动态加载 -->
+        </div>
+        
+        <!-- 旧的静态内容（保留作为备用，将被JavaScript替换） -->
+        <div id="all" class="tab-content hidden">
+            <!-- 官方活动公告 -->
+            <div class="bg-white rounded-lg shadow-card mb-8 overflow-hidden">
+                <div class="p-6 border-b">
+                    <h3 class="text-xl font-semibold text-primary">
+                        <i class="fa fa-bullhorn mr-2"></i>2024年夏季大型招聘会即将开始
+                    </h3>
+                    <div class="flex flex-wrap items-center mt-2 text-gray-500 text-sm gap-4">
+                        <span><i class="fa fa-calendar mr-1"></i>2024-06-15</span>
+                        <span><i class="fa fa-eye mr-1"></i>1,245 浏览</span>
+                        <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold">官方活动</span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <p class="text-gray-700">本次招聘会将汇集多家知名企业，提供上千个优质岗位。活动将在北京国际会议中心举行，为期两天。求职者可免费参加，提前在线注册可获得专属简历投递通道。</p>
+                    <div class="mt-4 flex justify-between items-center">
+                        <div class="text-gray-500 text-sm">
+                            <i class="fa fa-map-marker mr-1"></i>北京国际会议中心 | <i class="fa fa-clock-o mr-1"></i>2024-07-15 至 2024-07-16
+                        </div>
+                        <button class="view-announcement-btn text-primary hover:text-indigo-700 font-medium">查看详情 <i class="fa fa-arrow-right ml-1"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 事业单位招聘 -->
+            <div class="bg-white rounded-lg shadow-card mb-8 overflow-hidden">
+                <div class="p-6 border-b">
+                    <h3 class="text-xl font-semibold text-primary">
+                        <i class="fa fa-building mr-2"></i>2024年国家机关事业单位公开招聘公告
+                    </h3>
+                    <div class="flex flex-wrap items-center mt-2 text-gray-500 text-sm gap-4">
+                        <span><i class="fa fa-calendar mr-1"></i>2024-06-10</span>
+                        <span><i class="fa fa-eye mr-1"></i>2,856 浏览</span>
+                        <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold">事业单位招聘</span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <p class="text-gray-700">国家机关事业单位面向社会公开招聘工作人员150名，涉及教育、医疗、科研等多个领域。报名时间为2024年6月20日至7月5日，考试分为笔试和面试两个阶段。</p>
+                    <div class="mt-4 flex justify-between items-center">
+                        <div class="text-gray-500 text-sm">
+                            <i class="fa fa-map-marker mr-1"></i>全国各地区 | <i class="fa fa-clock-o mr-1"></i>报名截止：2024-07-05
+                        </div>
+                        <button class="view-announcement-btn text-primary hover:text-indigo-700 font-medium">查看详情 <i class="fa fa-arrow-right ml-1"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 国企招聘 -->
+            <div class="bg-white rounded-lg shadow-card mb-8 overflow-hidden">
+                <div class="p-6 border-b">
+                    <h3 class="text-xl font-semibold text-primary">
+                        <i class="fa fa-industry mr-2"></i>中国航天科技集团2024校园招聘计划
+                    </h3>
+                    <div class="flex flex-wrap items-center mt-2 text-gray-500 text-sm gap-4">
+                        <span><i class="fa fa-calendar mr-1"></i>2024-06-05</span>
+                        <span><i class="fa fa-eye mr-1"></i>1,532 浏览</span>
+                        <span class="px-2 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-semibold">国企招聘</span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <p class="text-gray-700">中国航天科技集团2024校园招聘正式启动，计划招聘各类专业人才500名，涵盖航天工程、计算机科学、电子工程等多个专业领域。我们提供有竞争力的薪资待遇和完善的福利体系。</p>
+                    <div class="mt-4 flex justify-between items-center">
+                        <div class="text-gray-500 text-sm">
+                            <i class="fa fa-map-marker mr-1"></i>北京、上海、西安等 | <i class="fa fa-clock-o mr-1"></i>长期有效
+                        </div>
+                        <button class="view-announcement-btn text-primary hover:text-indigo-700 font-medium">查看详情 <i class="fa fa-arrow-right ml-1"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 旧的分类内容（将被JavaScript动态生成替换） -->
+        <div id="official" class="tab-content hidden">
+            <!-- 官方活动公告 -->
+            <div class="bg-white rounded-lg shadow-card mb-8 overflow-hidden">
+                <div class="p-6 border-b">
+                    <h3 class="text-xl font-semibold text-primary">
+                        <i class="fa fa-bullhorn mr-2"></i>2024年夏季大型招聘会即将开始
+                    </h3>
+                    <div class="flex flex-wrap items-center mt-2 text-gray-500 text-sm gap-4">
+                        <span><i class="fa fa-calendar mr-1"></i>2024-06-15</span>
+                        <span><i class="fa fa-eye mr-1"></i>1,245 浏览</span>
+                        <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold">官方活动</span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <p class="text-gray-700">本次招聘会将汇集多家知名企业，提供上千个优质岗位。活动将在北京国际会议中心举行，为期两天。求职者可免费参加，提前在线注册可获得专属简历投递通道。</p>
+                    <div class="mt-4 flex justify-between items-center">
+                        <div class="text-gray-500 text-sm">
+                            <i class="fa fa-map-marker mr-1"></i>北京国际会议中心 | <i class="fa fa-clock-o mr-1"></i>2024-07-15 至 2024-07-16
+                        </div>
+                        <button class="view-announcement-btn text-primary hover:text-indigo-700 font-medium">查看详情 <i class="fa fa-arrow-right ml-1"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="government" class="tab-content hidden">
+            <!-- 事业单位招聘 -->
+            <div class="bg-white rounded-lg shadow-card mb-8 overflow-hidden">
+                <div class="p-6 border-b">
+                    <h3 class="text-xl font-semibold text-primary">
+                        <i class="fa fa-building mr-2"></i>2024年国家机关事业单位公开招聘公告
+                    </h3>
+                    <div class="flex flex-wrap items-center mt-2 text-gray-500 text-sm gap-4">
+                        <span><i class="fa fa-calendar mr-1"></i>2024-06-10</span>
+                        <span><i class="fa fa-eye mr-1"></i>2,856 浏览</span>
+                        <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold">事业单位招聘</span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <p class="text-gray-700">国家机关事业单位面向社会公开招聘工作人员150名，涉及教育、医疗、科研等多个领域。报名时间为2024年6月20日至7月5日，考试分为笔试和面试两个阶段。</p>
+                    <div class="mt-4 flex justify-between items-center">
+                        <div class="text-gray-500 text-sm">
+                            <i class="fa fa-map-marker mr-1"></i>全国各地区 | <i class="fa fa-clock-o mr-1"></i>报名截止：2024-07-05
+                        </div>
+                        <button class="view-announcement-btn text-primary hover:text-indigo-700 font-medium">查看详情 <i class="fa fa-arrow-right ml-1"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="enterprise" class="tab-content hidden">
+            <!-- 国企招聘 -->
+            <div class="bg-white rounded-lg shadow-card mb-8 overflow-hidden">
+                <div class="p-6 border-b">
+                    <h3 class="text-xl font-semibold text-primary">
+                        <i class="fa fa-industry mr-2"></i>中国航天科技集团2024校园招聘计划
+                    </h3>
+                    <div class="flex flex-wrap items-center mt-2 text-gray-500 text-sm gap-4">
+                        <span><i class="fa fa-calendar mr-1"></i>2024-06-05</span>
+                        <span><i class="fa fa-eye mr-1"></i>1,532 浏览</span>
+                        <span class="px-2 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-semibold">国企招聘</span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <p class="text-gray-700">中国航天科技集团2024校园招聘正式启动，计划招聘各类专业人才500名，涵盖航天工程、计算机科学、电子工程等多个专业领域。我们提供有竞争力的薪资待遇和完善的福利体系。</p>
+                    <div class="mt-4 flex justify-between items-center">
+                        <div class="text-gray-500 text-sm">
+                            <i class="fa fa-map-marker mr-1"></i>北京、上海、西安等 | <i class="fa fa-clock-o mr-1"></i>长期有效
+                        </div>
+                        <button class="view-announcement-btn text-primary hover:text-indigo-700 font-medium">查看详情 <i class="fa fa-arrow-right ml-1"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">关于我们</h3>
+                    <p class="text-gray-300 text-sm">圣举人才网致力于为企业和求职者提供专业的人才招聘和求职服务平台，连接优秀人才与优质企业。</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">快速链接</h3>
+                    <ul class="space-y-2 text-sm text-gray-300">
+                        <li><a href="#" class="hover:text-white">首页</a></li>
+                        <li><a href="assessment.html" class="hover:text-white">测评中心</a></li>
+                        <li><a href="profile.html" class="hover:text-white">个人端</a></li>
+                        <li><a href="recommendation.html" class="hover:text-white">岗位推荐</a></li>
+                        <li><a href="talent-pool.html" class="hover:text-white">人才池</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">帮助中心</h3>
+                    <ul class="space-y-2 text-sm text-gray-300">
+                        <li><a href="#" class="hover:text-white">常见问题</a></li>
+                        <li><a href="#" class="hover:text-white">使用指南</a></li>
+                        <li><a href="#" class="hover:text-white">联系我们</a></li>
+                        <li><a href="#" class="hover:text-white">隐私政策</a></li>
+                        <li><a href="#" class="hover:text-white">用户协议</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">联系我们</h3>
+                    <ul class="space-y-2 text-gray-400" id="footer-contact">
+                        <li class="flex items-center">
+                            <i class="fa fa-phone mr-2"></i>
+                            <span id="footer-phone">400-123-4567</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fa fa-envelope mr-2"></i>
+                            <span id="footer-email">contact@shengju.com</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fa fa-map-marker mr-2"></i>
+                            <span id="footer-address">北京市海淀区中关村大街1号</span>
+                        </li>
+                    </ul>
+                    <ul class="space-y-2 text-sm text-gray-300" id="footer-contact">
+                        <li class="flex items-center"><i class="fa fa-phone mr-2"></i><span id="footer-phone">400-123-4567</span></li>
+                        <li class="flex items-center"><i class="fa fa-envelope mr-2"></i><span id="footer-email">contact@shengju.com</span></li>
+                        <li class="flex items-center"><i class="fa fa-map-marker mr-2"></i><span id="footer-address">北京市海淀区中关村大街1号</span></li>
+                    </ul>
+                    <div class="mt-4 flex space-x-4">
+                        <a href="#" class="text-gray-300 hover:text-white text-xl"><i class="fa fa-weixin"></i></a>
+                        <a href="#" class="text-gray-300 hover:text-white text-xl"><i class="fa fa-weibo"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-sm text-gray-400">
+                <p id="footer-copyright">© 2025 圣举人才网 版权所有</p>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        // 移动端菜单切换
+        document.getElementById('menu-toggle').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        // 从管理端基本设置加载底部内容
+        function loadFooterContent() {
+            try {
+                const contactInfo = JSON.parse(localStorage.getItem('contactInfo') || '{}');
+                const siteName = localStorage.getItem('siteName') || '圣举人才网';
+                
+                if (contactInfo.phone) {
+                    const phoneEl = document.getElementById('footer-phone');
+                    if (phoneEl) phoneEl.textContent = contactInfo.phone;
+                }
+                
+                if (contactInfo.email) {
+                    const emailEl = document.getElementById('footer-email');
+                    if (emailEl) emailEl.textContent = contactInfo.email;
+                }
+                
+                if (contactInfo.address) {
+                    const addressEl = document.getElementById('footer-address');
+                    if (addressEl) addressEl.textContent = contactInfo.address;
+                }
+                
+                const copyrightEl = document.getElementById('footer-copyright');
+                if (copyrightEl) {
+                    const year = new Date().getFullYear();
+                    copyrightEl.textContent = `© ${year} ${siteName} 版权所有`;
+                }
+            } catch (e) {
+                console.error('加载底部内容失败:', e);
+            }
+        }
+        
+        // 页面加载时加载底部内容
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                loadFooterContent();
+            });
+        } else {
+            loadFooterContent();
+        }
+        
+        // 监听设置更新事件
+        window.addEventListener('contactInfoUpdated', function(e) {
+            loadFooterContent();
+        });
+    </script>
+
+    <!-- 公告详情模态框（整页） -->
+    <div id="announcement-detail-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-4xl max-h-[95vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-semibold">公告详情</h3>
+                    <button id="close-detail-modal" class="text-gray-500 hover:text-gray-700">
+                        <i class="fa fa-times text-xl"></i>
+                    </button>
+                </div>
+                
+                <div class="space-y-6">
+                    <div id="detail-title" class="text-2xl font-bold text-gray-900"></div>
+                    <div class="flex flex-wrap items-center gap-4">
+                        <span id="detail-type" class="px-3 py-1 rounded-full text-sm font-semibold"></span>
+                        <span id="detail-date" class="text-gray-500"><i class="fa fa-calendar mr-1"></i></span>
+                        <span id="detail-views" class="text-gray-500"><i class="fa fa-eye mr-1"></i></span>
+                        <span id="detail-location" class="text-gray-500"><i class="fa fa-map-marker mr-1"></i></span>
+                    </div>
+                    <div class="border-t border-gray-200 pt-6"></div>
+                    <div id="detail-content" class="prose max-w-none">
+                        <!-- 公告详情内容将通过JavaScript填充 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 公告附加岗位「查看」详情 -->
+    <div id="announcement-project-view-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[55] flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="apv-title" class="text-lg font-semibold text-gray-900">岗位详情</h3>
+                <button type="button" onclick="closeAnnouncementProjectView()" class="text-gray-500 hover:text-gray-700" aria-label="关闭"><i class="fa fa-times text-xl"></i></button>
+            </div>
+            <div id="apv-body" class="text-sm text-gray-700 space-y-2"></div>
+            <div class="mt-6 text-right">
+                <button type="button" onclick="closeAnnouncementProjectView()" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-indigo-700">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== 公告数据管理 ==========
+        let allAnnouncementsData = [];
+        let filteredAnnouncementsData = [];
+        let currentCategory = 'all';
+        let currentPage = 1;
+        let itemsPerPage = 10;
+        
+        // 分类映射
+        const categoryMap = {
+            'all': '全部公告',
+            'government': '事业单位',
+            'education': '教育类',
+            'healthcare': '卫生类',
+            'soe': '国企',
+            'official': '官方活动',
+            'private': '民营企业'
+        };
+        
+        // 分类样式映射
+        const categoryStyleMap = {
+            '事业单位': 'bg-green-100 text-green-800',
+            '教育类': 'bg-blue-100 text-blue-800',
+            '卫生类': 'bg-red-100 text-red-800',
+            '国企': 'bg-amber-100 text-amber-800',
+            '官方活动': 'bg-purple-100 text-purple-800',
+            '民营企业': 'bg-indigo-100 text-indigo-800'
+        };
+
+        var AB = window.AnnouncementBranding || {};
+        function isInterviewStyleAnnouncement(ann) {
+            return AB.isInterviewStyleAnnouncement ? AB.isInterviewStyleAnnouncement(ann) : false;
+        }
+        function getRegistrationEntryUi(ann) {
+            return AB.getRegistrationEntryUi ? AB.getRegistrationEntryUi(ann, false) : { title: '报名入口', hint: '', btn: '进入报名系统', icon: 'fa-external-link' };
+        }
+        function resolveRegistrationUrl(ann) {
+            return AB.resolveRegistrationUrl ? AB.resolveRegistrationUrl(ann) : ((ann.registrationUrl || '').trim() || 'assessment.html');
+        }
+        function displayPublisherLabel(ann) {
+            return AB.displayPublisherLabel ? AB.displayPublisherLabel(ann) : (ann.companyName || ann.source || '官方');
+        }
+
+        /** 考生端样式：仅展示单条公告时的 ID（URL 或顶栏品牌配置） */
+        function getOnlyShowAnnouncementId() {
+            try {
+                var q = new URLSearchParams(window.location.search || '');
+                var qid = q.get('announcementId') || q.get('announcement');
+                if (qid != null && /^[0-9]+$/.test(String(qid).trim())) return String(qid).trim();
+            } catch (eQ) {}
+            var b = window.__jobseekerAnnouncementBranding;
+            if (b && b.onlyShowThisAnnouncement && b.announcementId != null && /^[0-9]+$/.test(String(b.announcementId))) {
+                return String(b.announcementId);
+            }
+            return null;
+        }
+
+        function updateAnnouncementsPageOnlyShowUi() {
+            var onlyId = getOnlyShowAnnouncementId();
+            var tabs = document.querySelector('.flex.flex-wrap.justify-center.mb-8.border-b');
+            var searchBox = document.querySelector('.bg-white.p-6.rounded-lg.shadow-card.mb-8');
+            if (onlyId) {
+                if (tabs) tabs.classList.add('hidden');
+                if (searchBox) searchBox.classList.add('hidden');
+            } else {
+                if (tabs) tabs.classList.remove('hidden');
+                if (searchBox) searchBox.classList.remove('hidden');
+            }
+        }
+
+        function normalizedRequiredGender(p) {
+            if (!p) return '';
+            const raw = p.requiredGender != null ? p.requiredGender : p.required_gender;
+            let s = String(raw || '').trim();
+            try {
+                if (typeof s.normalize === 'function') s = s.normalize('NFKC');
+            } catch (e) {}
+            return (s === '男' || s === '女') ? s : '';
+        }
+        
+        // 生成模拟公告数据
+        function generateMockAnnouncements() {
+            const now = new Date();
+            const mockAnnouncements = [
+                {
+                    id: 'ann_mock_001',
+                    title: '2024年国家机关事业单位公开招聘公告',
+                    content: '国家机关事业单位面向社会公开招聘工作人员150名，涉及教育、医疗、科研等多个领域。报名时间为2024年6月20日至7月5日，考试分为笔试和面试两个阶段。\n\n招聘岗位包括：\n1. 教育类岗位：教师、教务管理人员等\n2. 医疗类岗位：医生、护士、医疗管理人员等\n3. 科研类岗位：研究员、助理研究员等\n\n报名条件：\n- 具有中华人民共和国国籍\n- 遵守宪法和法律\n- 具有良好的品行\n- 具备岗位所需的专业或技能条件\n- 适应岗位要求的身体条件',
+                    category: '事业单位',
+                    source: '管理者端',
+                    publishDate: '2024-06-10',
+                    expiryDate: '2024-07-05',
+                    files: [],
+                    registrationEntry: true,
+                    registrationUrl: '',
+                    status: '发布中',
+                    views: 2856,
+                    location: '全国各地区'
+                },
+                {
+                    id: 'ann_mock_002',
+                    title: '2024年夏季大型招聘会即将开始',
+                    content: '本次招聘会将汇集多家知名企业，提供上千个优质岗位。活动将在北京国际会议中心举行，为期两天。求职者可免费参加，提前在线注册可获得专属简历投递通道。\n\n活动亮点：\n- 500+知名企业现场招聘\n- 涵盖互联网、金融、教育、医疗等多个行业\n- 提供现场面试机会\n- 免费职业规划咨询服务\n\n活动时间：2024年7月15日至7月16日\n活动地点：北京国际会议中心',
+                    category: '官方活动',
+                    source: '管理者端',
+                    publishDate: '2024-06-15',
+                    expiryDate: '2024-07-16',
+                    files: [],
+                    registrationEntry: true,
+                    registrationUrl: '',
+                    status: '发布中',
+                    views: 1245,
+                    location: '北京国际会议中心'
+                },
+                {
+                    id: 'ann_mock_003',
+                    title: '中国航天科技集团2024校园招聘计划',
+                    content: '中国航天科技集团2024校园招聘正式启动，计划招聘各类专业人才500名，涵盖航天工程、计算机科学、电子工程等多个专业领域。我们提供有竞争力的薪资待遇和完善的福利体系。\n\n招聘专业：\n- 航天工程类\n- 计算机科学与技术\n- 电子工程\n- 机械工程\n- 材料科学\n\n福利待遇：\n- 具有竞争力的薪资\n- 完善的五险一金\n- 带薪年假\n- 职业发展培训',
+                    category: '国企',
+                    source: '管理者端',
+                    publishDate: '2024-06-05',
+                    expiryDate: '2024-12-31',
+                    files: [],
+                    registrationEntry: true,
+                    registrationUrl: '',
+                    status: '发布中',
+                    views: 1532,
+                    location: '北京、上海、西安等'
+                },
+                {
+                    id: 'ann_mock_004',
+                    title: '2024年教育系统公开招聘教师公告',
+                    content: '为加强教师队伍建设，现面向社会公开招聘中小学教师200名。招聘岗位涵盖语文、数学、英语、物理、化学、生物等多个学科。\n\n招聘条件：\n- 具有相应学科的教师资格证\n- 本科及以上学历\n- 热爱教育事业，具有良好的师德\n\n报名方式：\n请登录教育系统招聘网站进行在线报名。',
+                    category: '教育类',
+                    source: '管理者端',
+                    publishDate: '2024-06-12',
+                    expiryDate: '2024-07-10',
+                    files: [],
+                    registrationEntry: true,
+                    registrationUrl: '',
+                    status: '发布中',
+                    views: 2100,
+                    location: '全国各地区'
+                },
+                {
+                    id: 'ann_mock_005',
+                    title: '2024年医疗卫生系统公开招聘公告',
+                    content: '为满足医疗卫生事业发展需要，现面向社会公开招聘医疗卫生人员300名，包括临床医生、护士、医技人员等。\n\n招聘岗位：\n- 临床医生：内科、外科、儿科、妇产科等\n- 护理人员：各科室护士\n- 医技人员：检验、影像、药剂等\n\n报名条件：\n- 具有相应的执业资格\n- 相关专业学历要求\n- 身体健康，能胜任岗位工作',
+                    category: '卫生类',
+                    source: '管理者端',
+                    publishDate: '2024-06-08',
+                    expiryDate: '2024-07-15',
+                    files: [],
+                    registrationEntry: true,
+                    registrationUrl: '',
+                    status: '发布中',
+                    views: 1890,
+                    location: '全国各地区'
+                },
+                {
+                    id: 'ann_mock_006',
+                    title: '某知名科技公司2024校园招聘计划',
+                    content: '某知名科技公司2024校园招聘计划正式启动，面向全国高校招聘优秀应届毕业生，提供技术研发、产品经理、市场营销等多个岗位方向。我们欢迎有激情、有创造力的年轻人加入我们的团队。\n\n招聘岗位：\n- 技术研发：前端开发、后端开发、算法工程师\n- 产品经理：产品设计、产品运营\n- 市场营销：市场推广、品牌运营\n\n我们提供：\n- 有竞争力的薪资待遇\n- 完善的培训体系\n- 良好的职业发展空间',
+                    category: '民营企业',
+                    source: '政企端',
+                    publishDate: '2024-06-08',
+                    expiryDate: '2024-08-30',
+                    files: [],
+                    registrationEntry: false,
+                    registrationUrl: '',
+                    status: '发布中',
+                    views: 856,
+                    location: '全国',
+                    companyName: '某知名科技公司'
+                },
+                {
+                    id: 'ann_mock_007',
+                    title: '互联网创业公司高薪招聘技术人才',
+                    content: '某互联网创业公司高薪招聘前端开发、后端开发、UI设计师等技术人才。我们提供有竞争力的薪资、股权激励和灵活的工作环境，欢迎有激情、有创新精神的技术人才加入我们的团队。\n\n岗位要求：\n- 3年以上相关工作经验\n- 熟练掌握主流技术栈\n- 有创业公司经验优先\n\n我们提供：\n- 高薪+股权激励\n- 灵活的工作时间\n- 扁平化管理\n- 快速成长机会',
+                    category: '民营企业',
+                    source: '政企端',
+                    publishDate: '2024-06-02',
+                    expiryDate: '2024-12-31',
+                    files: [],
+                    registrationEntry: false,
+                    registrationUrl: '',
+                    status: '发布中',
+                    views: 678,
+                    location: '北京、上海、深圳',
+                    companyName: '某互联网创业公司'
+                }
+            ];
+            
+            // 检查是否已有数据，如果没有则初始化模拟数据
+            const existingData = localStorage.getItem('announcementsData');
+            if (!existingData || JSON.parse(existingData).length === 0) {
+                localStorage.setItem('announcementsData', JSON.stringify(mockAnnouncements));
+                // 触发存储事件，通知其他页面
+                window.dispatchEvent(new StorageEvent('storage', {
+                    key: 'announcementsData',
+                    newValue: JSON.stringify(mockAnnouncements)
+                }));
+            }
+        }
+        
+        // 加载公告数据（优先从 API 拉取，失败时用本地/模拟数据）
+        const API_BASE_ANNOUNCEMENTS = window.API_BASE_URL || 'http://127.0.0.1:3001/api/v1';
+        async function loadAnnouncementsData() {
+            try {
+                const res = await fetch(API_BASE_ANNOUNCEMENTS + '/announcements?pageSize=100');
+                const json = await res.json();
+                // 与首页一致：仅当接口确有数据时才用 API 结果；success + data:[] 时仍回退本地/演示，避免「接口正常但库中无公告」时整页空白
+                if (json && json.success && Array.isArray(json.data) && json.data.length > 0) {
+                    allAnnouncementsData = json.data.map(function(r) {
+                        var ex = r.extraJson;
+                        if (typeof ex === 'string') {
+                            try { ex = JSON.parse(ex || '{}'); } catch (e) { ex = {}; }
+                        }
+                        return {
+                            id: r.id,
+                            title: r.title,
+                            content: r.content,
+                            category: r.category || '未分类',
+                            source: r.source || '管理者端',
+                            publishDate: r.publishDate || '',
+                            expiryDate: r.expiryDate || '',
+                            rawStatus: r.status || 'published',
+                            status: r.status === 'published' ? '发布中' : (r.status === 'offline' ? '已下架' : '已过期'),
+                            views: r.views || 0,
+                            attachedProjects: Array.isArray(r.attachedProjects) ? r.attachedProjects : [],
+                            extraJson: ex && typeof ex === 'object' ? ex : {},
+                            companyName: r.companyName || r.source || '',
+                            publisherLabel: (ex && ex.candidateNavBranding && ex.candidateNavBranding.publisherLabel) || ''
+                        };
+                    });
+                    applyFilters();
+                    updateAnnouncementsPageOnlyShowUi();
+                    return;
+                }
+                if (json && json.success && Array.isArray(json.data) && json.data.length === 0) {
+                    console.warn('公告 API 返回空列表（库中无公告或均已下架），已回退本地/演示数据');
+                }
+            } catch (e) { console.warn('公告 API 加载失败，使用本地数据', e); }
+            try {
+                generateMockAnnouncements();
+                const savedAnnouncements = localStorage.getItem('announcementsData');
+                if (savedAnnouncements) {
+                    allAnnouncementsData = JSON.parse(savedAnnouncements);
+                    allAnnouncementsData = allAnnouncementsData.map(ann => {
+                        if (!ann.source) ann.source = (ann.companyName || ann.companyId) ? '政企端' : '管理者端';
+                        if (!ann.status) ann.status = '发布中';
+                        if (!ann.expiryDate && ann.publishDate) {
+                            const d = new Date(ann.publishDate); d.setMonth(d.getMonth() + 1);
+                            ann.expiryDate = d.toISOString().split('T')[0];
+                        }
+                        return ann;
+                    });
+                    allAnnouncementsData = allAnnouncementsData.filter(ann => {
+                        if (ann.status === '已下架') return false;
+                        return true;
+                    });
+                } else {
+                    allAnnouncementsData = [];
+                }
+            } catch (e) {
+                allAnnouncementsData = [];
+            }
+            applyFilters();
+        }
+
+        function isAnnouncementSignupClosedForDisplay(ann) {
+            if (!ann) return false;
+            if (ann.status === '已下架') return true;
+            if (ann.status === '已过期') return true;
+            if (ann.rawStatus === 'expired') return true;
+            if (ann.expiryDate) {
+                var e = new Date(ann.expiryDate);
+                e.setHours(23, 59, 59, 999);
+                if (e < new Date()) return true;
+            }
+            return false;
+        }
+        
+        // 应用筛选条件
+        function applyFilters() {
+            var onlyId = getOnlyShowAnnouncementId();
+            filteredAnnouncementsData = allAnnouncementsData.filter(ann => {
+                if (onlyId && String(ann.id) !== String(onlyId)) return false;
+                // 分类筛选
+                if (currentCategory !== 'all' && ann.category !== categoryMap[currentCategory]) {
+                    return false;
+                }
+                return true;
+            });
+            
+            // 按发布时间排序（最新的在前）
+            filteredAnnouncementsData.sort((a, b) => {
+                return new Date(b.publishDate) - new Date(a.publishDate);
+            });
+            
+            currentPage = 1;
+            renderAnnouncementsList();
+            renderPagination();
+        }
+        
+        // 渲染公告列表
+        function renderAnnouncementsList() {
+            const container = document.getElementById('announcements-container');
+            if (!container) return;
+            
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const pageData = filteredAnnouncementsData.slice(startIndex, endIndex);
+            
+            if (pageData.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-white rounded-lg shadow-card p-12 text-center">
+                        <i class="fa fa-inbox text-gray-400 text-5xl mb-4"></i>
+                        <p class="text-gray-500 text-lg">暂无公告</p>
+                        <p class="text-gray-400 text-sm mt-2">请稍后再来查看</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = pageData.map(ann => {
+                const categoryStyle = categoryStyleMap[ann.category] || 'bg-gray-100 text-gray-800';
+                const iconMap = {
+                    '事业单位': 'fa-building',
+                    '教育类': 'fa-graduation-cap',
+                    '卫生类': 'fa-hospital-o',
+                    '国企': 'fa-industry',
+                    '官方活动': 'fa-bullhorn',
+                    '民营企业': 'fa-users'
+                };
+                const icon = iconMap[ann.category] || 'fa-file-text-o';
+                const detailHref = 'announcement-detail.html?id=' + encodeURIComponent(ann.id);
+                return `
+                    <a href="${detailHref}" class="block bg-white rounded-lg shadow-card overflow-hidden cursor-pointer hover:border-primary hover:border transition no-underline text-inherit">
+                        <div class="p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                            <h3 class="text-lg font-semibold text-primary flex items-center">
+                                <i class="fa ${icon} mr-2 text-gray-500"></i>${ann.title}
+                            </h3>
+                            <div class="flex flex-wrap items-center gap-3 text-gray-500 text-sm">
+                                <span><i class="fa fa-building-o mr-1"></i>发布方：${displayPublisherLabel(ann)}</span>
+                                <span><i class="fa fa-calendar mr-1"></i>${ann.publishDate}</span>
+                                <span class="px-2 py-0.5 ${categoryStyle} rounded-full text-xs font-semibold">${ann.category}</span>
+                                ${isAnnouncementSignupClosedForDisplay(ann) ? '<span class="px-2 py-0.5 bg-gray-200 text-gray-700 rounded-full text-xs font-semibold">报名已截止</span>' : ''}
+                                <span class="text-primary text-xs font-medium">查看详情 <i class="fa fa-arrow-right"></i></span>
+                            </div>
+                        </div>
+                    </a>
+                `;
+            }).join('');
+        }
+        
+        // 渲染分页
+        function renderPagination() {
+            const paginationContainer = document.getElementById('announcements-pagination');
+            if (!paginationContainer) return;
+            
+            const totalPages = Math.ceil(filteredAnnouncementsData.length / itemsPerPage);
+            
+            if (totalPages <= 1) {
+                paginationContainer.innerHTML = '';
+                return;
+            }
+            
+            let paginationHTML = `
+                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                    <button onclick="changePage(${currentPage - 1})" 
+                            class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}"
+                            ${currentPage === 1 ? 'disabled' : ''}>
+                        <span class="sr-only">上一页</span>
+                        <i class="fa fa-angle-left"></i>
+                    </button>
+            `;
+            
+            const maxVisiblePages = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+            
+            if (endPage - startPage < maxVisiblePages - 1) {
+                startPage = Math.max(1, endPage - maxVisiblePages + 1);
+            }
+            
+            if (startPage > 1) {
+                paginationHTML += `
+                    <button onclick="changePage(1)" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">1</button>
+                `;
+                if (startPage > 2) {
+                    paginationHTML += `<span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">...</span>`;
+                }
+            }
+            
+            for (let i = startPage; i <= endPage; i++) {
+                paginationHTML += `
+                    <button onclick="changePage(${i})" 
+                            class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium ${i === currentPage ? 'bg-primary text-white' : 'bg-white text-gray-700 hover:bg-gray-50'}">
+                        ${i}
+                    </button>
+                `;
+            }
+            
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    paginationHTML += `<span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">...</span>`;
+                }
+                paginationHTML += `
+                    <button onclick="changePage(${totalPages})" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">${totalPages}</button>
+                `;
+            }
+            
+            paginationHTML += `
+                    <button onclick="changePage(${currentPage + 1})" 
+                            class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''}"
+                            ${currentPage === totalPages ? 'disabled' : ''}>
+                        <span class="sr-only">下一页</span>
+                        <i class="fa fa-angle-right"></i>
+                    </button>
+                </nav>
+                <div class="mt-4 flex items-center justify-center">
+                    <label class="text-sm text-gray-700 mr-2">每页显示：</label>
+                    <select id="items-per-page" class="px-3 py-1 border border-gray-300 rounded-md text-sm" onchange="changeItemsPerPage(this.value)">
+                        <option value="10" ${itemsPerPage === 10 ? 'selected' : ''}>10</option>
+                        <option value="20" ${itemsPerPage === 20 ? 'selected' : ''}>20</option>
+                        <option value="50" ${itemsPerPage === 50 ? 'selected' : ''}>50</option>
+                    </select>
+                </div>
+            `;
+            
+            paginationContainer.innerHTML = paginationHTML;
+        }
+        
+        // 切换页码
+        window.changePage = function(page) {
+            const totalPages = Math.ceil(filteredAnnouncementsData.length / itemsPerPage);
+            if (page < 1 || page > totalPages) return;
+            currentPage = page;
+            renderAnnouncementsList();
+            renderPagination();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+        
+        // 改变每页显示数量
+        window.changeItemsPerPage = function(value) {
+            itemsPerPage = parseInt(value);
+            currentPage = 1;
+            renderAnnouncementsList();
+            renderPagination();
+        };
+        
+        // 查看公告详情（先请求详情接口以获取附加岗位，再弹整页框）
+        window.viewAnnouncementDetail = async function(announcementId) {
+            const ann = allAnnouncementsData.find(a => String(a.id) === String(announcementId));
+            if (!ann) {
+                alert('公告不存在或已被删除');
+                return;
+            }
+            const modal = document.getElementById('announcement-detail-modal');
+            if (!modal) return;
+            const API_BASE = window.API_BASE_URL || 'http://127.0.0.1:3001/api/v1';
+            try {
+                const res = await fetch(API_BASE + '/announcements/' + announcementId);
+                const json = await res.json().catch(function() { return {}; });
+                if (json && json.success && json.data) {
+                    const d = json.data;
+                    ann.attachedProjects = Array.isArray(d.attachedProjects) ? d.attachedProjects : (ann.attachedProjects || []);
+                    ann.views = d.views != null ? d.views : ann.views;
+                    if (d.extraJson) {
+                        const ex = typeof d.extraJson === 'string' ? JSON.parse(d.extraJson || '{}') : (d.extraJson || {});
+                        ann.extraJson = ex;
+                        ann.registrationEntry = ex.registrationEntry;
+                        ann.registrationUrl = ex.registrationUrl;
+                        if (ex.candidateNavBranding) {
+                            ann.candidateNavBranding = ex.candidateNavBranding;
+                            ann.publisherLabel = (ex.candidateNavBranding.publisherLabel || ann.publisherLabel || '').trim();
+                        }
+                    }
+                }
+            } catch (e) { console.warn('获取公告详情失败，使用列表数据', e); }
+            if (AB.fetchAnnNavBranding && AB.applyAnnNavBranding) {
+                try {
+                    const b = await AB.fetchAnnNavBranding(API_BASE, ann.id);
+                    if (b) AB.applyAnnNavBranding(ann, b);
+                } catch (eBr) { /* ignore */ }
+            }
+            if (!ann.attachedProjects) ann.attachedProjects = [];
+            const categoryStyle = categoryStyleMap[ann.category] || 'bg-gray-100 text-gray-800';
+            document.getElementById('detail-title').textContent = ann.title;
+            document.getElementById('detail-type').textContent = ann.category;
+            document.getElementById('detail-type').className = `px-3 py-1 rounded-full text-sm font-semibold ${categoryStyle}`;
+            document.getElementById('detail-date').textContent = `发布时间：${ann.publishDate}`;
+            document.getElementById('detail-views').textContent = `浏览：${ann.views || 0}`;
+            document.getElementById('detail-location').textContent = ann.location ? `地点：${ann.location}` : '';
+            const formattedContent = (ann.content || '').replace(/\n/g, '<br>');
+            let filesHTML = '';
+            if (ann.files && ann.files.length > 0) {
+                filesHTML = `
+                    <div class="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                        <h4 class="font-semibold mb-3 text-gray-900">附件文件：</h4>
+                        <div class="space-y-2">
+                            ${ann.files.map((file, index) => {
+                                const fileName = typeof file === 'string' ? file : (file.name || '未知文件');
+                                const fileData = typeof file === 'object' && file.data ? file.data : null;
+                                const isExcel = fileName.endsWith('.xlsx') || fileName.endsWith('.xls');
+                                const fileIcon = isExcel ? 'file-excel-o' : 'file-word-o';
+                                const iconColor = isExcel ? 'text-green-600' : 'text-blue-600';
+                                
+                                return `
+                                    <div class="flex items-center justify-between p-3 bg-white rounded border border-gray-200 hover:border-primary transition">
+                                        <div class="flex items-center">
+                                            <i class="fa ${fileIcon} ${iconColor} mr-3 text-xl"></i>
+                                            <span class="text-sm text-gray-700">${fileName}</span>
+                                        </div>
+                                        ${fileData ? `
+                                            <button onclick="downloadAnnouncementFile('${ann.id}', ${index})" class="px-3 py-1 text-sm text-primary hover:text-indigo-700 border border-primary rounded hover:bg-primary/10 transition">
+                                                <i class="fa fa-download mr-1"></i>下载
+                                            </button>
+                                        ` : ''}
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // 公告附带岗位列表
+            let projectsHTML = '';
+            if (ann.attachedProjects && ann.attachedProjects.length > 0) {
+                projectsHTML = `
+                    <div class="mt-8 border-t border-gray-200 pt-6">
+                        <h4 class="font-semibold mb-1 text-gray-900 flex items-center">
+                            <i class="fa fa-briefcase mr-2 text-primary"></i>可报名岗位
+                        </h4>
+                        <p class="text-sm text-gray-500 mb-3">点击下方某岗位的「立即报名」即报名该岗位。</p>
+                        <div class="space-y-3">
+                            ${ann.attachedProjects.map(function(p) {
+                                const statusText = p.status === 'recruiting' ? '招聘中' : (p.status === 'closed' ? '已关闭' : (p.status || ''));
+                                const disabled = p.status && p.status !== 'recruiting';
+                                const showDept = p.showDepartment !== false;
+                                const jobCodeStr = (p.jobCode != null && String(p.jobCode).trim() !== '') ? String(p.jobCode).trim() : '';
+                                const __gList = normalizedRequiredGender(p);
+                                return `
+                                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
+                                        <div>
+                                            <div class="font-medium text-gray-900">${p.name || '未命名岗位'}${jobCodeStr ? ' <span class="text-gray-500 font-normal text-sm">岗位号：' + jobCodeStr + '</span>' : ''}</div>
+                                            <div class="text-xs text-gray-500 mt-1">
+                                                ${showDept && p.type ? `<span class="mr-2">所属部门：${p.type}</span>` : ''}
+                                                ${p.requiredTalentType ? `<span class="mr-2">学历要求：${p.requiredTalentType}</span>` : ''}
+                                                ${__gList ? `<span class="mr-2">性别：${__gList}</span>` : ''}
+                                                ${(p.minAge != null || p.maxAge != null) ? `<span class="mr-2">年龄：${p.minAge != null ? p.minAge : '—'}~${p.maxAge != null ? p.maxAge : '—'} 岁</span>` : ''}
+                                                ${(p.majorRequired != null && p.majorRequired !== '') ? `<span class="mr-2">专业限制：${p.majorRequired}</span>` : ''}
+                                                ${(p.requireAttachments && p.requireAttachments.length) ? `<span class="mr-2">要求上传：${p.requireAttachments.map(function(a){ return { photo:'证件照', id_card:'身份证', education:'学历证明', certificate:'职业证书' }[a] || a; }).join('、')}</span>` : ''}
+                                                ${statusText ? `<span class="px-2 py-0.5 rounded-full text-xs ${p.status === 'recruiting' ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-200 text-gray-700'}">${statusText}</span>` : ''}
+                                            </div>
+                                        </div>
+                                        <div class="flex flex-wrap items-center gap-2 justify-end">
+                                            <button type="button" onclick="event.stopPropagation(); viewAnnouncementAttachedProject('${ann.id}','${p.id}')" class="px-3 py-1.5 text-sm rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50" title="查看岗位">查看</button>
+                                            <button type="button" ${disabled ? 'disabled' : ''} onclick="event.stopPropagation(); applyAnnouncementProject('${ann.id}','${p.id}')" class="px-3 py-1.5 text-sm rounded-md border ${disabled ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed' : 'bg-primary text-white border-primary hover:bg-indigo-700'}" title="报名该岗位">
+                                                ${disabled ? '不可报名' : '立即报名'}
+                                            </button>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            // 仅有附加岗位时显示「可报名岗位」；无附加岗位时显示报名入口或打印准考证
+            const hasProjects = ann.attachedProjects && ann.attachedProjects.length > 0;
+            const registrationUrl = resolveRegistrationUrl(ann);
+            const entryUi = getRegistrationEntryUi(ann);
+            const registrationHTML = hasProjects ? '' : `
+                <div class="mt-6 p-4 bg-primary/10 rounded-lg border border-primary/20">
+                    <h4 class="font-semibold mb-2 text-primary">${entryUi.title}</h4>
+                    <p class="text-sm text-gray-600 mb-3">${entryUi.hint}</p>
+                    <a href="${registrationUrl}" class="inline-block px-6 py-2 bg-primary text-white rounded-lg hover:bg-indigo-700 transition">
+                        <i class="fa ${entryUi.icon} mr-2"></i>${entryUi.btn}
+                    </a>
+                </div>
+            `;
+            document.getElementById('detail-content').innerHTML = `
+                <div class="prose max-w-none">
+                    <div class="text-gray-700 leading-relaxed whitespace-pre-wrap">${formattedContent}</div>
+                    ${filesHTML}
+                    ${projectsHTML}
+                    ${registrationHTML}
+                </div>
+            `;
+            
+            // 增加浏览量
+            ann.views = (ann.views || 0) + 1;
+            try {
+                const savedAnnouncements = localStorage.getItem('announcementsData');
+                if (savedAnnouncements) {
+                    let allData = JSON.parse(savedAnnouncements);
+                    const index = allData.findIndex(a => String(a.id) === String(announcementId));
+                    if (index > -1) {
+                        allData[index].views = ann.views;
+                        localStorage.setItem('announcementsData', JSON.stringify(allData));
+                    }
+                }
+            } catch (e) {
+                console.error('更新浏览量失败:', e);
+            }
+            
+            modal.classList.remove('hidden');
+        };
+
+        window.closeAnnouncementProjectView = function() {
+            var m = document.getElementById('announcement-project-view-modal');
+            if (m) m.classList.add('hidden');
+        };
+
+        window.viewAnnouncementAttachedProject = function(announcementId, projectId) {
+            var ann = allAnnouncementsData.find(function(a) { return String(a.id) === String(announcementId); });
+            if (!ann || !Array.isArray(ann.attachedProjects)) {
+                alert('公告或岗位不存在');
+                return;
+            }
+            var p = ann.attachedProjects.find(function(x) { return String(x.id) === String(projectId); });
+            if (!p) {
+                alert('岗位不存在');
+                return;
+            }
+            var title = document.getElementById('apv-title');
+            var body = document.getElementById('apv-body');
+            if (title) title.textContent = p.name || '岗位详情';
+            var parts = [];
+            var jobCodeStr = (p.jobCode != null && String(p.jobCode).trim() !== '') ? String(p.jobCode).trim() : '';
+            if (jobCodeStr) parts.push('<p><span class="font-medium text-gray-800">岗位代码：</span>' + jobCodeStr + '</p>');
+            if (p.type) parts.push('<p><span class="font-medium text-gray-800">所属部门：</span>' + p.type + '</p>');
+            if (p.requiredTalentType) parts.push('<p><span class="font-medium text-gray-800">学历要求：</span>' + p.requiredTalentType + '</p>');
+            var __gModal = normalizedRequiredGender(p);
+            if (__gModal) parts.push('<p><span class="font-medium text-gray-800">性别要求：</span>' + __gModal + '</p>');
+            if (p.majorRequired != null && p.majorRequired !== '') parts.push('<p><span class="font-medium text-gray-800">专业限制：</span>' + p.majorRequired + '</p>');
+            if (p.description) parts.push('<p><span class="font-medium text-gray-800">说明：</span>' + String(p.description).replace(/</g, '&lt;') + '</p>');
+            if (p.minAge != null || p.maxAge != null) parts.push('<p><span class="font-medium text-gray-800">年龄：</span>' + (p.minAge != null ? p.minAge : '—') + ' ~ ' + (p.maxAge != null ? p.maxAge : '—') + '</p>');
+            if (p.requireAttachments && p.requireAttachments.length) {
+                var map = { photo: '证件照', id_card: '身份证', education: '学历证明', certificate: '职业证书' };
+                parts.push('<p><span class="font-medium text-gray-800">需上传：</span>' + p.requireAttachments.map(function(a) { return map[a] || a; }).join('、') + '</p>');
+            }
+            parts.push('<p class="text-xs text-gray-500 pt-2">状态：' + (p.status === 'recruiting' ? '招聘中' : (p.status || '—')) + '</p>');
+            if (body) body.innerHTML = parts.length ? parts.join('') : '<p class="text-gray-500">暂无更多说明</p>';
+            var modal = document.getElementById('announcement-project-view-modal');
+            if (modal) modal.classList.remove('hidden');
+        };
+
+        // 公告详情中「立即报名」附带岗位：在本页弹出与岗位推荐一致的大报名表（共用同一套逻辑）
+        window.applyAnnouncementProject = function(announcementId, projectId) {
+            const auth = (typeof AuthHelper !== 'undefined' && AuthHelper.get)
+                ? AuthHelper.get('jobseeker')
+                : null;
+            const token = (auth && auth.token) || localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+            if (!token) {
+                alert('请先登录后再报名。');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const ann = allAnnouncementsData.find(function(a) { return String(a.id) === String(announcementId); });
+            if (!ann || !Array.isArray(ann.attachedProjects)) {
+                alert('公告或岗位不存在');
+                return;
+            }
+            const project = ann.attachedProjects.find(function(p) { return String(p.id) === String(projectId); });
+            if (!project) {
+                alert('岗位不存在或已下架');
+                return;
+            }
+
+            const jobLike = {
+                id: project.id,
+                name: project.name || '未命名岗位',
+                title: project.name || '未命名岗位',
+                companyName: ann.companyName || ann.source || '',
+                jobCode: (project.jobCode != null && String(project.jobCode).trim() !== '') ? String(project.jobCode).trim() : null,
+                requireAttachments: Array.isArray(project.requireAttachments) ? project.requireAttachments : [],
+                requiredTalentType: project.requiredTalentType || '',
+                requiredGender: normalizedRequiredGender(project),
+                minAge: project.minAge,
+                maxAge: project.maxAge
+            };
+
+            var ex = ann.extraJson;
+            if (typeof ex === 'string') {
+                try { ex = JSON.parse(ex || '{}'); } catch (e) { ex = {}; }
+            }
+            var regSchema = (typeof RegistrationFormSchema !== 'undefined' && RegistrationFormSchema.normalizeFromExtra)
+                ? RegistrationFormSchema.normalizeFromExtra(ex || {})
+                : null;
+
+            if (window.JobApplyForm && typeof window.JobApplyForm.openForProject === 'function') {
+                window.JobApplyForm.openForProject(jobLike, project.id, { registrationFormSchema: regSchema });
+            } else {
+                alert('报名表组件加载失败，请刷新后重试');
+            }
+        };
+        
+        // 切换分类
+        function switchCategory(category) {
+            currentCategory = category;
+            applyFilters();
+        }
+        
+        // 移动端菜单切换
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuBtn = document.querySelector('.fa-bars')?.parentElement;
+            const mobileMenu = document.querySelector('.md\\:hidden.bg-white');
+            
+            if (menuBtn && mobileMenu) {
+                menuBtn.addEventListener('click', function() {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            }
+            
+            // 选项卡切换
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tab = this.getAttribute('data-tab');
+                    
+                    // 更新按钮样式
+                    tabBtns.forEach(b => {
+                        b.classList.remove('text-primary', 'border-primary');
+                        b.classList.add('text-gray-600', 'border-transparent');
+                    });
+                    
+                    this.classList.remove('text-gray-600', 'border-transparent');
+                    this.classList.add('text-primary', 'border-primary');
+                    
+                    // 切换分类
+                    switchCategory(tab);
+                });
+            });
+            
+            // 处理URL参数
+            const urlParams = new URLSearchParams(window.location.search);
+            const tabParam = urlParams.get('tab');
+            if (tabParam && Object.keys(categoryMap).includes(tabParam)) {
+                const tabBtn = document.querySelector(`.tab-btn[data-tab="${tabParam}"]`);
+                if (tabBtn) {
+                    tabBtn.click();
+                }
+            }
+            
+            // 公告详情模态框关闭
+            const announcementDetailModal = document.getElementById('announcement-detail-modal');
+            const closeDetailModal = document.getElementById('close-detail-modal');
+            
+            if (closeDetailModal) {
+                closeDetailModal.addEventListener('click', function() {
+                    if (announcementDetailModal) {
+                        announcementDetailModal.classList.add('hidden');
+                    }
+                });
+            }
+            
+            // 点击模态框外部关闭
+            if (announcementDetailModal) {
+                window.addEventListener('click', function(event) {
+                    if (event.target === announcementDetailModal) {
+                        announcementDetailModal.classList.add('hidden');
+                    }
+                });
+            }
+            
+            // 加载公告数据
+            loadAnnouncementsData();
+            updateAnnouncementsPageOnlyShowUi();
+
+            window.addEventListener('jobseekerNavBrandingReady', function() {
+                applyFilters();
+                updateAnnouncementsPageOnlyShowUi();
+            });
+
+            // 监听公告数据更新
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'announcementsData') {
+                    loadAnnouncementsData();
+                }
+            });
+        });
+        // 下载公告附件
+        window.downloadAnnouncementFile = function(announcementId, fileIndex) {
+            const ann = allAnnouncementsData.find(a => String(a.id) === String(announcementId));
+            if (!ann || !ann.files || !ann.files[fileIndex]) {
+                alert('文件不存在');
+                return;
+            }
+            
+            const file = ann.files[fileIndex];
+            if (typeof file === 'object' && file.data) {
+                // 如果有base64数据，直接下载
+                const link = document.createElement('a');
+                link.href = file.data;
+                link.download = file.name || 'download';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else {
+                alert('文件数据不可用');
+            }
+        };
+    </script>
+</body>
+</html>

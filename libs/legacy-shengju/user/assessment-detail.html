@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>职业测评 - 圣举人才网</title>
+    <!-- Tailwind CSS -->
+    <script>(function(){var w=console.warn;console.warn=function(){var m=(arguments[0]!=null&&typeof arguments[0]==='string')?arguments[0]:'';if(m.indexOf('cdn.tailwindcss.com')!==-1||m.indexOf('Tracking Prevention')!==-1)return;return w.apply(console,arguments);};})();</script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <script src="../js/api-config.js"></script>
+    <script src="../js/auth-helper.js"></script>
+    <script src="../js/user-navbar.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#1E40AF',
+                        accent: '#60A5FA',
+                        light: '#EFF6FF',
+                        dark: '#1E293B'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow {
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            }
+            .bg-gradient-blue {
+                background: linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%);
+            }
+            .progress-bar {
+                height: 0.5rem; background-color: #e5e7eb; border-radius: 9999px; overflow: hidden;
+            }
+            .progress-value {
+                height: 100%; background-color: #1E40AF; transition: all 0.3s;
+            }
+            .option-card {
+                border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 1rem; cursor: pointer;
+                transition: all 0.15s;
+            }
+            .option-card:hover { border-color: #1E40AF; background-color: #eff6ff; }
+            .option-card.selected {
+                border-color: #1E40AF; background-color: #eff6ff;
+            }
+        }
+    </style>
+</head>
+<body class="font-sans bg-gray-50">
+    <!-- 导航栏 -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+            <!-- Logo -->
+            <div class="flex items-center space-x-2">
+                <a href="../index.html" class="flex items-center space-x-2">
+                    <img data-site-brand-logo src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%231E40AF' rx='4'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-size='24' font-weight='bold' fill='white'%3E圣%3C/text%3E%3C/svg%3E" 
+                         alt="圣举人才网" class="h-10 w-10 rounded-full">
+                    <h1 class="text-2xl font-bold text-primary">圣举人才网</h1>
+                </a>
+                <span class="text-gray-400">|</span>
+                <span class="text-gray-600 font-medium">求职者中心</span>
+            </div>
+            
+            <!-- 导航链接（与首页完全一致） -->
+            <nav class="hidden md:flex items-center space-x-8">
+                <a href="index.html" class="text-primary font-medium border-b-2 border-primary">首页</a>
+                <a href="assessment.html" class="text-gray-700 hover:text-primary font-medium">测评中心</a>
+                <a href="recommendation.html" class="text-gray-700 hover:text-primary font-medium">岗位推荐</a>
+                <a href="announcements.html" class="text-gray-700 hover:text-primary font-medium">招聘公告</a>
+                <a href="talent-pool.html" class="text-gray-700 hover:text-primary font-medium">人才池</a>
+                <a href="payment.html" class="text-gray-700 hover:text-primary font-medium">付费服务</a>
+                <a href="profile.html" class="text-gray-700 hover:text-primary font-medium">个人中心</a>
+            </nav>
+            
+            <!-- 用户菜单 -->
+            <div class="flex items-center space-x-4">
+                <div class="hidden md:flex items-center space-x-2" id="user-menu">
+                    <img id="user-avatar-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="" class="h-8 w-8 rounded-full">
+                    <span class="text-gray-700" id="user-name-display"></span>
+                </div>
+                <button type="button" onclick="showLogoutModal()" class="hidden md:flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition">
+                    <i class="fa fa-sign-out"></i> 退出
+                </button>
+                <button class="md:hidden text-gray-700 focus:outline-none" id="menu-toggle">
+                    <i class="fa fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- 移动端菜单（与首页完全一致） -->
+        <div class="md:hidden hidden bg-white border-t border-gray-200" id="mobile-menu">
+            <div class="container mx-auto px-4 py-2">
+                <a href="index.html" class="block py-2 text-primary font-medium border-l-4 border-primary pl-2">首页</a>
+                <a href="assessment.html" class="block py-2 text-gray-700 hover:text-primary pl-2">测评中心</a>
+                <a href="recommendation.html" class="block py-2 text-gray-700 hover:text-primary pl-2">岗位推荐</a>
+                <a href="announcements.html" class="block py-2 text-gray-700 hover:text-primary pl-2">招聘公告</a>
+                <a href="talent-pool.html" class="block py-2 text-gray-700 hover:text-primary pl-2">人才池</a>
+                <a href="payment.html" class="block py-2 text-gray-700 hover:text-primary pl-2">付费服务</a>
+                <a href="profile.html" class="block py-2 text-gray-700 hover:text-primary pl-2">个人中心</a>
+                <div class="border-t border-gray-200 my-2"></div>
+                <button type="button" onclick="showLogoutModal()" class="block w-full text-left py-2 text-primary font-medium pl-2"><i class="fa fa-sign-out mr-2"></i>退出</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 退出确认弹窗 -->
+    <div id="logout-modal" class="fixed inset-0 z-50 hidden">
+        <div class="fixed inset-0 bg-black bg-opacity-50" onclick="closeLogoutModal()"></div>
+        <div class="fixed inset-0 flex items-center justify-center p-4">
+            <div class="bg-white rounded-xl shadow-xl max-w-sm w-full p-6">
+                <p class="text-center text-gray-800 mb-6">确定要退出登录吗？</p>
+                <div class="flex gap-3">
+                    <button type="button" onclick="closeLogoutModal()" class="flex-1 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">取消</button>
+                    <button type="button" onclick="confirmLogout()" class="flex-1 py-2 bg-primary text-white rounded-lg hover:bg-blue-700">确定退出</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+    function showLogoutModal() { document.getElementById('logout-modal').classList.remove('hidden'); }
+    function closeLogoutModal() { document.getElementById('logout-modal').classList.add('hidden'); }
+    function confirmLogout() {
+        if (typeof AuthHelper !== 'undefined') AuthHelper.clear('jobseeker');
+        else { localStorage.removeItem('authToken'); sessionStorage.removeItem('authToken'); localStorage.removeItem('userId'); localStorage.removeItem('userType'); localStorage.removeItem('username'); }
+        closeLogoutModal();
+        window.location.href = 'login.html';
+    }
+    </script>
+
+    <!-- 主内容区 -->
+    <main>
+        <!-- 测评标题 -->
+        <section class="bg-gradient-blue text-white py-8">
+            <div class="container mx-auto px-4">
+                <h1 class="text-3xl font-bold text-center">MBTI职业性格测评</h1>
+                <p class="text-center mt-2">探索你的性格类型，发现最适合的职业方向</p>
+            </div>
+        </section>
+        
+        <!-- 测评内容 -->
+        <section class="py-8">
+            <div class="container mx-auto px-4 min-w-[1200px]">
+                <!-- 测评进度 -->
+                <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-gray-700 font-medium">测评进度</span>
+                        <span class="text-primary font-medium" id="progress-text">1/30</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-value" style="width: 3.33%"></div>
+                    </div>
+                </div>
+                
+                <!-- 测评说明 -->
+                <div class="bg-white rounded-lg shadow-md p-6 mb-8" id="assessment-intro">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">测评说明</h2>
+                    <p class="text-gray-600 mb-4">
+                        MBTI（迈尔斯-布里格斯类型指标）是一种广泛使用的人格评估工具，用于了解人们在获取信息、做出决策和与他人互动方面的偏好。
+                    </p>
+                    <p class="text-gray-600 mb-6">
+                        本测评包含30个问题，预计需要10-15分钟完成。请根据你的真实情况和第一反应进行选择，不要过度思考。测评结果将帮助你了解自己的性格类型，并推荐适合的职业方向。
+                    </p>
+                    <div class="flex justify-center">
+                        <button id="start-assessment" class="bg-primary hover:bg-blue-700 text-white font-medium py-3 px-8 rounded-lg transition">
+                            开始测评
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 测评问题 -->
+                <div class="bg-white rounded-lg shadow-md p-6 mb-8 hidden" id="assessment-questions">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-bold text-gray-800" id="question-number">问题 1</h2>
+                        <div class="text-sm text-gray-500">
+                            <i class="fa fa-clock-o mr-1"></i>
+                            <span id="question-timer">00:00</span>
+                        </div>
+                    </div>
+                    
+                    <div id="question-container">
+                        <h3 class="text-lg font-medium text-gray-800 mb-6" id="question-text">
+                            在社交场合中，你通常更喜欢：
+                        </h3>
+                        
+                        <div class="space-y-4" id="options-container">
+                            <div class="option-card" data-value="E">
+                                <div class="flex items-center">
+                                    <div class="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center mr-3">
+                                        <div class="w-3 h-3 rounded-full bg-primary hidden"></div>
+                                    </div>
+                                    <span>A. 主动与他人交流，认识新朋友</span>
+                                </div>
+                            </div>
+                            
+                            <div class="option-card" data-value="I">
+                                <div class="flex items-center">
+                                    <div class="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center mr-3">
+                                        <div class="w-3 h-3 rounded-full bg-primary hidden"></div>
+                                    </div>
+                                    <span>B. 与熟悉的人交流，保持安静</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between mt-8">
+                        <button id="prev-question" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 px-6 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            上一题
+                        </button>
+                        <button id="next-question" class="bg-primary hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            下一题
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 测评结果 -->
+                <div class="bg-white rounded-lg shadow-md p-6 mb-8 hidden" id="assessment-result">
+                    <h2 class="text-xl font-bold text-gray-800 mb-6 text-center">测评结果</h2>
+                    
+                    <!-- 结果摘要 -->
+                    <div class="bg-blue-50 rounded-lg p-6 mb-8">
+                        <div class="flex flex-col md:flex-row items-center justify-between">
+                            <div class="mb-6 md:mb-0">
+                                <h3 class="text-lg font-medium text-gray-800 mb-2">你的性格类型是：</h3>
+                                <p class="text-4xl font-bold text-primary" id="personality-type">ESTJ</p>
+                                <p class="text-gray-600 mt-2" id="personality-title">监督者型 - 高效的组织者</p>
+                            </div>
+                            <div class="bg-white rounded-full w-32 h-32 flex items-center justify-center shadow-md">
+                                <span class="text-5xl font-bold text-primary" id="type-initials">ESTJ</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 性格特质分析 -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-medium text-gray-800 mb-4">性格特质分析</h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- 能量来源 -->
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-gray-700">能量来源</span>
+                                    <span class="text-primary font-medium" id="energy-type">外向 (E)</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-value" id="energy-bar" style="width: 70%"></div>
+                                </div>
+                                <div class="flex justify-between text-xs text-gray-500 mt-1">
+                                    <span>内向 (I)</span>
+                                    <span>外向 (E)</span>
+                                </div>
+                            </div>
+                            
+                            <!-- 信息获取 -->
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-gray-700">信息获取</span>
+                                    <span class="text-primary font-medium" id="info-type">感觉 (S)</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-value" id="info-bar" style="width: 60%"></div>
+                                </div>
+                                <div class="flex justify-between text-xs text-gray-500 mt-1">
+                                    <span>直觉 (N)</span>
+                                    <span>感觉 (S)</span>
+                                </div>
+                            </div>
+                            
+                            <!-- 决策方式 -->
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-gray-700">决策方式</span>
+                                    <span class="text-primary font-medium" id="decision-type">思考 (T)</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-value" id="decision-bar" style="width: 80%"></div>
+                                </div>
+                                <div class="flex justify-between text-xs text-gray-500 mt-1">
+                                    <span>情感 (F)</span>
+                                    <span>思考 (T)</span>
+                                </div>
+                            </div>
+                            
+                            <!-- 生活方式 -->
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-gray-700">生活方式</span>
+                                    <span class="text-primary font-medium" id="lifestyle-type">判断 (J)</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-value" id="lifestyle-bar" style="width: 75%"></div>
+                                </div>
+                                <div class="flex justify-between text-xs text-gray-500 mt-1">
+                                    <span>知觉 (P)</span>
+                                    <span>判断 (J)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 性格描述 -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-medium text-gray-800 mb-4">性格描述</h3>
+                        <p class="text-gray-600" id="personality-description">
+                            ESTJ型的人是高效的组织者，喜欢结构化和秩序。他们务实、逻辑、果断，善于组织人和资源来完成任务。他们重视传统和规则，是天生的领导者，能够在压力下保持冷静并做出明智的决策。
+                        </p>
+                    </div>
+                    
+                    <!-- 适合职业 -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-medium text-gray-800 mb-4">适合职业</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="suitable-jobs">
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <div class="flex items-center">
+                                    <i class="fa fa-check-circle text-green-500 mr-2"></i>
+                                    <span>项目经理</span>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <div class="flex items-center">
+                                    <i class="fa fa-check-circle text-green-500 mr-2"></i>
+                                    <span>行政主管</span>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <div class="flex items-center">
+                                    <i class="fa fa-check-circle text-green-500 mr-2"></i>
+                                    <span>财务经理</span>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <div class="flex items-center">
+                                    <i class="fa fa-check-circle text-green-500 mr-2"></i>
+                                    <span>人力资源总监</span>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <div class="flex items-center">
+                                    <i class="fa fa-check-circle text-green-500 mr-2"></i>
+                                    <span>运营总监</span>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <div class="flex items-center">
+                                    <i class="fa fa-check-circle text-green-500 mr-2"></i>
+                                    <span>管理顾问</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 职业发展建议 -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-medium text-gray-800 mb-4">职业发展建议</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-600" id="career-advice">
+                            <li>发挥你的组织能力和领导才能，寻求管理岗位</li>
+                            <li>学习灵活处理变化和不确定性，提高适应能力</li>
+                            <li>加强倾听和理解他人观点的能力，提高团队协作</li>
+                            <li>培养创新思维，在保持秩序的同时拥抱变革</li>
+                            <li>寻找能够发挥你务实和高效特质的行业和岗位</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- 完整报告 -->
+                    <div class="bg-gray-50 rounded-lg p-6 mb-8">
+                        <div class="flex flex-col md:flex-row items-center justify-between">
+                            <div>
+                                <h3 class="text-lg font-medium text-gray-800 mb-2">解锁完整报告</h3>
+                                <p class="text-gray-600">
+                                    包含详细的性格分析、职业规划建议、行业适配分析等
+                                </p>
+                            </div>
+                            <div class="mt-4 md:mt-0">
+                                <button id="unlock-report" class="bg-primary hover:bg-blue-700 text-white font-medium py-3 px-8 rounded-lg transition">
+                                    解锁完整报告 ¥99
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 分享和推荐 -->
+                    <div class="flex flex-col md:flex-row justify-between items-center">
+                        <div class="mb-4 md:mb-0">
+                            <span class="text-gray-700 mr-2">分享测评结果：</span>
+                            <div class="inline-flex space-x-2">
+                                <a href="#" class="bg-blue-100 hover:bg-blue-200 text-primary p-2 rounded-full transition">
+                                    <i class="fa fa-weixin"></i>
+                                </a>
+                                <a href="#" class="bg-blue-100 hover:bg-blue-200 text-primary p-2 rounded-full transition">
+                                    <i class="fa fa-weibo"></i>
+                                </a>
+                                <a href="#" class="bg-blue-100 hover:bg-blue-200 text-primary p-2 rounded-full transition">
+                                    <i class="fa fa-linkedin"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div>
+                            <a href="recommendation.html" class="text-primary hover:text-blue-700 font-medium">
+                                查看推荐岗位 <i class="fa fa-angle-right ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 付费提示 -->
+                <div class="bg-white rounded-lg shadow-md p-6 mb-8 hidden" id="payment-prompt">
+                    <div class="text-center mb-6">
+                        <div class="inline-block p-4 bg-blue-100 rounded-full mb-4">
+                            <i class="fa fa-lock text-primary text-3xl"></i>
+                        </div>
+                        <h2 class="text-xl font-bold text-gray-800 mb-2">该测评需要付费</h2>
+                        <p class="text-gray-600">
+                            互联网行业专属测评包，包含技术岗、产品岗、运营岗等专业测评
+                        </p>
+                    </div>
+                    
+                    <div class="bg-gray-50 rounded-lg p-6 mb-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-gray-700 font-medium">互联网行业测评包</span>
+                            <span class="text-primary font-bold text-xl">¥99</span>
+                        </div>
+                        <ul class="space-y-2 mb-6">
+                            <li class="flex items-start">
+                                <i class="fa fa-check text-green-500 mt-1 mr-2"></i>
+                                <span>技术岗编程能力测评</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-check text-green-500 mt-1 mr-2"></i>
+                                <span>产品岗PRD能力测评</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-check text-green-500 mt-1 mr-2"></i>
+                                <span>运营岗数据分析能力测评</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-check text-green-500 mt-1 mr-2"></i>
+                                <span>行业人才竞争力分析报告</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="flex flex-col space-y-4">
+                        <button id="pay-now" class="bg-primary hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition">
+                            立即支付 ¥99
+                        </button>
+                        <button id="back-to-assessments" class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium py-3 px-6 rounded-lg transition">
+                            返回测评列表
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-gray-800 text-white py-10">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">关于我们</h4>
+                    <p class="text-gray-400">
+                        圣举人才网是一家以测评驱动的招聘平台，致力于连接求职者与企业，通过科学测评实现精准匹配。
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">求职者服务</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="assessment.html" class="hover:text-white">职业测评</a></li>
+                        <li><a href="profile.html" class="hover:text-white">个人中心</a></li>
+                        <li><a href="recommendation.html" class="hover:text-white">岗位推荐</a></li>
+                        <li><a href="payment.html" class="hover:text-white">付费服务</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">帮助中心</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white">常见问题</a></li>
+                        <li><a href="#" class="hover:text-white">使用指南</a></li>
+                        <li><a href="#" class="hover:text-white">隐私政策</a></li>
+                        <li><a href="#" class="hover:text-white">用户协议</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">联系我们</h4>
+                    <ul class="space-y-2 text-gray-400" id="footer-contact">
+                        <li class="flex items-center">
+                            <i class="fa fa-phone mr-2"></i>
+                            <span id="footer-phone">400-123-4567</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fa fa-envelope mr-2"></i>
+                            <span id="footer-email">contact@shengju.com</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fa fa-map-marker mr-2"></i>
+                            <span id="footer-address">北京市海淀区中关村大街1号</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                <p id="footer-copyright">&copy; 2025 圣举人才网 版权所有</p>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        // 从管理端基本设置加载底部内容
+        function loadFooterContent() {
+            try {
+                const contactInfo = JSON.parse(localStorage.getItem('contactInfo') || '{}');
+                const siteName = localStorage.getItem('siteName') || '圣举人才网';
+                
+                if (contactInfo.phone) {
+                    const phoneEl = document.getElementById('footer-phone');
+                    if (phoneEl) phoneEl.textContent = contactInfo.phone;
+                }
+                
+                if (contactInfo.email) {
+                    const emailEl = document.getElementById('footer-email');
+                    if (emailEl) emailEl.textContent = contactInfo.email;
+                }
+                
+                if (contactInfo.address) {
+                    const addressEl = document.getElementById('footer-address');
+                    if (addressEl) addressEl.textContent = contactInfo.address;
+                }
+                
+                const copyrightEl = document.getElementById('footer-copyright');
+                if (copyrightEl) {
+                    const year = new Date().getFullYear();
+                    copyrightEl.textContent = `© ${year} ${siteName} 版权所有`;
+                }
+            } catch (e) {
+                console.error('加载底部内容失败:', e);
+            }
+        }
+        
+        // 页面加载时加载底部内容
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                loadFooterContent();
+            });
+        } else {
+            loadFooterContent();
+        }
+        
+        // 监听设置更新事件
+        window.addEventListener('contactInfoUpdated', function(e) {
+            loadFooterContent();
+        });
+    </script>
+
+    <!-- JavaScript -->
+    <script>
+        // 移动端菜单切换
+        document.getElementById('menu-toggle').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        // 测评数据
+        const questions = [
+            {
+                id: 1,
+                text: "在社交场合中，你通常更喜欢：",
+                options: [
+                    { value: "E", text: "A. 主动与他人交流，认识新朋友" },
+                    { value: "I", text: "B. 与熟悉的人交流，保持安静" }
+                ]
+            },
+            {
+                id: 2,
+                text: "你更倾向于：",
+                options: [
+                    { value: "S", text: "A. 关注具体的事实和细节" },
+                    { value: "N", text: "B. 关注抽象的概念和可能性" }
+                ]
+            },
+            {
+                id: 3,
+                text: "在做决策时，你更依赖：",
+                options: [
+                    { value: "T", text: "A. 逻辑和客观分析" },
+                    { value: "F", text: "B. 个人价值观和情感考虑" }
+                ]
+            },
+            {
+                id: 4,
+                text: "你更喜欢：",
+                options: [
+                    { value: "J", text: "A. 有计划、有组织的生活方式" },
+                    { value: "P", text: "B. 灵活、即兴的生活方式" }
+                ]
+            },
+            {
+                id: 5,
+                text: "当你遇到问题时，你通常会：",
+                options: [
+                    { value: "S", text: "A. 回顾过去的经验寻找解决方案" },
+                    { value: "N", text: "B. 思考新的可能性和创新方法" }
+                ]
+            },
+            {
+                id: 6,
+                text: "在团队中，你更擅长：",
+                options: [
+                    { value: "J", text: "A. 组织和协调团队工作" },
+                    { value: "P", text: "B. 适应变化并灵活应对" }
+                ]
+            },
+            {
+                id: 7,
+                text: "你更喜欢的工作环境是：",
+                options: [
+                    { value: "E", text: "A. 充满活力和互动的环境" },
+                    { value: "I", text: "B. 安静和专注的环境" }
+                ]
+            },
+            {
+                id: 8,
+                text: "在做决定时，你更看重：",
+                options: [
+                    { value: "T", text: "A. 公平和客观的标准" },
+                    { value: "F", text: "B. 和谐和人际关系" }
+                ]
+            }
+        ];
+        
+        // 性格类型数据
+        const personalityTypes = {
+            "ESTJ": {
+                title: "监督者型 - 高效的组织者",
+                description: "ESTJ型的人是高效的组织者，喜欢结构化和秩序。他们务实、逻辑、果断，善于组织人和资源来完成任务。他们重视传统和规则，是天生的领导者，能够在压力下保持冷静并做出明智的决策。",
+                energy: { type: "外向 (E)", value: 70 },
+                info: { type: "感觉 (S)", value: 60 },
+                decision: { type: "思考 (T)", value: 80 },
+                lifestyle: { type: "判断 (J)", value: 75 },
+                jobs: [
+                    "项目经理", "行政主管", "财务经理", 
+                    "人力资源总监", "运营总监", "管理顾问"
+                ],
+                advice: [
+                    "发挥你的组织能力和领导才能，寻求管理岗位",
+                    "学习灵活处理变化和不确定性，提高适应能力",
+                    "加强倾听和理解他人观点的能力，提高团队协作",
+                    "培养创新思维，在保持秩序的同时拥抱变革",
+                    "寻找能够发挥你务实和高效特质的行业和岗位"
+                ]
+            },
+            "INFP": {
+                title: "调停者型 - 理想主义的思想家",
+                description: "INFP型的人是理想主义者，充满热情和创造力。他们重视个人价值观和内在和谐，善于理解他人的情感和需求。他们具有强烈的同理心和洞察力，喜欢追求意义和价值，对美和艺术有敏锐的感知。",
+                energy: { type: "内向 (I)", value: 75 },
+                info: { type: "直觉 (N)", value: 80 },
+                decision: { type: "情感 (F)", value: 70 },
+                lifestyle: { type: "知觉 (P)", value: 65 },
+                jobs: [
+                    "作家", "心理咨询师", "艺术家", 
+                    "社会工作者", "教师", "设计师"
+                ],
+                advice: [
+                    "寻找能够表达你的创造力和理想主义的工作",
+                    "发展实际技能，将抽象想法转化为具体成果",
+                    "学会设定界限，避免过度投入他人的问题",
+                    "增强自信心，勇于表达自己的观点和需求",
+                    "寻找支持你价值观的工作环境和团队"
+                ]
+            }
+        };
+        
+        const API_BASE_URL = window.API_BASE_URL || 'http://127.0.0.1:3001/api/v1';
+        function getAuthToken() {
+            var a = (typeof AuthHelper !== 'undefined') ? AuthHelper.get('jobseeker') : null;
+            return (a && a.token) || localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+        }
+        async function apiRequest(url, options = {}) {
+            const token = getAuthToken();
+            const defaultOptions = {
+                headers: { 'Content-Type': 'application/json', ...(token && { 'Authorization': 'Bearer ' + token }) }
+            };
+            try {
+                const response = await fetch(url, { ...defaultOptions, ...options });
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        if (typeof AuthHelper !== 'undefined') AuthHelper.clear('jobseeker');
+                        else localStorage.removeItem('authToken');
+                        window.location.href = '../index.html';
+                        return null;
+                    }
+                    const err = await response.json().catch(() => ({}));
+                    throw new Error(err.message || 'HTTP ' + response.status);
+                }
+                return await response.json();
+            } catch (e) {
+                console.error('API请求失败:', e);
+                throw e;
+            }
+        }
+        
+        // 当前问题索引
+        let currentQuestionIndex = 0;
+        // 用户答案
+        const userAnswers = {};
+        // 测评类型
+        let assessmentType = '';
+        // 当前测评包ID（从URL获取）
+        let currentPackageId = null;
+        // 计时器
+        let timer = null;
+        let seconds = 0;
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取URL参数
+            const urlParams = new URLSearchParams(window.location.search);
+            const viewMode = urlParams.get('view');
+            const packageId = urlParams.get('id');
+            currentPackageId = packageId ? parseInt(packageId, 10) : null;
+            
+            // 如果是查看报告模式
+            if (viewMode === 'report' && packageId) {
+                showAssessmentReport(packageId);
+                return;
+            }
+            
+            // 获取测评类型
+            assessmentType = urlParams.get('type') || 'personality';
+            
+            // 检查是否需要付费
+            if (assessmentType === 'internet' || assessmentType === 'finance' || assessmentType === 'manufacturing') {
+                // 显示付费提示
+                document.getElementById('assessment-intro').classList.add('hidden');
+                document.getElementById('payment-prompt').classList.remove('hidden');
+                
+                // 返回测评列表按钮
+                document.getElementById('back-to-assessments').addEventListener('click', function() {
+                    window.location.href = 'assessment.html';
+                });
+                
+                // 立即支付按钮
+                document.getElementById('pay-now').addEventListener('click', function() {
+                    // 根据测评类型跳转到相应的付费页面
+                    let serviceType = 'industry';
+                    const windowFeatures = 'width=500,height=600,top=200,left=500,toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes';
+                    window.open(`payment-popup.html?service=${serviceType}`, '_blank', windowFeatures);
+                });
+                
+                return;
+            }
+            
+            // 开始测评按钮
+            document.getElementById('start-assessment').addEventListener('click', function() {
+                document.getElementById('assessment-intro').classList.add('hidden');
+                document.getElementById('assessment-questions').classList.remove('hidden');
+                loadQuestion(currentQuestionIndex);
+                startTimer();
+            });
+            
+            // 下一题按钮
+            document.getElementById('next-question').addEventListener('click', function() {
+                if (currentQuestionIndex < questions.length - 1) {
+                    currentQuestionIndex++;
+                    loadQuestion(currentQuestionIndex);
+                    updateProgress();
+                } else {
+                    // 完成测评
+                    finishAssessment();
+                }
+            });
+            
+            // 上一题按钮
+            document.getElementById('prev-question').addEventListener('click', function() {
+                if (currentQuestionIndex > 0) {
+                    currentQuestionIndex--;
+                    loadQuestion(currentQuestionIndex);
+                    updateProgress();
+                }
+            });
+            
+            // 解锁完整报告按钮
+            document.getElementById('unlock-report').addEventListener('click', function() {
+                // 跳转到AI职业报告购买页面
+                const windowFeatures = 'width=500,height=600,top=200,left=500,toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes';
+                window.open('payment-popup.html?service=ai-report', '_blank', windowFeatures);
+            });
+        });
+        
+        // 加载问题
+        function loadQuestion(index) {
+            const question = questions[index];
+            document.getElementById('question-number').textContent = `问题 ${question.id}`;
+            document.getElementById('question-text').textContent = question.text;
+            
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach(option => {
+                const optionCard = document.createElement('div');
+                optionCard.className = 'option-card';
+                if (userAnswers[question.id] === option.value) {
+                    optionCard.classList.add('selected');
+                }
+                optionCard.dataset.value = option.value;
+                
+                optionCard.innerHTML = `
+                    <div class="flex items-center">
+                        <div class="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center mr-3">
+                            <div class="w-3 h-3 rounded-full bg-primary ${userAnswers[question.id] === option.value ? '' : 'hidden'}"></div>
+                        </div>
+                        <span>${option.text}</span>
+                    </div>
+                `;
+                
+                optionCard.addEventListener('click', function() {
+                    // 移除其他选项的选中状态
+                    document.querySelectorAll('.option-card').forEach(card => {
+                        card.classList.remove('selected');
+                        card.querySelector('.w-3').classList.add('hidden');
+                    });
+                    
+                    // 添加当前选项的选中状态
+                    this.classList.add('selected');
+                    this.querySelector('.w-3').classList.remove('hidden');
+                    
+                    // 保存答案
+                    userAnswers[question.id] = option.value;
+                    
+                    // 启用下一题按钮
+                    document.getElementById('next-question').disabled = false;
+                });
+                
+                optionsContainer.appendChild(optionCard);
+            });
+            
+            // 更新按钮状态
+            document.getElementById('prev-question').disabled = index === 0;
+            document.getElementById('next-question').disabled = !userAnswers[question.id];
+            
+            // 如果是最后一题，更改按钮文本
+            document.getElementById('next-question').textContent = index === questions.length - 1 ? '完成测评' : '下一题';
+        }
+        
+        // 更新进度
+        function updateProgress() {
+            const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+            document.querySelector('.progress-value').style.width = `${progress}%`;
+            document.getElementById('progress-text').textContent = `${currentQuestionIndex + 1}/${questions.length}`;
+        }
+        
+        // 开始计时器
+        function startTimer() {
+            seconds = 0;
+            timer = setInterval(function() {
+                seconds++;
+                const minutes = Math.floor(seconds / 60);
+                const remainingSeconds = seconds % 60;
+                document.getElementById('question-timer').textContent = `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+        
+        // 完成测评
+        async function finishAssessment() {
+            clearInterval(timer);
+            
+            document.getElementById('assessment-questions').classList.add('hidden');
+            document.getElementById('assessment-result').classList.remove('hidden');
+            
+            const result = calculateResult();
+            displayResult(result);
+            
+            // 先写入本地「我的测评记录」，保证测评中心和个人中心能立即看到
+            saveAssessmentResult(result);
+            // 已登录且存在测评包ID：同步提交到后端持久化
+            const token = getAuthToken();
+            const packageId = currentPackageId;
+            if (token && packageId) {
+                const answers = Object.entries(userAnswers).map(([questionId, value]) => ({
+                    questionId: Number(questionId) || questionId,
+                    value: value
+                }));
+                const packages = JSON.parse(localStorage.getItem('assessmentPackages') || '[]');
+                const pkg = packages.find(p => p.id == packageId);
+                const packageName = (pkg && pkg.name) ? pkg.name : ('测评包#' + packageId);
+                try {
+                    const res = await apiRequest(`${API_BASE_URL}/assessments/${packageId}/submit`, {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            answers: answers,
+                            result: result,
+                            packageName: packageName,
+                            duration: seconds
+                        })
+                    });
+                    if (res && res.success) {
+                        if (window.showToast) window.showToast('测评已提交并保存', 'success');
+                    }
+                } catch (e) {
+                    console.warn('提交测评失败:', e.message);
+                }
+            }
+        }
+        
+        // 计算结果
+        function calculateResult() {
+            // 简化版计算，实际应该基于完整的MBTI算法
+            const counts = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
+            
+            // 统计答案
+            for (const [questionId, answer] of Object.entries(userAnswers)) {
+                counts[answer]++;
+            }
+            
+            // 确定类型
+            let type = '';
+            type += counts.E > counts.I ? 'E' : 'I';
+            type += counts.S > counts.N ? 'S' : 'N';
+            type += counts.T > counts.F ? 'T' : 'F';
+            type += counts.J > counts.P ? 'J' : 'P';
+            
+            // 返回性格类型数据
+            return personalityTypes[type] || personalityTypes['ESTJ'];
+        }
+        
+        // 显示结果
+        function displayResult(result) {
+            // 设置性格类型
+            const type = Object.keys(personalityTypes).find(key => personalityTypes[key] === result);
+            document.getElementById('personality-type').textContent = type;
+            document.getElementById('type-initials').textContent = type;
+            document.getElementById('personality-title').textContent = result.title;
+            document.getElementById('personality-description').textContent = result.description;
+            
+            // 设置特质分析
+            document.getElementById('energy-type').textContent = result.energy.type;
+            document.getElementById('energy-bar').style.width = `${result.energy.value}%`;
+            
+            document.getElementById('info-type').textContent = result.info.type;
+            document.getElementById('info-bar').style.width = `${result.info.value}%`;
+            
+            document.getElementById('decision-type').textContent = result.decision.type;
+            document.getElementById('decision-bar').style.width = `${result.decision.value}%`;
+            
+            document.getElementById('lifestyle-type').textContent = result.lifestyle.type;
+            document.getElementById('lifestyle-bar').style.width = `${result.lifestyle.value}%`;
+            
+            // 设置适合职业
+            const jobsContainer = document.getElementById('suitable-jobs');
+            jobsContainer.innerHTML = '';
+            
+            result.jobs.forEach(job => {
+                const jobElement = document.createElement('div');
+                jobElement.className = 'bg-gray-50 rounded-lg p-4';
+                jobElement.innerHTML = `
+                    <div class="flex items-center">
+                        <i class="fa fa-check-circle text-green-500 mr-2"></i>
+                        <span>${job}</span>
+                    </div>
+                `;
+                jobsContainer.appendChild(jobElement);
+            });
+            
+            // 设置职业发展建议
+            const adviceContainer = document.getElementById('career-advice');
+            adviceContainer.innerHTML = '';
+            
+            result.advice.forEach(advice => {
+                const adviceElement = document.createElement('li');
+                adviceElement.textContent = advice;
+                adviceContainer.appendChild(adviceElement);
+            });
+        }
+        
+        // 保存测评结果到本地存储（assessmentResults + userAssessmentRecords，保证「我的测评记录」和图表能正确展示）
+        function saveAssessmentResult(result) {
+            let results = JSON.parse(localStorage.getItem('assessmentResults')) || [];
+            results.push({
+                type: assessmentType,
+                date: new Date().toISOString(),
+                result: result,
+                duration: seconds
+            });
+            localStorage.setItem('assessmentResults', JSON.stringify(results));
+
+            var packageId = currentPackageId;
+            if (packageId == null) packageId = assessmentType || 'personality';
+            var packages = JSON.parse(localStorage.getItem('assessmentPackages') || '[]');
+            var pkg = packages.find(function(p) { return p.id == packageId; });
+            var packageName = (pkg && pkg.name) ? pkg.name : ('测评包#' + packageId);
+            var resultText = (result && result.title) ? result.title : (result && result.type) ? result.type : (result && result.score != null) ? (result.score + '分') : '已完成';
+            var score = (result && (result.score != null || result.totalScore != null)) ? (result.totalScore != null ? result.totalScore : result.score) : null;
+            var record = {
+                id: 'pkg_' + packageId + '_' + Date.now(),
+                packageId: packageId,
+                packageName: packageName,
+                completedDate: new Date().toISOString().split('T')[0],
+                completedAt: new Date().toISOString(),
+                result: resultText,
+                score: score != null ? score : 0
+            };
+            var userRecords = JSON.parse(localStorage.getItem('userAssessmentRecords') || '[]');
+            userRecords.unshift(record);
+            localStorage.setItem('userAssessmentRecords', JSON.stringify(userRecords));
+        }
+        
+        // 显示测评报告（关联报告模板）
+        function showAssessmentReport(packageId) {
+            // 隐藏所有其他内容
+            document.getElementById('assessment-intro')?.classList.add('hidden');
+            document.getElementById('assessment-questions')?.classList.add('hidden');
+            document.getElementById('assessment-result')?.classList.add('hidden');
+            document.getElementById('payment-prompt')?.classList.add('hidden');
+            
+            // 创建报告容器
+            const mainSection = document.querySelector('section.py-8');
+            if (!mainSection) return;
+            
+            // 获取测评记录
+            const records = JSON.parse(localStorage.getItem('userAssessmentRecords') || '[]');
+            const record = records.find(r => (r.packageId || r.id) == packageId);
+            
+            if (!record) {
+                mainSection.innerHTML = `
+                    <div class="container mx-auto px-4">
+                        <div class="bg-white rounded-lg shadow-md p-8 text-center">
+                            <i class="fa fa-exclamation-triangle text-yellow-500 text-5xl mb-4"></i>
+                            <h2 class="text-2xl font-bold text-gray-800 mb-4">未找到测评记录</h2>
+                            <p class="text-gray-600 mb-6">该测评记录不存在或已被删除</p>
+                            <a href="assessment.html" class="inline-block bg-primary hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition">
+                                返回测评中心
+                            </a>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            // 获取测评包信息
+            const packages = JSON.parse(localStorage.getItem('assessmentPackages') || '[]');
+            const pkg = packages.find(p => p.id == packageId);
+            
+            // 获取报告模板
+            const templates = JSON.parse(localStorage.getItem('reportTemplates') || '[]');
+            // 优先查找匹配的模板（根据测评包类型和适用端）
+            let template = templates.find(t => 
+                t.platform === 'jobseeker' && 
+                t.status === 'active' &&
+                (t.type === 'comprehensive' || t.type === 'career')
+            );
+            
+            // 如果没有找到，使用第一个可用的模板
+            if (!template && templates.length > 0) {
+                template = templates.find(t => t.platform === 'jobseeker' && t.status === 'active') || templates[0];
+            }
+            
+            // 获取用户简历信息（模拟）
+            const userResume = JSON.parse(localStorage.getItem('userResume') || '{}');
+            const userProfile = {
+                name: userResume.name || '求职者',
+                age: userResume.age || 25,
+                education: userResume.education || '本科',
+                major: userResume.major || '计算机科学',
+                workExperience: userResume.workExperience || [],
+                skills: userResume.skills || []
+            };
+            
+            // 生成报告内容
+            const reportContent = generateReportFromTemplate(template, record, pkg, userProfile);
+            
+            // 显示报告
+            mainSection.innerHTML = `
+                <div class="container mx-auto px-4">
+                    <div class="bg-white rounded-lg shadow-md p-8">
+                        <div class="flex justify-between items-center mb-6">
+                            <div>
+                                <h1 class="text-3xl font-bold text-gray-800 mb-2">${record.packageName || '测评报告'}</h1>
+                                <p class="text-gray-600">完成时间：${record.completedDate || record.date || ''}</p>
+                            </div>
+                            <div class="flex space-x-3">
+                                <button onclick="downloadReport('pdf')" class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition flex items-center">
+                                    <i class="fa fa-file-pdf-o mr-2"></i>下载PDF
+                                </button>
+                                <button onclick="downloadReport('word')" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition flex items-center">
+                                    <i class="fa fa-file-word-o mr-2"></i>下载Word
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="border-t border-gray-200 pt-6">
+                            <div id="report-content" class="prose max-w-none">
+                                ${reportContent}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // 根据模板生成报告内容
+        function generateReportFromTemplate(template, record, pkg, userProfile) {
+            if (!template) {
+                // 如果没有模板，使用默认报告格式
+                return generateDefaultReport(record, pkg, userProfile);
+            }
+            
+            let content = template.content || template.templateContent || '';
+            
+            // 替换变量
+            const variables = {
+                'user.name': userProfile.name,
+                'user.age': userProfile.age,
+                'user.education': userProfile.education,
+                'user.major': userProfile.major,
+                'assessment.scores.total': record.score || record.result || '未评分',
+                'assessment.result': record.result || '未完成',
+                'assessment.packageName': record.packageName || pkg?.name || '未知测评',
+                'assessment.completedDate': record.completedDate || record.date || '',
+                'date.today': new Date().toLocaleDateString('zh-CN'),
+                'date.year': new Date().getFullYear(),
+                'date.month': new Date().getMonth() + 1,
+                'date.day': new Date().getDate()
+            };
+            
+            // 替换所有变量
+            Object.keys(variables).forEach(key => {
+                const regex = new RegExp(`\\$\\{${key}\\}`, 'g');
+                content = content.replace(regex, variables[key]);
+            });
+            
+            // 处理技能列表
+            if (userProfile.skills && userProfile.skills.length > 0) {
+                const top3Skills = userProfile.skills.slice(0, 3).join('、');
+                content = content.replace(/\$\{assessment\.skills\.top3\}/g, top3Skills);
+            }
+            
+            // 处理工作经历
+            if (userProfile.workExperience && userProfile.workExperience.length > 0) {
+                const workExp = userProfile.workExperience.map(exp => 
+                    `${exp.company || ''} - ${exp.position || ''} (${exp.duration || ''})`
+                ).join('；');
+                content = content.replace(/\$\{user\.workExperience\}/g, workExp);
+            }
+            
+            return content;
+        }
+        
+        // 生成默认报告
+        function generateDefaultReport(record, pkg, userProfile) {
+            return `
+                <h1>职业发展评估报告</h1>
+                <p>尊敬的 ${userProfile.name}，</p>
+                <p>基于您的测评结果，我们为您生成了以下职业发展评估报告。</p>
+                
+                <h2>一、测评基本信息</h2>
+                <p><strong>测评名称：</strong>${record.packageName || '未知测评'}</p>
+                <p><strong>完成时间：</strong>${record.completedDate || record.date || ''}</p>
+                <p><strong>测评结果：</strong>${record.result || '未完成'}</p>
+                ${record.score ? `<p><strong>综合评分：</strong>${record.score}分</p>` : ''}
+                
+                <h2>二、个人基本信息</h2>
+                <p><strong>姓名：</strong>${userProfile.name}</p>
+                <p><strong>年龄：</strong>${userProfile.age}岁</p>
+                <p><strong>学历：</strong>${userProfile.education}</p>
+                ${userProfile.major ? `<p><strong>专业：</strong>${userProfile.major}</p>` : ''}
+                
+                <h2>三、总体评分</h2>
+                <p>您的综合评分为：<strong>${record.score || '未评分'}</strong> 分</p>
+                
+                <h2>四、优势技能</h2>
+                <p>${userProfile.skills && userProfile.skills.length > 0 
+                    ? `您的优势技能包括：${userProfile.skills.slice(0, 3).join('、')}` 
+                    : '暂无技能信息'}</p>
+                
+                <h2>五、发展建议</h2>
+                <p>基于您的测评结果，建议您：</p>
+                <ul>
+                    <li>继续发挥您的优势技能，在相关领域深耕</li>
+                    <li>关注行业发展趋势，持续学习新技能</li>
+                    <li>积极参与职业发展相关活动，拓展人脉</li>
+                </ul>
+                
+                <h2>六、岗位推荐</h2>
+                <p>根据您的测评结果，我们推荐您关注以下类型的岗位：</p>
+                <ul>
+                    <li>与您专业背景相关的技术岗位</li>
+                    <li>能够发挥您优势技能的管理岗位</li>
+                    <li>具有良好发展前景的新兴行业岗位</li>
+                </ul>
+                
+                <p style="margin-top: 30px; color: #666;">报告生成日期：${new Date().toLocaleDateString('zh-CN')}</p>
+            `;
+        }
+        
+        // 下载报告
+        function downloadReport(format) {
+            const reportContent = document.getElementById('report-content');
+            if (!reportContent) return;
+            
+            if (format === 'pdf') {
+                // 实际项目中应该使用PDF生成库，这里只是模拟
+                alert('PDF下载功能需要后端支持，当前为演示版本');
+            } else if (format === 'word') {
+                // 实际项目中应该使用Word生成库，这里只是模拟
+                alert('Word下载功能需要后端支持，当前为演示版本');
+            }
+        }
+        
+        window.downloadReport = downloadReport;
+    </script>
+</body>
+</html>

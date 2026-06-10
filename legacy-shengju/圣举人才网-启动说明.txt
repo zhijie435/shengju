@@ -1,0 +1,110 @@
+========================================
+  圣举人才网 - 启动说明
+========================================
+
+一、无法启动时请按下面逐项检查
+----------------------------------------
+
+1. 运行环境是否齐全
+
+   (1) Node.js（必须）
+       - 未安装：请到 https://nodejs.org/ 下载并安装（建议 LTS 版本）
+       - 安装后：重新打开「启动圣举人才网.bat」或重新开一个命令行再运行
+
+   (2) MySQL（使用注册、登录、简历、岗位等存库功能时必须）
+       - 未安装：请先安装 MySQL，并记住 root 密码
+       - 已安装：需先创建数据库并执行建表脚本（见下文「二、数据库配置」）
+
+2. 后端依赖是否已安装
+
+   - 首次运行：脚本会自动执行 npm install；若失败，请手动在命令行执行：
+     cd backend
+     npm install
+   - 若提示“找不到 node”或“npm 不是内部或外部命令”，说明 Node.js 未正确安装或未加入环境变量。
+
+3. 数据库与配置（需要存数据时必做）
+
+   - 在 backend 目录下应有 .env 文件（脚本会从 .env.example 自动复制一份）
+   - 用记事本打开 backend\.env，根据本机 MySQL 情况修改：
+     DB_HOST=localhost
+     DB_USER=root
+     DB_PASSWORD=你的MySQL密码
+     DB_NAME=shengju_exam
+   - 在 MySQL 中创建数据库并执行建表脚本（见下文）。
+
+
+二、数据库配置（与题库阅卷系统共用同一数据库时）
+----------------------------------------
+
+1. 打开 MySQL 命令行或 Navicat 等工具，执行：
+
+   CREATE DATABASE IF NOT EXISTS shengju_exam DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+   USE shengju_exam;
+
+2. 执行建表脚本（在项目目录下执行，将下面的路径改成你本机的 backend 路径）：
+
+   mysql -u root -p shengju_exam < backend\scripts\init-db.sql
+
+   若使用 init-db.sql 中的 shengju 库，请先建 shengju 并执行 init-db.sql；公告功能需再执行：
+   mysql -u root -p shengju < backend\scripts\init-announcements.sql
+
+   人才池项目、候选人、岗位申请等需再执行：
+   mysql -u root -p shengju < backend\scripts\migrate-candidates-projects.sql
+
+   或在 MySQL 客户端中： source 你的项目路径/backend/scripts/init-db.sql;
+   公告表： source 你的项目路径/backend/scripts/init-announcements.sql;
+   人才池/项目/候选人表： source 你的项目路径/backend/scripts/migrate-candidates-projects.sql;
+
+
+三、启动方式
+----------------------------------------
+
+- 推荐：双击「启动圣举人才网.bat」
+  - 会自动检测 Node.js、安装依赖（如需）、启动后端并打开浏览器。
+  - 若启动失败，会弹出一个黑色窗口（圣举人才网-API），里面有报错信息，请根据报错排查。
+
+- 手动启动后端（用于排查问题）：
+  1. 打开 cmd，进入项目目录下的 backend 文件夹
+  2. 执行: node src/index.js
+  3. 若报错 “Cannot find module 'xxx'”，说明需要在该目录执行: npm install
+  4. 若报错 “connect ECONNREFUSED” 或 “Unknown database”，说明 MySQL 未启动或未建库/未配置 .env
+
+
+四、常见报错与处理
+----------------------------------------
+
+- “node 不是内部或外部命令”
+  → 未安装 Node.js 或未勾选“添加到 PATH”，请重新安装 Node.js 并勾选添加环境变量。
+
+- “Cannot find module 'express'”（或 mysql2、bcrypt 等）
+  → 在 backend 目录执行: npm install
+
+- “connect ECONNREFUSED 127.0.0.1:3306”
+  → MySQL 未启动，或 .env 里 DB_HOST/DB_PORT 填错。请启动 MySQL 并检查 .env。
+
+- “Unknown database 'shengju_exam'”
+  → 未创建数据库，请按上面「二、数据库配置」建库并执行 init-db.sql。
+
+- 浏览器能打开页面，但登录/注册一直失败或提示无法连接
+  → 说明后端未启动或端口不是 3001。请确认「圣举人才网-API」窗口仍在运行，且本机未占用 3001 端口。
+
+- 企业端人才池项目发布失败或提示「表不存在」
+  → 需执行 migrate-candidates-projects.sql 创建 sj_projects 等表（见上文「二、数据库配置」）。
+
+- 企业端发布岗位提示「请先完成企业认证审核」
+  → 测试期间可在 backend\.env 中设置 TEST_MODE=1，跳过企业认证校验。
+
+
+五、项目结构说明（便于排查）
+----------------------------------------
+
+- 后端和数据库相关代码都在，不缺少文件：
+  - backend/
+    - src/          后端接口（auth、users、jobs 等）
+    - scripts/
+      init-db.sql   建表脚本（sj_ 前缀，与阅卷系统同库）
+    - .env          配置（从 .env.example 复制后可改）
+    - package.json  依赖说明
+  - 启动圣举人才网.bat  一键启动脚本
+
+若按上述步骤仍无法启动，请把「圣举人才网-API」窗口中的完整报错内容保存下来，便于进一步排查。

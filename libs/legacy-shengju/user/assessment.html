@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测评中心 - 圣举人才网</title>
+    <!-- Tailwind CSS -->
+    <script>(function(){var w=console.warn;console.warn=function(){var m=(arguments[0]!=null&&typeof arguments[0]==='string')?arguments[0]:'';if(m.indexOf('cdn.tailwindcss.com')!==-1||m.indexOf('Tracking Prevention')!==-1)return;return w.apply(console,arguments);};})();</script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <script src="../js/api-config.js"></script>
+    <script src="../js/auth-helper.js"></script>
+    <script src="../js/user-navbar.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#1E40AF',
+                        accent: '#60A5FA',
+                        light: '#EFF6FF',
+                        dark: '#1E293B'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow {
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            }
+            .bg-gradient-blue {
+                background: linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%);
+            }
+        }
+    </style>
+</head>
+<body class="font-sans bg-gray-50">
+    <!-- 导航栏 -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+            <!-- Logo -->
+            <div class="flex items-center space-x-2">
+                <a href="../index.html" class="flex items-center space-x-2">
+                    <img data-site-brand-logo src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%231E40AF' rx='4'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-size='24' font-weight='bold' fill='white'%3E圣%3C/text%3E%3C/svg%3E" 
+                         alt="圣举人才网" class="h-10 w-10 rounded-full">
+                    <h1 class="text-2xl font-bold text-primary">圣举人才网</h1>
+                </a>
+                <span class="text-gray-400">|</span>
+                <span class="text-gray-600 font-medium">求职者中心</span>
+            </div>
+            
+            <!-- 导航链接（与首页完全一致） -->
+            <nav class="hidden md:flex items-center space-x-8">
+                <a href="index.html" class="text-primary font-medium border-b-2 border-primary">首页</a>
+                <a href="assessment.html" class="text-gray-700 hover:text-primary font-medium">测评中心</a>
+                <a href="recommendation.html" class="text-gray-700 hover:text-primary font-medium">岗位推荐</a>
+                <a href="announcements.html" class="text-gray-700 hover:text-primary font-medium">招聘公告</a>
+                <a href="talent-pool.html" class="text-gray-700 hover:text-primary font-medium">人才池</a>
+                <a href="payment.html" class="text-gray-700 hover:text-primary font-medium">付费服务</a>
+                <a href="profile.html" class="text-gray-700 hover:text-primary font-medium">个人中心</a>
+            </nav>
+            
+            <!-- 用户菜单 -->
+            <div class="flex items-center space-x-4">
+                <div class="hidden md:flex items-center space-x-2" id="user-menu">
+                    <img id="user-avatar-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="" class="h-8 w-8 rounded-full">
+                    <span class="text-gray-700" id="user-name-display"></span>
+                </div>
+                <button type="button" onclick="showLogoutModal()" class="hidden md:flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition">
+                    <i class="fa fa-sign-out"></i> 退出
+                </button>
+                <button class="md:hidden text-gray-700 focus:outline-none" id="menu-toggle">
+                    <i class="fa fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- 移动端菜单（与首页完全一致） -->
+        <div class="md:hidden hidden bg-white border-t border-gray-200" id="mobile-menu">
+            <div class="container mx-auto px-4 py-2">
+                <a href="index.html" class="block py-2 text-primary font-medium border-l-4 border-primary pl-2">首页</a>
+                <a href="assessment.html" class="block py-2 text-gray-700 hover:text-primary pl-2">测评中心</a>
+                <a href="recommendation.html" class="block py-2 text-gray-700 hover:text-primary pl-2">岗位推荐</a>
+                <a href="announcements.html" class="block py-2 text-gray-700 hover:text-primary pl-2">招聘公告</a>
+                <a href="talent-pool.html" class="block py-2 text-gray-700 hover:text-primary pl-2">人才池</a>
+                <a href="payment.html" class="block py-2 text-gray-700 hover:text-primary pl-2">付费服务</a>
+                <a href="profile.html" class="block py-2 text-gray-700 hover:text-primary pl-2">个人中心</a>
+                <div class="border-t border-gray-200 my-2"></div>
+                <button type="button" onclick="showLogoutModal()" class="block w-full text-left py-2 text-primary font-medium pl-2"><i class="fa fa-sign-out mr-2"></i>退出</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 退出确认弹窗 -->
+    <div id="logout-modal" class="fixed inset-0 z-50 hidden">
+        <div class="fixed inset-0 bg-black bg-opacity-50" onclick="closeLogoutModal()"></div>
+        <div class="fixed inset-0 flex items-center justify-center p-4">
+            <div class="bg-white rounded-xl shadow-xl max-w-sm w-full p-6">
+                <p class="text-center text-gray-800 mb-6">确定要退出登录吗？</p>
+                <div class="flex gap-3">
+                    <button type="button" onclick="closeLogoutModal()" class="flex-1 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">取消</button>
+                    <button type="button" onclick="confirmLogout()" class="flex-1 py-2 bg-primary text-white rounded-lg hover:bg-blue-700">确定退出</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+    function showLogoutModal() { document.getElementById('logout-modal').classList.remove('hidden'); }
+    function closeLogoutModal() { document.getElementById('logout-modal').classList.add('hidden'); }
+    function confirmLogout() {
+        if (typeof AuthHelper !== 'undefined') AuthHelper.clear('jobseeker');
+        else { localStorage.removeItem('authToken'); sessionStorage.removeItem('authToken'); localStorage.removeItem('userId'); localStorage.removeItem('userType'); localStorage.removeItem('username'); }
+        closeLogoutModal();
+        window.location.href = 'login.html';
+    }
+    </script>
+
+    <!-- 主内容区 -->
+    <main>
+        <!-- 页面标题 -->
+        <section class="bg-gradient-blue text-white py-8">
+            <div class="container mx-auto px-4">
+                <h1 class="text-3xl font-bold text-center">测评中心</h1>
+                <p class="text-center mt-2">通过科学测评，发现你的职业优势和发展方向</p>
+            </div>
+        </section>
+        
+        <!-- 测评中心内容 -->
+        <section class="py-8">
+            <div class="container mx-auto px-4">
+                <!-- 测评分类 -->
+                <div class="flex flex-wrap justify-center gap-4 mb-8">
+                    <button class="filter-btn bg-primary text-white px-6 py-2 rounded-full font-medium" data-filter="all">
+                        全部测评
+                    </button>
+                    <button class="filter-btn bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-6 py-2 rounded-full font-medium" data-filter="personality">
+                        性格测评
+                    </button>
+                    <button class="filter-btn bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-6 py-2 rounded-full font-medium" data-filter="ability">
+                        能力测评
+                    </button>
+                    <button class="filter-btn bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-6 py-2 rounded-full font-medium" data-filter="interest">
+                        兴趣测评
+                    </button>
+                    <button class="filter-btn bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-6 py-2 rounded-full font-medium" data-filter="industry">
+                        行业测评
+                    </button>
+                    <button class="filter-btn bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-6 py-2 rounded-full font-medium" data-filter="career">
+                        职业倾向
+                    </button>
+                </div>
+                
+                <!-- 测评包列表（含系统测评包） -->
+                <div class="mb-12">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">测评包列表</h2>
+                    <div id="assessments-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- 测评包将通过JavaScript动态加载 -->
+                    </div>
+                </div>
+                
+
+                
+                <!-- 测评记录 -->
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">我的测评记录</h2>
+                    
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            测评名称
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            完成时间
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            测评结果
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            操作
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="assessment-records-tbody" class="bg-white divide-y divide-gray-200">
+                                    <!-- 测评记录将通过JavaScript动态加载 -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- 分页 -->
+                        <div id="assessment-records-pagination" class="px-6 py-4 border-t border-gray-200 bg-gray-50 flex flex-col sm:flex-row items-center justify-between">
+                            <!-- 分页内容将通过JavaScript动态加载 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 测评包支付弹窗（与企业端一致：微信/支付宝二维码 + 银行转账） -->
+    <div id="payment-modal-pkg" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white z-10">
+                <h3 class="text-lg font-semibold text-gray-900">测评包购买</h3>
+                <button type="button" onclick="closePaymentModalPkg()" class="text-gray-400 hover:text-gray-600"><i class="fa fa-times text-xl"></i></button>
+            </div>
+            <div class="px-6 py-6">
+                <div id="payment-modal-pkg-plan-info" class="mb-6 p-4 bg-gray-50 rounded-lg"></div>
+                <div class="mb-6">
+                    <h4 class="text-md font-medium text-gray-900 mb-4">选择支付方式</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <button type="button" class="payment-method-btn-pkg active px-4 py-3 border-2 border-primary bg-primary/5 rounded-lg text-center" data-method="wechat">
+                            <i class="fa fa-weixin text-3xl text-green-500 mb-2"></i>
+                            <p class="font-medium">微信支付</p>
+                        </button>
+                        <button type="button" class="payment-method-btn-pkg px-4 py-3 border-2 border-gray-200 rounded-lg text-center hover:border-primary hover:bg-primary/5 transition" data-method="alipay">
+                            <i class="fa fa-credit-card text-3xl text-blue-500 mb-2"></i>
+                            <p class="font-medium">支付宝</p>
+                        </button>
+                        <button type="button" class="payment-method-btn-pkg px-4 py-3 border-2 border-gray-200 rounded-lg text-center hover:border-primary hover:bg-primary/5 transition" data-method="bank">
+                            <i class="fa fa-university text-3xl text-gray-500 mb-2"></i>
+                            <p class="font-medium">银行转账</p>
+                        </button>
+                    </div>
+                </div>
+                <div id="payment-content-pkg"></div>
+                <div class="mt-6 flex justify-end">
+                    <button type="button" onclick="confirmPaymentDonePkg()" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg"><i class="fa fa-check mr-2"></i>已完成支付</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="bg-gray-800 text-white py-10">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">关于我们</h4>
+                    <p class="text-gray-400">
+                        圣举人才网是一家以测评驱动的招聘平台，致力于连接求职者与企业，通过科学测评实现精准匹配。
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">求职者服务</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="assessment.html" class="hover:text-white">职业测评</a></li>
+                        <li><a href="profile.html" class="hover:text-white">个人中心</a></li>
+                        <li><a href="recommendation.html" class="hover:text-white">岗位推荐</a></li>
+                        <li><a href="payment.html" class="hover:text-white">付费服务</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">帮助中心</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white">常见问题</a></li>
+                        <li><a href="#" class="hover:text-white">使用指南</a></li>
+                        <li><a href="#" class="hover:text-white">隐私政策</a></li>
+                        <li><a href="#" class="hover:text-white">用户协议</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">联系我们</h4>
+                    <ul class="space-y-2 text-gray-400" id="footer-contact">
+                        <li class="flex items-center">
+                            <i class="fa fa-phone mr-2"></i>
+                            <span id="footer-phone">400-123-4567</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fa fa-envelope mr-2"></i>
+                            <span id="footer-email">contact@shengju.com</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fa fa-map-marker mr-2"></i>
+                            <span id="footer-address">北京市海淀区中关村大街1号</span>
+                        </li>
+                    </ul>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                <p id="footer-copyright">&copy; 2025 圣举人才网 版权所有</p>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        // 从管理端基本设置加载底部内容
+        function loadFooterContent() {
+            try {
+                const contactInfo = JSON.parse(localStorage.getItem('contactInfo') || '{}');
+                const siteName = localStorage.getItem('siteName') || '圣举人才网';
+                
+                if (contactInfo.phone) {
+                    const phoneEl = document.getElementById('footer-phone');
+                    if (phoneEl) phoneEl.textContent = contactInfo.phone;
+                }
+                
+                if (contactInfo.email) {
+                    const emailEl = document.getElementById('footer-email');
+                    if (emailEl) emailEl.textContent = contactInfo.email;
+                }
+                
+                if (contactInfo.address) {
+                    const addressEl = document.getElementById('footer-address');
+                    if (addressEl) addressEl.textContent = contactInfo.address;
+                }
+                
+                const copyrightEl = document.getElementById('footer-copyright');
+                if (copyrightEl) {
+                    const year = new Date().getFullYear();
+                    copyrightEl.textContent = `© ${year} ${siteName} 版权所有`;
+                }
+            } catch (e) {
+                console.error('加载底部内容失败:', e);
+            }
+        }
+        
+        // 页面加载时加载底部内容
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                loadFooterContent();
+            });
+        } else {
+            loadFooterContent();
+        }
+        
+        // 监听设置更新事件
+        window.addEventListener('contactInfoUpdated', function(e) {
+            loadFooterContent();
+        });
+    </script>
+
+    <!-- JavaScript -->
+    <script>
+        const API_BASE_URL = window.API_BASE_URL || 'http://127.0.0.1:3001/api/v1';
+        /** 最近一次 exam-packages 请求：用于提示「仅系统测评」原因 */
+        function getAuthToken() {
+            var a = (typeof AuthHelper !== 'undefined') ? AuthHelper.get('jobseeker') : null;
+            return (a && a.token) || localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+        }
+        async function apiRequest(url, options = {}) {
+            const token = getAuthToken();
+            const defaultOptions = {
+                headers: { 'Content-Type': 'application/json', ...(token && { 'Authorization': 'Bearer ' + token }) }
+            };
+            try {
+                const response = await fetch(url, { ...defaultOptions, ...options });
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        if (typeof AuthHelper !== 'undefined') AuthHelper.clear('jobseeker');
+                        else localStorage.removeItem('authToken');
+                        window.location.href = '../index.html';
+                        return null;
+                    }
+                    const err = await response.json().catch(() => ({}));
+                    throw new Error(err.message || 'HTTP ' + response.status);
+                }
+                return await response.json();
+            } catch (e) {
+                console.error('API请求失败:', e);
+                throw e;
+            }
+        }
+
+        // 移动端菜单切换
+        document.getElementById('menu-toggle').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        // 获取支付设置（与企业管理端一致：管理端配置的二维码与银行账户）
+        function getPaymentSettings() {
+            var paymentData = JSON.parse(localStorage.getItem('paymentSettings') || 'null');
+            if (!paymentData) {
+                var systemSettings = JSON.parse(localStorage.getItem('systemSettings') || '{}');
+                if (systemSettings.payment) paymentData = systemSettings.payment;
+            }
+            return {
+                qrCodes: {
+                    wechat: (paymentData && (paymentData.wechat && paymentData.wechat.qrcode || paymentData.qrCodes && paymentData.qrCodes.wechat)) || '',
+                    alipay: (paymentData && (paymentData.alipay && paymentData.alipay.qrcode || paymentData.qrCodes && paymentData.qrCodes.alipay)) || ''
+                },
+                bankAccount: {
+                    bankName: (paymentData && paymentData.bankAccount && paymentData.bankAccount.bankName) || '',
+                    accountNumber: (paymentData && paymentData.bankAccount && paymentData.bankAccount.accountNumber) || '',
+                    accountName: (paymentData && paymentData.bankAccount && paymentData.bankAccount.accountName) || ''
+                }
+            };
+        }
+        // 测评包支付弹窗（与企业端一致：微信/支付宝二维码 + 银行转账）
+        function openPaymentModalForPkg(pkgId, pkgName, pkgPrice) {
+            var modal = document.getElementById('payment-modal-pkg');
+            var planInfo = document.getElementById('payment-modal-pkg-plan-info');
+            if (!modal || !planInfo) return;
+            planInfo.innerHTML = '<h4 class="text-lg font-semibold text-gray-900 mb-2">' + (pkgName || '测评包').replace(/</g,'&lt;') + '</h4><p class="text-gray-600 mb-1">价格：<span class="font-bold text-primary text-xl">¥' + (Number(pkgPrice)||0).toLocaleString() + '</span></p>';
+            modal.setAttribute('data-payment-pkg-id', pkgId || '');
+            modal.setAttribute('data-payment-pkg-name', pkgName || '');
+            modal.setAttribute('data-payment-pkg-price', String(pkgPrice || 0));
+            switchPaymentMethodPkg('wechat');
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+        function closePaymentModalPkg() {
+            var modal = document.getElementById('payment-modal-pkg');
+            if (modal) { modal.classList.add('hidden'); document.body.style.overflow = 'auto'; }
+        }
+        function switchPaymentMethodPkg(method) {
+            document.querySelectorAll('.payment-method-btn-pkg').forEach(function(btn) {
+                if (btn.getAttribute('data-method') === method) {
+                    btn.classList.add('active', 'border-primary', 'bg-primary/5'); btn.classList.remove('border-gray-200');
+                } else {
+                    btn.classList.remove('active', 'border-primary', 'bg-primary/5'); btn.classList.add('border-gray-200');
+                }
+            });
+            var paymentContent = document.getElementById('payment-content-pkg');
+            if (!paymentContent) return;
+            var s = getPaymentSettings();
+            if (method === 'wechat') {
+                var qr = s.qrCodes.wechat;
+                paymentContent.innerHTML = qr ? '<div class="text-center"><p class="text-sm text-gray-600 mb-4">请使用微信扫描下方二维码完成支付</p><div class="flex justify-center mb-4"><img src="' + qr.replace(/"/g, '&quot;') + '" alt="微信支付二维码" class="w-64 h-64 border border-gray-200 rounded-lg"></div></div>' : '<div class="p-8 bg-gray-50 rounded-lg"><i class="fa fa-weixin text-6xl text-gray-300 mb-4"></i><p class="text-gray-500">微信支付二维码未配置</p><p class="text-sm text-gray-400 mt-2">请联系管理员配置支付信息</p></div>';
+            } else if (method === 'alipay') {
+                var qr = s.qrCodes.alipay;
+                paymentContent.innerHTML = qr ? '<div class="text-center"><p class="text-sm text-gray-600 mb-4">请使用支付宝扫描下方二维码完成支付</p><div class="flex justify-center mb-4"><img src="' + qr.replace(/"/g, '&quot;') + '" alt="支付宝二维码" class="w-64 h-64 border border-gray-200 rounded-lg"></div></div>' : '<div class="p-8 bg-gray-50 rounded-lg"><i class="fa fa-credit-card text-6xl text-gray-300 mb-4"></i><p class="text-gray-500">支付宝二维码未配置</p></div>';
+            } else {
+                var b = s.bankAccount;
+                paymentContent.innerHTML = (b.accountName || b.accountNumber || b.bankName) ? '<div class="bg-gray-50 rounded-lg p-6"><h5 class="font-medium text-gray-900 mb-4">银行对公账户信息</h5><div class="space-y-3 text-left"><div class="flex justify-between"><span class="text-gray-600">开户名称：</span><span class="font-medium">' + (b.accountName || '未配置') + '</span></div><div class="flex justify-between"><span class="text-gray-600">账号：</span><span class="font-medium">' + (b.accountNumber || '未配置') + '</span></div><div class="flex justify-between"><span class="text-gray-600">开户银行：</span><span class="font-medium">' + (b.bankName || '未配置') + '</span></div></div><div class="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg"><p class="text-sm text-yellow-800 mb-2"><i class="fa fa-info-circle mr-2"></i>转账须知：</p><ul class="text-xs text-yellow-700 space-y-1 list-disc list-inside"><li>转账时请备注测评包名称</li><li>转账完成后请联系客服开通</li></ul></div></div>' : '<div class="text-center py-8"><i class="fa fa-university text-6xl text-gray-300 mb-4"></i><p class="text-gray-500">银行账户信息未配置</p></div>';
+            }
+        }
+        function confirmPaymentDonePkg() {
+            var modal = document.getElementById('payment-modal-pkg');
+            if (!modal) return;
+            var pkgName = modal.getAttribute('data-payment-pkg-name') || '测评包';
+            var pkgPrice = modal.getAttribute('data-payment-pkg-price') || '0';
+            try {
+                var raw = localStorage.getItem('purchases');
+                var list = raw ? JSON.parse(raw) : [];
+                list.push({ name: pkgName, time: new Date().toLocaleString('zh-CN'), price: parseFloat(pkgPrice)||0, status: '已完成', source: 'assessment', action: null });
+                localStorage.setItem('purchases', JSON.stringify(list));
+            } catch (e) {}
+            closePaymentModalPkg();
+            alert('支付记录已保存，请联系客服确认后开通测评权限。');
+        }
+        // 打开支付：弹出二维码弹窗（与企业端一致）
+        function openPayment(pkgId) {
+            var list = window.__assessmentPackagesForPayment || [];
+            var pkg = list.find(function(p) { return String(p.id) === String(pkgId); });
+            if (!pkg) { alert('测评包信息不存在'); return; }
+            openPaymentModalForPkg(pkg.id, pkg.name, pkg.price);
+        }
+        window.openPayment = openPayment;
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.payment-method-btn-pkg').forEach(function(btn) {
+                btn.addEventListener('click', function() { switchPaymentMethodPkg(btn.getAttribute('data-method')); });
+            });
+        });
+        
+        document.querySelectorAll('.view-payment-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const serviceType = this.getAttribute('data-service');
+                openPayment(serviceType);
+            });
+        });
+
+        /** 求职者端：与 /exam-packages?audience=jobseeker 一致——题库试卷 paper_* 由后端按启用+显示端过滤；exam_packages 须明确标 candidate/jobseeker */
+        function shouldShowPackageToJobseeker(pkg) {
+            if (!pkg || typeof pkg !== 'object') return false;
+            var idStr = String(pkg.id != null ? pkg.id : '');
+            if (idStr.indexOf('paper_') === 0) return true;
+            const vs = String(pkg.visibleSide || pkg.visible_side || '').toLowerCase().trim();
+            if (vs === 'enterprise' || vs === 'company' || vs === 'government') return false;
+            if (vs === 'candidate' || vs === 'jobseeker') return true;
+            const plat = String(pkg.platform || '').toLowerCase();
+            if (plat === 'enterprise' || plat === 'government') return false;
+            if (plat === 'jobseeker') return true;
+            const pn = String(pkg.platformName || '');
+            if (pn.indexOf('企业') !== -1) return false;
+            return false;
+        }
+        
+        // 从接口加载测评包（公开列表，不用登录态，避免 token 异常导致整页无数据）
+        async function loadAssessmentPackagesFromAPI(category) {
+            try {
+                const bust = '&_t=' + Date.now();
+                const url = category && category !== 'all'
+                    ? `${API_BASE_URL}/exam-packages?category=${encodeURIComponent(category)}&status=published&audience=jobseeker${bust}`
+                    : `${API_BASE_URL}/exam-packages?status=published&audience=jobseeker${bust}`;
+                const res = await fetch(url, { method: 'GET', cache: 'no-store', headers: { 'Accept': 'application/json' } });
+                if (!res.ok) {
+                    console.warn('[测评包] 接口 HTTP', res.status, url);
+                    return [];
+                }
+                const json = await res.json().catch(function() { return null; });
+                if (!json || !json.success || !Array.isArray(json.data)) {
+                    return [];
+                }
+                return json.data.filter(shouldShowPackageToJobseeker).map(function(pkg) {
+                    var idStr = String(pkg.id != null ? pkg.id : '');
+                    var cat = pkg.category != null && String(pkg.category).trim() !== '' ? pkg.category : (idStr.indexOf('paper_') === 0 ? 'ability' : 'all');
+                    return {
+                        id: idStr,
+                        name: pkg.name,
+                        price: pkg.price != null ? Number(pkg.price) : 0,
+                        description: pkg.description || '',
+                        category: cat,
+                        duration: (pkg.durationMinutes != null ? pkg.durationMinutes + '分钟' : (pkg.duration || '30分钟')),
+                        participants: pkg.participants || '0人已测',
+                        rating: pkg.rating != null ? pkg.rating : 4.5,
+                        image: pkg.image || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='100%25' height='100%25' fill='%231E40AF'/%3E%3C/svg%3E"
+                    };
+                });
+            } catch (e) {
+                console.warn('测评包接口失败:', e.message);
+            }
+            return [];
+        }
+        
+        // 系统测评包（固定三项，放入测评包列表）
+        function getSystemAssessmentPackages() {
+            return [
+                { id: 'system_stress', name: '专业抗压能力测试', price: 0, description: '评估情绪调节、工作负荷承受、挫折恢复、时间压力与人际压力等维度，题库约200题，每次随机抽取15题，完成后可生成专业报告。', category: 'ability', duration: '约10-15分钟', participants: '系统测评', rating: 4.5, image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Cdefs%3E%3ClinearGradient id='g1' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23f59e0b'/%3E%3Cstop offset='100%25' style='stop-color:%23d97706'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23g1)'/%3E%3C/svg%3E", systemType: 'stress' },
+                { id: 'system_personality', name: '性格测试', price: 0, description: '基于 MBTI 四维度的职业性格测评，题库约200题，每次随机抽取15题，探索您的性格偏好与适合的职业方向，可生成详细报告。', category: 'personality', duration: '约10-15分钟', participants: '系统测评', rating: 4.5, image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Cdefs%3E%3ClinearGradient id='g2' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%236366f1'/%3E%3Cstop offset='100%25' style='stop-color:%234f46e5'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23g2)'/%3E%3C/svg%3E", systemType: 'personality' },
+                { id: 'system_intelligence', name: '智力测试', price: 0, description: '涵盖逻辑推理、数字运算与语言理解，题库约200题，每次随机抽取15题，系统评估认知能力水平，可生成专业报告。', category: 'ability', duration: '约10-15分钟', participants: '系统测评', rating: 4.5, image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Cdefs%3E%3ClinearGradient id='g3' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%2310b981'/%3E%3Cstop offset='100%25' style='stop-color:%23059669'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23g3)'/%3E%3C/svg%3E", systemType: 'intelligence' },
+                { id: 'system_ability', name: '职业能力测试', price: 0, description: '从沟通协作、团队合作、领导力、执行与落实、学习与适应等维度评估职业能力，题库约200题，每次随机抽取15题，完成后可生成专业报告。', category: 'ability', duration: '约10-15分钟', participants: '系统测评', rating: 4.5, image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Cdefs%3E%3ClinearGradient id='g4' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%230ea5e9'/%3E%3Cstop offset='100%25' style='stop-color:%230286c7'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23g4)'/%3E%3C/svg%3E", systemType: 'ability' },
+                { id: 'system_interest', name: '兴趣测试', price: 0, description: '基于霍兰德职业兴趣类型（实际型、研究型、艺术型、社会型、企业型、常规型），题库约200题，每次随机抽取15题，探索您的兴趣倾向与适合的职业方向，可生成详细报告。', category: 'personality', duration: '约10-15分钟', participants: '系统测评', rating: 4.5, image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Cdefs%3E%3ClinearGradient id='g5' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23a855f7'/%3E%3Cstop offset='100%25' style='stop-color:%237c3aed'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23g5)'/%3E%3C/svg%3E", systemType: 'interest' }
+            ];
+        }
+
+        // 从localStorage读取测评包数据（回退）
+        function loadAssessmentPackagesFromAdmin() {
+            let allPackages = [];
+            
+            try {
+                const saved = localStorage.getItem('assessmentPackages');
+                if (saved) {
+                    const adminPackages = JSON.parse(saved);
+                    if (Array.isArray(adminPackages) && adminPackages.length > 0) {
+                        // 将管理端的测评包数据转换为前端显示格式
+                        allPackages = adminPackages
+                            .filter(pkg => pkg.status === 'active' && shouldShowPackageToJobseeker(pkg))
+                            .map(pkg => {
+                                // 根据名称和描述推断分类
+                                const name = pkg.name || '';
+                                const desc = (pkg.description || '').toLowerCase();
+                                let category = 'all';
+                                
+                                if (name.includes('性格') || name.includes('MBTI') || desc.includes('性格')) {
+                                    category = 'personality';
+                                } else if (name.includes('能力') || desc.includes('能力')) {
+                                    category = 'ability';
+                                } else if (name.includes('兴趣') || desc.includes('兴趣')) {
+                                    category = 'interest';
+                                } else if (name.includes('行业') || name.includes('测评包')) {
+                                    category = 'industry';
+                                } else if (name.includes('倾向') || name.includes('职业倾向')) {
+                                    category = 'career';
+                                }
+                                
+                                return {
+                                    id: pkg.id,
+                                    name: pkg.name,
+                                    price: pkg.price || 0,
+                                    description: pkg.description || '',
+                                    category: category,
+                                    duration: '30分钟',
+                                    participants: '0人已测',
+                                    rating: 4.5,
+                                    image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Cdefs%3E%3ClinearGradient id='cardGradient' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%231E40AF;stop-opacity:0.8'/%3E%3Cstop offset='100%25' style='stop-color:%233B82F6;stop-opacity:0.6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23cardGradient)'/%3E%3C/svg%3E"
+                                };
+                            });
+                    }
+                }
+            } catch (e) {
+                console.error('读取测评包数据失败:', e);
+            }
+            
+            return allPackages;
+        }
+        
+        // 当前筛选分类
+        let currentFilter = 'all';
+        
+        // 渲染测评包卡片
+        function renderAssessmentCard(pkg) {
+            const isFree = pkg.price === 0 || pkg.systemType;
+            const priceBadge = isFree 
+                ? '<div class="absolute top-4 right-4 bg-primary text-white text-xs font-medium px-2.5 py-0.5 rounded-full">免费</div>'
+                : '<div class="absolute top-4 right-4 bg-red-500 text-white text-xs font-medium px-2.5 py-0.5 rounded-full">付费</div>';
+            
+            const stars = Array.from({ length: 5 }, (_, i) => {
+                const fullStar = i < Math.floor(pkg.rating);
+                const halfStar = i === Math.floor(pkg.rating) && pkg.rating % 1 >= 0.5;
+                if (fullStar) return '<i class="fa fa-star"></i>';
+                if (halfStar) return '<i class="fa fa-star-half-o"></i>';
+                return '<i class="fa fa-star-o"></i>';
+            }).join('');
+            
+            const actionButton = pkg.systemType
+                ? `<a href="system-assessment.html?type=${pkg.systemType}" class="block w-full bg-primary hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition text-center">开始测评</a>`
+                : isFree
+                    ? `<a href="assessment-detail.html?id=${pkg.id}" class="block w-full bg-primary hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition text-center">开始测评</a>`
+                    : `<div class="flex justify-between items-center">
+                        <span class="text-primary font-bold text-xl">¥${pkg.price}</span>
+                        <a href="javascript:void(0)" onclick="openPayment('${pkg.id}')" class="bg-primary hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition">购买测评</a>
+                    </div>`;
+            
+            return `
+                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition">
+                    <div class="relative">
+                        <img src="${pkg.image}" alt="${pkg.name}" class="w-full h-48 object-cover">
+                        ${priceBadge}
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">${pkg.name}</h3>
+                        <p class="text-gray-600 mb-4">${pkg.description}</p>
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="flex items-center text-gray-500 text-sm">
+                                <span class="mr-4"><i class="fa fa-clock-o mr-1"></i> ${pkg.duration}</span>
+                                <span><i class="fa fa-users mr-1"></i> ${pkg.participants}</span>
+                            </div>
+                            <div class="text-yellow-500">
+                                ${stars}
+                                <span class="text-gray-500 text-sm ml-1">${pkg.rating}</span>
+                            </div>
+                        </div>
+                        ${actionButton}
+                    </div>
+                </div>
+            `;
+        }
+        
+        // 渲染测评包列表（系统测评包 + 接口/本地测评包）
+        async function renderAssessmentPackages(filter = 'all') {
+            currentFilter = filter;
+            const container = document.getElementById('assessments-container');
+            if (!container) return;
+            container.innerHTML = '<div class="col-span-full text-center py-8 text-gray-500">加载中...</div>';
+            
+            let allPackages = await loadAssessmentPackagesFromAPI(filter);
+            allPackages = getSystemAssessmentPackages().concat(allPackages);
+            let filteredPackages = allPackages;
+            if (filter !== 'all') {
+                filteredPackages = allPackages.filter(function(pkg) {
+                    var idStr = String(pkg.id != null ? pkg.id : '');
+                    if (idStr.indexOf('paper_') === 0) return true;
+                    return (pkg.category || 'all') === filter;
+                });
+            }
+            if (filteredPackages.length === 0) {
+                container.innerHTML = '<div class="col-span-full text-center py-8 text-gray-500">暂无测评包数据</div>';
+                return;
+            }
+            window.__assessmentPackagesForPayment = filteredPackages;
+            container.innerHTML = filteredPackages.map(pkg => renderAssessmentCard(pkg)).join('');
+        }
+        
+        // 测评记录数据
+        let assessmentRecords = [];
+        let currentPage = 1;
+        const recordsPerPage = 10;
+        
+        // 从接口加载测评结果（已登录时）
+        async function loadAssessmentResultsFromAPI() {
+            if (!getAuthToken()) return null;
+            try {
+                const res = await apiRequest(`${API_BASE_URL}/assessments/results`);
+                if (res && res.success && Array.isArray(res.data)) {
+                    return res.data.map(r => ({
+                        id: r.id,
+                        packageId: r.packageId,
+                        packageName: r.packageName || ('测评包#' + r.packageId),
+                        completedDate: r.completedAt ? r.completedAt.split('T')[0] : '',
+                        result: r.result || ((r.recommendedJobTypes && r.recommendedJobTypes.length) ? r.recommendedJobTypes.join('、') : (r.score != null ? r.score + '分' : '')),
+                        score: r.score != null ? r.score : (r.totalScore != null ? r.totalScore : 0)
+                    }));
+                }
+            } catch (e) {
+                console.warn('测评结果接口失败:', e.message);
+            }
+            return null;
+        }
+        
+        // 判断是否为旧版模拟数据（需排除，只保留真实测评记录）
+        function isLikelyMockRecord(record) {
+            if (!record || record.systemType) return false;
+            var id = record.id;
+            if (typeof id === 'string' && id.indexOf('sys_') === 0) return false;
+            if (typeof id === 'number' && id >= 1 && id <= 20) return true;
+            if (typeof id === 'string' && /^\d+$/.test(id) && parseInt(id, 10) >= 1 && parseInt(id, 10) <= 20) return true;
+            return false;
+        }
+
+        // 加载测评记录（仅实际数据：优先接口，否则 localStorage 且过滤掉历史模拟数据，无则空列表）
+        async function loadAssessmentRecords() {
+            const apiRecords = await loadAssessmentResultsFromAPI();
+            if (apiRecords) {
+                assessmentRecords = apiRecords;
+                return;
+            }
+            try {
+                const saved = localStorage.getItem('userAssessmentRecords');
+                if (saved) {
+                    var list = JSON.parse(saved);
+                    assessmentRecords = list.filter(function(r) { return !isLikelyMockRecord(r); });
+                    if (assessmentRecords.length !== list.length) {
+                        try { localStorage.setItem('userAssessmentRecords', JSON.stringify(assessmentRecords)); } catch (e) {}
+                    }
+                } else {
+                    assessmentRecords = [];
+                }
+            } catch (e) {
+                console.error('读取测评记录失败:', e);
+                assessmentRecords = [];
+            }
+        }
+        
+        // 生成模拟测评记录数据
+        function generateMockRecords() {
+            const packages = loadAssessmentPackagesFromAdmin();
+            const mockRecords = [];
+            
+            // 如果没有测评包数据，使用默认记录
+            if (packages.length === 0) {
+                return [
+                    {
+                        id: 1,
+                        packageId: 1,
+                        packageName: 'MBTI职业性格测评',
+                        completedDate: '2025-01-15',
+                        result: 'ESTJ - 监督者型',
+                        score: 85
+                    },
+                    {
+                        id: 2,
+                        packageId: 2,
+                        packageName: '职业能力测评',
+                        completedDate: '2025-01-12',
+                        result: '85分 - 优秀',
+                        score: 85
+                    },
+                    {
+                        id: 3,
+                        packageId: 3,
+                        packageName: '职业兴趣测评',
+                        completedDate: '2025-01-10',
+                        result: '现实型(R) + 研究型(I)',
+                        score: 82
+                    },
+                    {
+                        id: 4,
+                        packageId: 4,
+                        packageName: '互联网行业测评包',
+                        completedDate: '2025-01-08',
+                        result: '综合评分：88分',
+                        score: 88
+                    },
+                    {
+                        id: 5,
+                        packageId: 5,
+                        packageName: '金融行业测评包',
+                        completedDate: '2025-01-05',
+                        result: '综合评分：90分',
+                        score: 90
+                    },
+                    {
+                        id: 6,
+                        packageId: 6,
+                        packageName: '教育行业测评包',
+                        completedDate: '2024-12-28',
+                        result: '综合评分：87分',
+                        score: 87
+                    },
+                    {
+                        id: 7,
+                        packageId: 1,
+                        packageName: 'MBTI职业性格测评',
+                        completedDate: '2024-12-25',
+                        result: 'INFP - 调停者型',
+                        score: 80
+                    },
+                    {
+                        id: 8,
+                        packageId: 2,
+                        packageName: '职业能力测评',
+                        completedDate: '2024-12-20',
+                        result: '78分 - 良好',
+                        score: 78
+                    },
+                    {
+                        id: 9,
+                        packageId: 3,
+                        packageName: '职业兴趣测评',
+                        completedDate: '2024-12-15',
+                        result: '艺术型(A) + 社会型(S)',
+                        score: 83
+                    },
+                    {
+                        id: 10,
+                        packageId: 4,
+                        packageName: '互联网行业测评包',
+                        completedDate: '2024-12-10',
+                        result: '综合评分：85分',
+                        score: 85
+                    },
+                    {
+                        id: 11,
+                        packageId: 5,
+                        packageName: '金融行业测评包',
+                        completedDate: '2024-12-05',
+                        result: '综合评分：92分',
+                        score: 92
+                    },
+                    {
+                        id: 12,
+                        packageId: 6,
+                        packageName: '教育行业测评包',
+                        completedDate: '2024-11-30',
+                        result: '综合评分：89分',
+                        score: 89
+                    },
+                    {
+                        id: 13,
+                        packageId: 1,
+                        packageName: 'MBTI职业性格测评',
+                        completedDate: '2024-11-25',
+                        result: 'ENTJ - 指挥官型',
+                        score: 88
+                    },
+                    {
+                        id: 14,
+                        packageId: 2,
+                        packageName: '职业能力测评',
+                        completedDate: '2024-11-20',
+                        result: '90分 - 优秀',
+                        score: 90
+                    },
+                    {
+                        id: 15,
+                        packageId: 3,
+                        packageName: '职业兴趣测评',
+                        completedDate: '2024-11-15',
+                        result: '企业型(E) + 常规型(C)',
+                        score: 81
+                    }
+                ];
+            }
+            
+            // 根据实际测评包数据生成记录
+            const results = [
+                'ESTJ - 监督者型', 'INFP - 调停者型', 'ENTJ - 指挥官型', 'ISFJ - 守护者型',
+                '85分 - 优秀', '78分 - 良好', '90分 - 优秀', '82分 - 良好',
+                '现实型(R) + 研究型(I)', '艺术型(A) + 社会型(S)', '企业型(E) + 常规型(C)',
+                '综合评分：88分', '综合评分：90分', '综合评分：87分', '综合评分：85分', '综合评分：92分'
+            ];
+            
+            // 为每个测评包生成1-3条记录
+            packages.forEach((pkg, index) => {
+                const recordCount = Math.floor(Math.random() * 3) + 1;
+                for (let i = 0; i < recordCount; i++) {
+                    const daysAgo = Math.floor(Math.random() * 60) + 1;
+                    const date = new Date();
+                    date.setDate(date.getDate() - daysAgo);
+                    const dateStr = date.toISOString().split('T')[0];
+                    
+                    mockRecords.push({
+                        id: mockRecords.length + 1,
+                        packageId: pkg.id,
+                        packageName: pkg.name,
+                        completedDate: dateStr,
+                        result: results[Math.floor(Math.random() * results.length)],
+                        score: Math.floor(Math.random() * 20) + 75
+                    });
+                }
+            });
+            
+            // 按日期排序
+            mockRecords.sort((a, b) => {
+                return new Date(b.completedDate) - new Date(a.completedDate);
+            });
+            
+            return mockRecords;
+        }
+        
+        // 渲染测评记录
+        async function renderAssessmentRecords(page = 1) {
+            currentPage = page;
+            const tbody = document.getElementById('assessment-records-tbody');
+            if (tbody) tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 text-center text-gray-500">加载中...</td></tr>';
+            await loadAssessmentRecords();
+            
+            const pagination = document.getElementById('assessment-records-pagination');
+            
+            if (!tbody) return;
+            
+            // 获取测评包数据，用于关联测评记录
+            const packages = loadAssessmentPackagesFromAdmin();
+            
+            // 关联测评记录和测评包数据
+            const recordsWithPackageInfo = assessmentRecords.map(record => {
+                const pkg = packages.find(p => p.id === record.packageId || p.id === record.id);
+                return {
+                    ...record,
+                    packageName: pkg ? pkg.name : (record.packageName || record.assessmentName || '未知测评')
+                };
+            });
+            
+            // 按完成时间倒序排序
+            recordsWithPackageInfo.sort((a, b) => {
+                const dateA = new Date(a.completedDate || a.date || 0);
+                const dateB = new Date(b.completedDate || b.date || 0);
+                return dateB - dateA;
+            });
+            
+            // 获取当前页的数据
+            const startIndex = (page - 1) * recordsPerPage;
+            const endIndex = startIndex + recordsPerPage;
+            const pageRecords = recordsWithPackageInfo.slice(startIndex, endIndex);
+            const totalPages = Math.ceil(recordsWithPackageInfo.length / recordsPerPage);
+            
+            if (pageRecords.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="px-6 py-8 text-center text-gray-500">
+                            暂无测评记录
+                        </td>
+                    </tr>
+                `;
+            } else {
+                tbody.innerHTML = pageRecords.map(record => {
+                    return `
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-medium text-gray-900">${record.packageName}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-500">${record.completedDate || record.date || ''}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900">${record.result || record.score || '未完成'}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                ${record.systemType ? `<a href="system-assessment.html?view=report&type=${encodeURIComponent(record.systemType)}&id=${encodeURIComponent(record.id)}" class="text-primary hover:text-blue-700">查看报告</a>` : `<a href="assessment-detail.html?id=${record.packageId || record.id}&view=report" class="text-primary hover:text-blue-700">查看报告</a>`}
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+            
+            // 渲染分页
+            if (pagination) {
+                if (totalPages <= 1) {
+                    pagination.innerHTML = `
+                        <div class="text-sm text-gray-700">
+                            共 <span class="font-medium">${recordsWithPackageInfo.length}</span> 条记录
+                        </div>
+                    `;
+                } else {
+                    pagination.innerHTML = `
+                        <div class="text-sm text-gray-700">
+                            共 <span class="font-medium">${recordsWithPackageInfo.length}</span> 条记录，第 <span class="font-medium">${page}</span> / <span class="font-medium">${totalPages}</span> 页
+                        </div>
+                        <div class="flex items-center space-x-2 mt-3 sm:mt-0">
+                            <button onclick="renderAssessmentRecords(${Math.max(1, page - 1)})" 
+                                    ${page === 1 ? 'disabled' : ''} 
+                                    class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                                上一页
+                            </button>
+                            <div class="flex items-center space-x-1">
+                                ${Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                                    let pageNum;
+                                    if (totalPages <= 5) {
+                                        pageNum = i + 1;
+                                    } else if (page <= 3) {
+                                        pageNum = i + 1;
+                                    } else if (page >= totalPages - 2) {
+                                        pageNum = totalPages - 4 + i;
+                                    } else {
+                                        pageNum = page - 2 + i;
+                                    }
+                                    return `
+                                        <button onclick="renderAssessmentRecords(${pageNum})" 
+                                                class="px-3 py-2 text-sm font-medium ${pageNum === page ? 'bg-primary text-white' : 'text-gray-700 bg-white border border-gray-300'} rounded-md hover:bg-gray-50">
+                                            ${pageNum}
+                                        </button>
+                                    `;
+                                }).join('')}
+                            </div>
+                            <button onclick="renderAssessmentRecords(${Math.min(totalPages, page + 1)})" 
+                                    ${page === totalPages ? 'disabled' : ''} 
+                                    class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                                下一页
+                            </button>
+                        </div>
+                    `;
+                }
+            }
+        }
+        
+        // 将renderAssessmentRecords暴露到全局，以便分页按钮可以调用
+        window.renderAssessmentRecords = renderAssessmentRecords;
+        
+        // 页面加载时读取测评包数据
+        document.addEventListener('DOMContentLoaded', async function() {
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', async function() {
+                    const filter = this.getAttribute('data-filter');
+                    filterBtns.forEach(b => {
+                        b.classList.remove('bg-primary', 'text-white');
+                        b.classList.add('bg-white', 'border', 'border-gray-300', 'text-gray-700');
+                    });
+                    this.classList.remove('bg-white', 'border', 'border-gray-300', 'text-gray-700');
+                    this.classList.add('bg-primary', 'text-white');
+                    await renderAssessmentPackages(filter);
+                });
+            });
+            
+            await renderAssessmentPackages('all');
+            await renderAssessmentRecords(1);
+            
+            window.addEventListener('storage', async function(e) {
+                if (e.key === 'assessmentPackages') {
+                    await renderAssessmentPackages(currentFilter);
+                }
+                if (e.key === 'userAssessmentRecords') {
+                    await renderAssessmentRecords(currentPage);
+                }
+            });
+            
+            // 使用自定义事件监听同页面的localStorage变化
+            const originalSetItem = localStorage.setItem;
+            localStorage.setItem = function(key, value) {
+                if (key === 'assessmentPackages') {
+                    window.dispatchEvent(new Event('storage'));
+                }
+                if (key === 'userAssessmentRecords') {
+                    window.dispatchEvent(new Event('storage'));
+                }
+                originalSetItem.apply(this, arguments);
+            };
+        });
+    </script>
+</body>
+</html>

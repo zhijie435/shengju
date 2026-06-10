@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 - 试题管理系统</title>
+    <link rel="stylesheet" href="/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .login-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .login-header h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .login-header p {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 10px;
+        }
+        
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-login:active {
+            transform: translateY(0);
+        }
+        
+        .error-message {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            color: #856404;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+            line-height: 1.8;
+            white-space: pre-line;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .error-message.show {
+            display: block;
+        }
+        
+        .error-message strong {
+            color: #856404;
+            font-weight: 600;
+        }
+        
+        .error-message ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
+        .error-message li {
+            margin: 5px 0;
+        }
+        
+        .register-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .register-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 10px;
+        }
+        
+        .loading.show {
+            display: block;
+        }
+        
+        .loading i {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <h1><i class="fas fa-graduation-cap"></i> 试题管理系统</h1>
+            <p>请登录您的账号</p>
+        </div>
+        
+        <div class="error-message" id="errorMessage"></div>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username"><i class="fas fa-user"></i> 用户名</label>
+                <input type="text" id="username" name="username" required autocomplete="username">
+            </div>
+            
+            <div class="form-group">
+                <label for="password"><i class="fas fa-lock"></i> 密码</label>
+                <input type="password" id="password" name="password" required autocomplete="current-password">
+            </div>
+            
+            <button type="submit" class="btn-login">
+                <i class="fas fa-sign-in-alt"></i> 登录
+            </button>
+        </form>
+        
+        <div class="loading" id="loading">
+            <i class="fas fa-spinner"></i> 正在登录...
+        </div>
+        
+        <div class="register-link">
+            没有账号？<a href="#" id="registerLink">联系管理员注册</a>
+        </div>
+    </div>
+    
+    <script>
+        // 动态加载脚本函数
+        function loadScript(src) {
+            return new Promise((resolve, reject) => {
+                // 检查脚本是否已加载
+                const existingScript = document.querySelector(`script[src="${src}"]`);
+                if (existingScript) {
+                    resolve();
+                    return;
+                }
+                
+                const script = document.createElement('script');
+                script.src = src;
+                script.onload = () => {
+                    console.log('✓ 脚本加载成功:', src);
+                    resolve();
+                };
+                script.onerror = () => {
+                    console.error('✗ 脚本加载失败:', src);
+                    reject(new Error(`无法加载脚本: ${src}`));
+                };
+                document.head.appendChild(script);
+            });
+        }
+        
+        // 获取脚本基础路径
+        function getScriptBasePath() {
+            // 检测Tauri环境
+            const isTauri = typeof window !== 'undefined' && window.__TAURI__;
+            
+            if (isTauri) {
+                // Tauri环境：index.html在src目录下，js也在src/js下，使用相对路径
+                return './js/';
+            } else {
+                // 浏览器环境：使用绝对路径
+                const currentPath = window.location.pathname;
+                if (currentPath.startsWith('/src/')) {
+                    return '/src/js/';
+                } else {
+                    // 如果不在/src/路径下，尝试相对路径
+                    return './js/';
+                }
+            }
+        }
+        
+        // 等待DOM加载完成后加载脚本
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const basePath = getScriptBasePath();
+                const isTauri = typeof window !== 'undefined' && window.__TAURI__;
+                
+                console.log('环境检测:', {
+                    isTauri: isTauri,
+                    basePath: basePath,
+                    currentPath: window.location.pathname
+                });
+                
+                // 按顺序加载脚本
+                await loadScript(basePath + 'tauri-backend.js');
+                await loadScript(basePath + 'auth.js');
+                
+                // 等待一小段时间确保脚本执行完成
+                await new Promise(resolve => setTimeout(resolve, 50));
+                
+                // 验证auth对象是否已加载
+                if (!window.auth) {
+                    // 再等待一下，可能脚本还在执行
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                    
+                    if (!window.auth) {
+                        throw new Error('auth对象未正确初始化。请检查控制台错误信息。');
+                    }
+                }
+                
+                console.log('✓ 所有脚本加载完成，auth对象已就绪');
+                
+                // 初始化登录表单
+                initLoginForm();
+                
+            } catch (error) {
+                console.error('脚本加载失败:', error);
+                const errorMessage = document.getElementById('errorMessage');
+                if (errorMessage) {
+                    let errorMsg = '登录模块加载失败：' + error.message;
+                    errorMsg += '\n\n请检查：';
+                    errorMsg += '\n1. 脚本文件是否存在';
+                    errorMsg += '\n2. 后端服务是否已启动';
+                    errorMsg += '\n3. 查看浏览器控制台的错误信息';
+                    errorMessage.textContent = errorMsg;
+                    errorMessage.classList.add('show');
+                }
+            }
+        });
+        
+        function initLoginForm() {
+            const loginForm = document.getElementById('loginForm');
+            if (!loginForm) {
+                console.error('登录表单未找到');
+                return;
+            }
+            
+            // 页面加载时检查后端服务状态
+            checkBackendStatus();
+            
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                const errorMessage = document.getElementById('errorMessage');
+                const loading = document.getElementById('loading');
+                
+                errorMessage.classList.remove('show');
+                loading.classList.add('show');
+                
+                try {
+                    // 再次检查auth对象是否存在
+                    if (!window.auth || typeof window.auth.login !== 'function') {
+                        throw new Error('登录模块未正确初始化');
+                    }
+                    
+                    const result = await window.auth.login(username, password);
+                    if (result.success) {
+                        // 登录成功，根据用户角色跳转到不同入口
+                        const user = result.user || window.auth.getUser();
+                        if (user) {
+                            if (user.role === 'admin') {
+                                // 管理员跳转到总管理端
+                                window.location.href = '/src/app.html';
+                            } else if (user.role === 'enterprise') {
+                                window.location.href = window.location.origin + '/exam-admin/login';
+                            } else if (user.role === 'candidate') {
+                                window.location.href = window.location.origin + '/exam-student/login';
+                            } else {
+                                // 其他角色默认跳转到总管理端
+                                window.location.href = '/src/app.html';
+                            }
+                        } else {
+                            window.location.href = '/src/app.html';
+                        }
+                    } else {
+                        // 格式化错误消息（支持换行）
+                        const message = result.message || '登录失败，请检查用户名和密码';
+                        errorMessage.innerHTML = message.replace(/\n/g, '<br>');
+                        errorMessage.classList.add('show');
+                    }
+                } catch (error) {
+                    const message = '登录失败：' + error.message;
+                    errorMessage.innerHTML = message.replace(/\n/g, '<br>');
+                    errorMessage.classList.add('show');
+                } finally {
+                    loading.classList.remove('show');
+                }
+            });
+        }
+        
+        // 检查后端服务状态
+        async function checkBackendStatus() {
+            if (!window.auth || typeof window.auth.checkBackendHealth !== 'function') {
+                return;
+            }
+            
+            try {
+                const healthCheck = await window.auth.checkBackendHealth();
+                if (!healthCheck.success) {
+                    const errorMessage = document.getElementById('errorMessage');
+                    if (errorMessage) {
+                        let message = '⚠️ <strong>后端服务未启动</strong><br><br>';
+                        message += healthCheck.message + '<br><br>';
+                        message += '<strong>解决方案：</strong><br>';
+                        message += '1. 运行 <strong>"启动后端服务.bat"</strong> 启动后端服务<br>';
+                        message += '2. 等待服务启动完成（看到"服务器运行在端口 3000"）<br>';
+                        message += '3. 刷新此页面重试<br><br>';
+                        message += '如果问题仍然存在，请运行 <strong>"检查后端服务状态.bat"</strong> 进行诊断';
+                        
+                        errorMessage.innerHTML = message;
+                        errorMessage.classList.add('show');
+                    }
+                } else {
+                    console.log('✓ 后端服务检查通过:', healthCheck.message);
+                }
+            } catch (error) {
+                console.error('后端服务检查异常:', error);
+                const errorMessage = document.getElementById('errorMessage');
+                if (errorMessage) {
+                    errorMessage.innerHTML = '⚠️ 后端服务检查失败<br><br>错误: ' + error.message;
+                    errorMessage.classList.add('show');
+                }
+            }
+        }
+        
+        document.getElementById('registerLink').addEventListener('click', (e) => {
+            e.preventDefault();
+            alert('请联系系统管理员创建账号');
+        });
+    </script>
+</body>
+</html>

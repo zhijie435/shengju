@@ -1,0 +1,12 @@
+# 若浏览器出现 413 Request Entity Too Large，多半是 Nginx 默认 client_max_body_size=1m，
+# 请求在到达 Node 之前被反代拒绝（error.log: client intended to send too large body）。
+#
+# 在 proxy 到 Node 的 location 内增加（与场景匹配）：
+#
+#   client_max_body_size 80m;     # 企业证照 Base64、一般 API
+#   client_max_body_size 512m;   # 提前录制交卷整段录像（/api/.../prerecord-videos）
+#
+# 修改后: nginx -t && nginx -s reload
+#
+# Node：BODY_PARSER_LIMIT 默认 80mb（大 JSON）；Multer 提前录制单文件上限 512MB。
+# 反代限制须 ≥ 实际上传体积，否则仍返回 413。

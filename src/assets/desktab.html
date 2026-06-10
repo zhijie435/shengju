@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>试题编辑器</title>
+  <!-- 与项目根目录 assets/desktab.html 相同：兼容部署将 /assets 映射到 src/assets 的情况 -->
+  <script>
+    (function () {
+      var file = 'deepseek_html_20251230_e6f8db.html';
+      var ver = 'v=20260417-align-fix-3';
+      var search = window.location.search || '';
+      var qs = search ? (search + '&' + ver) : ('?' + ver);
+      var target = file + qs + (window.location.hash || '');
+      try {
+        var u = new URL(target, window.location.href);
+        window.location.replace(u.href);
+      } catch (e) {
+        window.location.replace(target);
+      }
+    })();
+  </script>
+</head>
+<body>
+  <p>正在打开编辑器…若长时间未跳转，请<a id="fallback" href="deepseek_html_20251230_e6f8db.html?v=20260417-align-fix-3">点此</a>。</p>
+  <script>
+    var search = window.location.search || '';
+    var qs = search ? (search + '&v=20260417-align-fix-3') : '?v=20260417-align-fix-3';
+    document.getElementById('fallback').href = 'deepseek_html_20251230_e6f8db.html' + qs;
+  </script>
+</body>
+</html>

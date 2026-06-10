@@ -1,0 +1,2084 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>求职者管理 - 圣举人才网</title>
+    <script src="../js/api-config.js"></script>
+    <!-- Tailwind CSS -->
+    <script>(function(){var w=console.warn;console.warn=function(){var m=(arguments[0]!=null&&typeof arguments[0]==='string')?arguments[0]:'';if(m.indexOf('cdn.tailwindcss.com')!==-1||m.indexOf('Tracking Prevention')!==-1)return;return w.apply(console,arguments);};})();</script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1E40AF',
+                        secondary: '#3B82F6',
+                        accent: '#60A5FA',
+                        light: '#EFF6FF',
+                        dark: '#1E293B'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow {
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            }
+            .bg-gradient-blue {
+                background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%);
+            }
+            .sidebar-active {
+                background-color: rgba(59, 130, 246, 0.1);
+                border-left: 4px solid #3B82F6;
+            }
+        }
+    </style>
+</head>
+<body class="font-sans bg-gray-50">
+    <div class="flex h-screen overflow-hidden">
+        <!-- 侧边栏 -->
+        <aside class="bg-white shadow-md w-64 flex-shrink-0 hidden md:block">
+            <div class="flex items-center justify-center h-16 border-b border-gray-200">
+                <a href="../index.html" class="flex items-center space-x-2">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%231E40AF' rx='4'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-size='24' font-weight='bold' fill='white'%3E圣%3C/text%3E%3C/svg%3E" 
+                         alt="圣举人才网" class="h-8 w-8">
+                    <h1 class="text-xl font-bold text-primary">圣举人才网</h1>
+                </a>
+            </div>
+            
+            <nav class="mt-5 px-2">
+                <div class="space-y-1">
+                    <a href="index.html" class="group flex items-center px-2 py-2 text-base font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-primary">
+                        <i class="fa fa-dashboard mr-3 text-gray-400 group-hover:text-primary"></i>
+                        数据概览
+                    </a>
+                    
+                    <div class="group">
+                        <button class="flex items-center w-full px-2 py-2 text-base font-medium bg-primary/10 text-primary rounded-md user-management-toggle">
+                            <i class="fa fa-users mr-3 text-primary"></i>
+                            用户管理
+                            <i class="fa fa-chevron-down ml-2 text-xs transition-transform duration-200 user-management-icon transform rotate-180"></i>
+                        </button>
+                        <div class="mt-1 pl-10 space-y-1 user-management-submenu">
+                            <a href="jobseekers.html" class="block px-2 py-2 text-sm font-medium bg-primary/5 text-primary rounded-md">
+                                求职者管理
+                            </a>
+                            <a href="enterprise-management.html" class="block px-2 py-2 text-sm font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-primary">
+                                企业端管理
+                            </a>
+                            <a href="talent-pool.html" class="block px-2 py-2 text-sm font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-primary">
+                                人才池管理
+                            </a>
+                        </div>
+                    </div>
+
+
+                    <a href="assessments.html" class="group flex items-center px-2 py-2 text-base font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-primary">
+                        <i class="fa fa-line-chart mr-3 text-gray-400 group-hover:text-primary"></i>
+                        测评管理
+                    </a>
+                    
+                    
+                    <a href="report-templates.html" class="group flex items-center px-2 py-2 text-base font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-primary">
+                        <i class="fa fa-file-text-o mr-3 text-gray-400 group-hover:text-primary"></i>
+                        报告模板管理
+                    </a>
+                    
+                    <!-- 圣举测评系统：笔试总管理端 exam-super-admin（非 enterprise/）；默认 /exams -->
+                    <a href="javascript:void(0)" onclick="window.open(window.EXAM_QUESTION_BANK_ENTRY_URL || (window.EXAM_SYSTEM_BASE_URL || (window.BACKEND_BASE_URL || '').replace(/\/+$/, '') + '/exam') + '/src/app.html#questionBank/questions','_blank')" rel="noopener noreferrer" class="group flex items-center px-2 py-2 text-base font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-primary">
+                        <i class="fa fa-magic mr-3 text-gray-400 group-hover:text-primary"></i>
+                        圣举测评系统
+                    </a>
+                    
+                    <a href="settings.html" class="group flex items-center px-2 py-2 text-base font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-primary">
+                        <i class="fa fa-cog mr-3 text-gray-400 group-hover:text-primary"></i>
+                        系统设置
+                    </a>
+                    
+                    <!-- 管理者-企业端对话入口 -->
+                    <a href="custom-solutions.html#enterprise-chat" class="group flex items-center px-2 py-2 text-base font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-primary mt-2">
+                        <i class="fa fa-comments-o mr-3 text-gray-400 group-hover:text-primary"></i>
+                        政企对话
+                    </a>
+                </div>
+            </nav>
+        </aside>
+        
+        <!-- 主内容区 -->
+        <div class="flex flex-col flex-1 overflow-hidden">
+            <!-- 顶部导航栏 -->
+            <header class="bg-white shadow-md z-10">
+                <div class="px-4 sm:px-6 lg:px-8">
+                    <div class="flex justify-between items-center h-16">
+                        <!-- 移动端菜单按钮 -->
+                        <button class="md:hidden text-gray-500 focus:outline-none" id="menu-toggle">
+                            <i class="fa fa-bars text-xl"></i>
+                        </button>
+                        
+                        <!-- Logo和返回首页 -->
+                        <div class="flex items-center space-x-4">
+                            <a href="../index.html" class="flex items-center space-x-2 hover:opacity-80 transition">
+                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%231E40AF' rx='4'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-size='24' font-weight='bold' fill='white'%3E圣%3C/text%3E%3C/svg%3E" 
+                                     alt="圣举人才网" class="h-8 w-8">
+                                <h1 class="text-xl font-bold text-primary hidden sm:block">圣举人才网</h1>
+                            </a>
+                            <a href="../index.html" class="text-sm text-gray-500 hover:text-primary transition hidden md:block">
+                                返回首页 <i class="fa fa-arrow-left ml-1"></i>
+                            </a>
+                        </div>
+                        
+                        <!-- 搜索框 -->
+                        <div class="flex-1 max-w-md ml-4 md:ml-8">
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fa fa-search text-gray-400"></i>
+                                </div>
+                                <input type="text" placeholder="搜索..." class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-gray-50 placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:border-primary focus:ring-1 focus:ring-primary sm:text-sm">
+                            </div>
+                        </div>
+                        
+                        <!-- 用户菜单 -->
+                        <div class="ml-4 flex items-center md:ml-6">
+                            <!-- 通知按钮 -->
+                            <div class="relative">
+                                <button class="p-1 rounded-full text-gray-400 hover:text-primary focus:outline-none relative" id="notification-button">
+                                    <i class="fa fa-bell text-xl"></i>
+                                    <span id="notification-count" class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-500 rounded-full hidden">0</span>
+                                </button>
+                                <!-- 通知下拉菜单（由 js/admin-navbar.js 填充） -->
+                                <div class="hidden origin-top-right absolute right-0 mt-2 w-80 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-50" id="notification-menu">
+                                    <div class="px-4 py-3 border-b border-gray-200">
+                                        <h3 class="text-sm font-medium text-gray-900">通知</h3>
+                                    </div>
+                                    <div class="max-h-96 overflow-y-auto" id="notification-list"><!-- 由 admin-navbar.js 动态加载 --></div>
+                                    <div class="px-4 py-2 border-t border-gray-200">
+                                        <a href="#" onclick="showAllNotifications(); return false;" class="text-sm text-primary hover:text-blue-700">查看所有通知</a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 用户头像菜单 -->
+                            <div class="ml-3 relative z-50">
+                                <div>
+                                    <button class="max-w-xs bg-gray-800 flex items-center text-sm rounded-full focus:outline-none hover:ring-2 hover:ring-primary transition" id="user-menu-button" type="button">
+                                        <span class="sr-only">打开用户菜单</span>
+                                        <img class="h-8 w-8 rounded-full border-2 border-white" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="" data-navbar-avatar id="user-avatar-img">
+                                    </button>
+                                </div>
+                                
+                                <div class="hidden origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-50" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" id="user-menu">
+                                    <div class="px-4 py-2 border-b border-gray-200">
+                                        <p class="text-sm font-medium text-gray-900" id="user-menu-name">管理员</p>
+                                        <p class="text-xs text-gray-500" id="user-menu-email">admin@shengju.com</p>
+                                    </div>
+                                    <a href="../index.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
+                                        <i class="fa fa-home mr-2"></i>返回首页
+                                    </a>
+                                    <a href="settings.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
+                                        <i class="fa fa-cog mr-2"></i>系统设置
+                                    </a>
+                                    <a href="admins.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
+                                        <i class="fa fa-user-secret mr-2"></i>管理员账号
+                                    </a>
+                                    <div class="border-t border-gray-100"></div>
+                                    <a href="#" onclick="logout(); return false;" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
+                                        <i class="fa fa-sign-out mr-2"></i>退出登录
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- 移动端侧边栏 -->
+            <div class="md:hidden hidden bg-white shadow-md w-64 flex-shrink-0 absolute inset-y-0 left-0 z-20" id="mobile-sidebar">
+                <div class="flex items-center justify-between h-16 border-b border-gray-200 px-4">
+                    <a href="../index.html" class="flex items-center space-x-2">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%231E40AF' rx='4'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-size='24' font-weight='bold' fill='white'%3E圣%3C/text%3E%3C/svg%3E" 
+                             alt="圣举人才网" class="h-8 w-8">
+                        <h1 class="text-xl font-bold text-primary">圣举人才网</h1>
+                    </a>
+                    <button class="text-gray-500 focus:outline-none" id="close-sidebar">
+                        <i class="fa fa-times text-xl"></i>
+                    </button>
+                </div>
+                
+                <nav class="mt-5 px-2">
+                    <div class="space-y-1">
+                        <a href="index.html" class="group flex items-center px-2 py-2 text-base font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-primary">
+                            <i class="fa fa-dashboard mr-3 text-gray-400 group-hover:text-primary"></i>
+                            数据概览
+                        </a>
+                        
+                        <div class="group">
+                            <button class="flex items-center w-full px-2 py-2 text-base font-medium bg-primary/10 text-primary rounded-md user-management-toggle">
+                                <i class="fa fa-users mr-3 text-primary"></i>
+                                用户管理
+                                <i class="fa fa-chevron-down ml-2 text-xs transition-transform duration-200 user-management-icon transform rotate-180"></i>
+                            </button>
+                            <div class="mt-1 pl-10 space-y-1 user-management-submenu">
+                                <a href="jobseekers.html" class="block px-2 py-2 text-sm font-medium bg-primary/5 text-primary rounded-md">
+                                    求职者管理
+                                </a>
+                                <a href="enterprise-management.html" class="block px-2 py-2 text-sm font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-primary">
+                                    企业端管理
+                                </a>
+                                <a href="talent-pool.html" class="block px-2 py-2 text-sm font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-primary">
+                                    人才池管理
+                                </a>
+                            </div>
+                        </div>
+                        
+
+                        <a href="assessments.html" class="group flex items-center px-2 py-2 text-base font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-primary">
+                            <i class="fa fa-line-chart mr-3 text-gray-400 group-hover:text-primary"></i>
+                            测评管理
+                        </a>
+                        
+                        <!-- 题库管理模块已下线，移除入口 -->
+                        
+                        <a href="report-templates.html" class="group flex items-center px-2 py-2 text-base font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-primary">
+                            <i class="fa fa-file-text-o mr-3 text-gray-400 group-hover:text-primary"></i>
+                            报告模板管理
+                        </a>
+                        
+                        <!-- 圣举测评系统（移动端）：笔试总管理端 -->
+                        <a href="javascript:void(0)" onclick="window.open(window.EXAM_QUESTION_BANK_ENTRY_URL || (window.EXAM_SYSTEM_BASE_URL || (window.BACKEND_BASE_URL || '').replace(/\/+$/, '') + '/exam') + '/src/app.html#questionBank/questions','_blank')" rel="noopener noreferrer" class="group flex items-center px-2 py-2 text-base font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-primary">
+                            <i class="fa fa-magic mr-3 text-gray-400 group-hover:text-primary"></i>
+                            圣举测评系统
+                        </a>
+                        
+                        <a href="settings.html" class="group flex items-center px-2 py-2 text-base font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-primary">
+                            <i class="fa fa-cog mr-3 text-gray-400 group-hover:text-primary"></i>
+                            系统设置
+                        </a>
+                        
+                        <!-- 管理者-企业端对话入口，固定在移动端侧边导航 -->
+                        <a href="custom-solutions.html#enterprise-chat" class="group flex items-center px-2 py-2 text-base font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-primary mt-2">
+                            <i class="fa fa-comments-o mr-3 text-gray-400 group-hover:text-primary"></i>
+                            政企对话
+                        </a>
+                    </div>
+                </nav>
+            </div>
+            
+            <!-- 内容区域 -->
+            <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                        <h1 class="text-2xl font-bold text-gray-900">求职者管理</h1>
+                        <div class="flex flex-wrap gap-3">
+                            <button id="filterBtn" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors flex items-center">
+                                <i class="fa fa-filter mr-2"></i>
+                                筛选
+                            </button>
+                            <button id="exportBtn" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors flex items-center">
+                                <i class="fa fa-download mr-2"></i>
+                                导出数据
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 统计卡片 -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <!-- 求职者总数 -->
+                    <div class="bg-white p-5 rounded-lg shadow card-shadow">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 bg-blue-500 rounded-md p-3">
+                                <i class="fa fa-user-circle text-white"></i>
+                            </div>
+                            <div class="ml-5 w-0 flex-1">
+                                <dl>
+                                    <dt class="text-sm font-medium text-gray-500 truncate">
+                                        求职者总数
+                                    </dt>
+                                    <dd class="flex items-baseline">
+                                        <div id="stat-total-jobseekers" class="text-2xl font-semibold text-gray-900">
+                                            0
+                                        </div>
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 活跃求职者 -->
+                    <div class="bg-white p-5 rounded-lg shadow card-shadow">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 bg-green-500 rounded-md p-3">
+                                <i class="fa fa-user-secret text-white"></i>
+                            </div>
+                            <div class="ml-5 w-0 flex-1">
+                                <dl>
+                                    <dt class="text-sm font-medium text-gray-500 truncate">
+                                        活跃求职者
+                                    </dt>
+                                    <dd class="flex items-baseline">
+                                        <div id="stat-active-jobseekers" class="text-2xl font-semibold text-gray-900">
+                                            0
+                                        </div>
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 会员总数 -->
+                    <div class="bg-white p-5 rounded-lg shadow card-shadow">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 bg-purple-500 rounded-md p-3">
+                                <i class="fa fa-diamond text-white"></i>
+                            </div>
+                            <div class="ml-5 w-0 flex-1">
+                                <dl>
+                                    <dt class="text-sm font-medium text-gray-500 truncate">
+                                        会员总数
+                                    </dt>
+                                    <dd class="flex items-baseline">
+                                        <div id="stat-total-members" class="text-2xl font-semibold text-gray-900">
+                                            0
+                                        </div>
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 今日新增 -->
+                    <div class="bg-white p-5 rounded-lg shadow card-shadow">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 bg-orange-500 rounded-md p-3">
+                                <i class="fa fa-plus-circle text-white"></i>
+                            </div>
+                            <div class="ml-5 w-0 flex-1">
+                                <dl>
+                                    <dt class="text-sm font-medium text-gray-500 truncate">
+                                        今日新增
+                                    </dt>
+                                    <dd class="flex items-baseline">
+                                        <div id="stat-today-new" class="text-2xl font-semibold text-gray-900">
+                                            0
+                                        </div>
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 图表区域 -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <!-- 求职者增长趋势 -->
+                    <div class="bg-white p-5 rounded-lg shadow">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-gray-900">求职者增长趋势</h3>
+                            <div class="flex space-x-2">
+                                <button class="px-2 py-1 text-xs bg-primary text-white rounded">周</button>
+                                <button class="px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 rounded">月</button>
+                                <button class="px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 rounded">季</button>
+                                <button class="px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 rounded">年</button>
+                            </div>
+                        </div>
+                        <div class="h-64">
+                            <canvas id="growth-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 会员类型分布 -->
+                    <div class="bg-white p-5 rounded-lg shadow">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-gray-900">会员类型分布</h3>
+                            <button class="text-gray-500 hover:text-gray-700">
+                                <i class="fa fa-ellipsis-v"></i>
+                            </button>
+                        </div>
+                        <div class="h-64">
+                            <canvas id="member-distribution-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 求职者列表 -->
+                <div class="bg-white rounded-lg shadow overflow-hidden mb-8">
+                    <div class="p-5 border-b border-gray-200">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                            <h3 class="text-lg font-semibold text-gray-900">求职者列表</h3>
+                            <div class="mt-3 sm:mt-0 relative">
+                                <input id="search-input" type="text" class="w-full sm:w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" placeholder="搜索求职者...">
+                                <i class="fa fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        用户名
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        邮箱
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        会员状态
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        注册时间
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        最后登录
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        状态
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        操作
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="jobseekers-tbody" class="bg-white divide-y divide-gray-200">
+                                <!-- 求职者数据将通过JavaScript动态加载 -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="jobseekers-pagination" class="p-4 border-t border-gray-200 bg-gray-50 flex flex-col sm:flex-row items-center justify-between">
+                        <!-- 分页内容将通过JavaScript动态加载 -->
+                    </div>
+                </div>
+
+                <!-- 会员套餐管理 -->
+                <div id="jobseeker-membership-plans" class="bg-white rounded-lg shadow overflow-hidden scroll-mt-24">
+                    <div class="p-5 border-b border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-900">会员套餐管理</h3>
+                    </div>
+                    <div class="p-5">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <!-- 普通会员 -->
+                            <div class="border border-gray-200 rounded-lg overflow-hidden transition-transform hover:shadow-lg hover:-translate-y-1">
+                                <div class="bg-gray-50 p-4 border-b border-gray-200">
+                                    <h4 class="font-semibold text-gray-900">普通会员</h4>
+                                </div>
+                                <div class="p-5">
+                                    <div class="text-center mb-5">
+                                        <span class="text-3xl font-bold text-gray-900">¥39</span>
+                                        <span class="text-gray-500">/月</span>
+                                    </div>
+                                    <ul class="space-y-3 mb-6">
+                                        <li class="flex items-start">
+                                            <i class="fa fa-check text-green-500 mt-1 mr-2"></i>
+                                            <span class="text-gray-700">基础简历模板</span>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <i class="fa fa-check text-green-500 mt-1 mr-2"></i>
+                                            <span class="text-gray-700">职位推送</span>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <i class="fa fa-check text-green-500 mt-1 mr-2"></i>
+                                            <span class="text-gray-700">每月5次测评</span>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <i class="fa fa-times text-gray-400 mt-1 mr-2"></i>
+                                            <span class="text-gray-500">简历优化服务</span>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <i class="fa fa-times text-gray-400 mt-1 mr-2"></i>
+                                            <span class="text-gray-500">职业咨询</span>
+                                        </li>
+                                    </ul>
+                                    <button onclick="editMembershipPlan(1)" class="w-full py-2 border border-primary text-primary rounded-md hover:bg-primary/5 transition-colors">
+                                        编辑套餐
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- 高级会员 -->
+                            <div class="border-2 border-primary rounded-lg overflow-hidden transition-transform hover:shadow-lg hover:-translate-y-1 relative">
+                                <div class="bg-primary text-white text-center py-1 text-xs font-semibold">
+                                    最受欢迎
+                                </div>
+                                <div class="bg-primary/10 p-4 border-b border-primary">
+                                    <h4 class="font-semibold text-primary">高级会员</h4>
+                                </div>
+                                <div class="p-5">
+                                    <div class="text-center mb-5">
+                                        <span class="text-3xl font-bold text-primary">¥99</span>
+                                        <span class="text-gray-500">/月</span>
+                                    </div>
+                                    <ul class="space-y-3 mb-6">
+                                        <li class="flex items-start">
+                                            <i class="fa fa-check text-green-500 mt-1 mr-2"></i>
+                                            <span class="text-gray-700">高级简历模板</span>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <i class="fa fa-check text-green-500 mt-1 mr-2"></i>
+                                            <span class="text-gray-700">优先职位推送</span>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <i class="fa fa-check text-green-500 mt-1 mr-2"></i>
+                                            <span class="text-gray-700">每月20次测评</span>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <i class="fa fa-check text-green-500 mt-1 mr-2"></i>
+                                            <span class="text-gray-700">简历优化服务</span>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <i class="fa fa-times text-gray-400 mt-1 mr-2"></i>
+                                            <span class="text-gray-500">职业咨询</span>
+                                        </li>
+                                    </ul>
+                                    <button onclick="editMembershipPlan(2)" class="w-full py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors">
+                                        编辑套餐
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- 尊享会员 -->
+                            <div class="border border-gray-200 rounded-lg overflow-hidden transition-transform hover:shadow-lg hover:-translate-y-1">
+                                <div class="bg-gray-50 p-4 border-b border-gray-200">
+                                    <h4 class="font-semibold text-gray-900">尊享会员</h4>
+                                </div>
+                                <div class="p-5">
+                                    <div class="text-center mb-5">
+                                        <span class="text-3xl font-bold text-gray-900">¥199</span>
+                                        <span class="text-gray-500">/月</span>
+                                    </div>
+                                    <ul class="space-y-3 mb-6">
+                                        <li class="flex items-start">
+                                            <i class="fa fa-check text-green-500 mt-1 mr-2"></i>
+                                            <span class="text-gray-700">全部简历模板</span>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <i class="fa fa-check text-green-500 mt-1 mr-2"></i>
+                                            <span class="text-gray-700">专属职位推送</span>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <i class="fa fa-check text-green-500 mt-1 mr-2"></i>
+                                            <span class="text-gray-700">无限次测评</span>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <i class="fa fa-check text-green-500 mt-1 mr-2"></i>
+                                            <span class="text-gray-700">简历优化服务</span>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <i class="fa fa-check text-green-500 mt-1 mr-2"></i>
+                                            <span class="text-gray-700">每月2次职业咨询</span>
+                                        </li>
+                                    </ul>
+                                    <button onclick="editMembershipPlan(3)" class="w-full py-2 border border-primary text-primary rounded-md hover:bg-primary/5 transition-colors">
+                                        编辑套餐
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- 脚本 -->
+    <script>
+        function getDefaultAdminApiBase() {
+            if (typeof window !== 'undefined' && window.API_BASE_URL && String(window.API_BASE_URL).trim()) {
+                return String(window.API_BASE_URL).trim().replace(/\/+$/, '');
+            }
+            if (typeof window !== 'undefined' && window.location && window.location.origin) {
+                var o = window.location.origin.replace(/\/+$/, '');
+                if (/^https?:\/\//i.test(o)) return o + '/api/v1';
+            }
+            return 'http://127.0.0.1:3001/api/v1';
+        }
+        const API_BASE_URL = getDefaultAdminApiBase();
+        window.initAssessmentPackages = function() {};
+        function getAuthToken() {
+            return sessionStorage.getItem('authToken') || localStorage.getItem('authToken') || '';
+        }
+        async function apiRequest(url, options = {}) {
+            const token = getAuthToken();
+            const defaultOptions = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(token && { 'Authorization': 'Bearer ' + token })
+                }
+            };
+            try {
+                const response = await fetch(url, { ...defaultOptions, ...options });
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        localStorage.removeItem('authToken');
+                        window.location.href = '../index.html';
+                        return null;
+                    }
+                    const err = await response.json().catch(() => ({}));
+                    throw new Error(err.message || 'HTTP ' + response.status);
+                }
+                return await response.json();
+            } catch (e) {
+                console.error('API请求失败:', e);
+                throw e;
+            }
+        }
+
+        // 求职者数据（当前页来自接口）
+        let jobseekersData = [];
+        let totalJobseekersCount = 0;
+        let currentPage = 1;
+        const itemsPerPage = 10;
+        let currentFilters = {
+            memberStatus: 'all',
+            registerStart: '',
+            registerEnd: '',
+            activity: 'all',
+            keyword: ''
+        };
+
+        function jobseekerById(rawId) {
+            const idStr = String(rawId);
+            return jobseekersData.find(function (j) {
+                return j && String(j.id) === idStr;
+            });
+        }
+
+        // 图表实例（用于后续更新）
+        let growthChart = null;
+        let memberDistributionChart = null;
+
+        // 加载统计卡片和图表数据
+        async function loadJobseekerStatistics() {
+            try {
+                const res = await apiRequest(`${API_BASE_URL}/admin/jobseekers/statistics`);
+                if (!res || !res.success || !res.data) return;
+                const cards = res.data.cards || {};
+                const charts = res.data.charts || {};
+
+                const totalEl = document.getElementById('stat-total-jobseekers');
+                const activeEl = document.getElementById('stat-active-jobseekers');
+                const memberEl = document.getElementById('stat-total-members');
+                const todayEl = document.getElementById('stat-today-new');
+                if (totalEl) totalEl.textContent = (cards.totalJobseekers ?? 0).toString();
+                if (activeEl) activeEl.textContent = (cards.activeJobseekers ?? 0).toString();
+                if (memberEl) memberEl.textContent = (cards.totalMembers ?? 0).toString();
+                if (todayEl) todayEl.textContent = (cards.todayNew ?? 0).toString();
+
+                if (charts.growth) {
+                    initGrowthChart(charts.growth);
+                }
+                if (charts.memberDistribution) {
+                    initMemberDistributionChart(charts.memberDistribution);
+                }
+            } catch (e) {
+                console.warn('加载求职者统计失败', e);
+            }
+        }
+
+        function initGrowthChart(chartData) {
+            const el = document.getElementById('growth-chart');
+            if (!el) return;
+            const ctx = el.getContext('2d');
+            const labels = chartData.labels || [];
+            const jobseekers = chartData.jobseekers || [];
+            const members = chartData.members || [];
+            if (growthChart) {
+                growthChart.data.labels = labels;
+                if (growthChart.data.datasets[0]) {
+                    growthChart.data.datasets[0].data = jobseekers;
+                }
+                if (growthChart.data.datasets[1]) {
+                    growthChart.data.datasets[1].data = members;
+                }
+                growthChart.update();
+                return;
+            }
+            growthChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: '新增求职者',
+                        data: jobseekers,
+                        borderColor: '#165DFF',
+                        backgroundColor: 'rgba(22, 93, 255, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true
+                    }, {
+                        label: '新增会员',
+                        data: members,
+                        borderColor: '#36CBCB',
+                        backgroundColor: 'rgba(54, 203, 203, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function initMemberDistributionChart(chartData) {
+            const el = document.getElementById('member-distribution-chart');
+            if (!el) return;
+            const ctx = el.getContext('2d');
+            const labels = chartData.labels || ['高级会员/尊享', '普通会员', '非会员'];
+            const data = chartData.data || [0, 0, 0];
+            if (memberDistributionChart) {
+                memberDistributionChart.data.labels = labels;
+                if (memberDistributionChart.data.datasets[0]) {
+                    memberDistributionChart.data.datasets[0].data = data;
+                }
+                memberDistributionChart.update();
+                return;
+            }
+            memberDistributionChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels,
+                    datasets: [{
+                        data,
+                        backgroundColor: [
+                            '#165DFF',
+                            '#36CBCB',
+                            '#E5E7EB'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        }
+                    },
+                    cutout: '70%'
+                }
+            });
+        }
+        
+        // 会员套餐数据
+        let membershipPlans = [
+            {
+                id: 1,
+                name: '普通会员',
+                price: 39,
+                period: 'month',
+                features: ['基础简历模板', '职位推送', '每月5次测评'],
+                excludedFeatures: ['简历优化服务', '职业咨询']
+            },
+            {
+                id: 2,
+                name: '高级会员',
+                price: 99,
+                period: 'month',
+                features: ['高级简历模板', '优先职位推送', '每月20次测评', '简历优化服务'],
+                excludedFeatures: ['职业咨询']
+            },
+            {
+                id: 3,
+                name: '尊享会员',
+                price: 199,
+                period: 'month',
+                features: ['全部简历模板', '专属职位推送', '无限次测评', '简历优化服务', '每月2次职业咨询'],
+                excludedFeatures: []
+            }
+        ];
+        
+        // 从接口加载求职者列表（分页）
+        async function loadJobseekersFromAPI(page = 1) {
+            const tbody = document.getElementById('jobseekers-tbody');
+            if (tbody) tbody.innerHTML = '<tr><td colspan="7" class="px-6 py-4 text-center text-gray-500">加载中...</td></tr>';
+            const params = new URLSearchParams({
+                page: String(page),
+                size: String(itemsPerPage),
+                ...(currentFilters.keyword && { keyword: currentFilters.keyword }),
+                ...(currentFilters.memberStatus && currentFilters.memberStatus !== 'all' && { memberStatus: currentFilters.memberStatus }),
+                ...(currentFilters.registerStart && { registerStart: currentFilters.registerStart }),
+                ...(currentFilters.registerEnd && { registerEnd: currentFilters.registerEnd }),
+                ...(currentFilters.activity && currentFilters.activity !== 'all' && { activity: currentFilters.activity })
+            });
+            try {
+                const res = await apiRequest(`${API_BASE_URL}/admin/jobseekers?${params}`);
+                if (res && res.success) {
+                    jobseekersData = res.data || [];
+                    totalJobseekersCount = res.total || 0;
+                    currentPage = parseInt(res.page, 10) || page;
+                    loadJobseekersList(currentPage);
+                } else {
+                    jobseekersData = [];
+                    totalJobseekersCount = 0;
+                    loadJobseekersList(1);
+                }
+            } catch (e) {
+                console.warn('加载求职者列表失败', e);
+                jobseekersData = [];
+                totalJobseekersCount = 0;
+                if (tbody) tbody.innerHTML = '<tr><td colspan="7" class="px-6 py-4 text-center text-red-500">加载失败，请重试</td></tr>';
+            }
+        }
+
+        
+        // 格式化日期
+        function formatDate(date) {
+            const now = new Date();
+            const diff = now - date;
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            
+            if (days === 0) return '今天 ' + date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+            if (days === 1) return '昨天 ' + date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+            if (days < 7) return days + '天前';
+            if (days < 30) return Math.floor(days / 7) + '周前';
+            if (days < 365) return Math.floor(days / 30) + '个月前';
+            return date.toLocaleDateString('zh-CN');
+        }
+        
+        // 加载求职者列表（渲染当前页数据 jobseekersData，来自接口）
+        function loadJobseekersList(page = 1) {
+            currentPage = page;
+            const tbody = document.getElementById('jobseekers-tbody');
+            if (!tbody) return;
+            
+            const pageData = jobseekersData;
+            
+            if (!pageData || pageData.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="px-6 py-4 text-center text-sm text-gray-500">
+                            暂无数据
+                        </td>
+                    </tr>
+                `;
+                updatePagination();
+                return;
+            }
+            
+            tbody.innerHTML = pageData.map(jobseeker => {
+                const memberTypeMap = {
+                    'premium': { text: '高级会员', class: 'bg-green-100 text-green-800' },
+                    'normal': { text: '普通会员', class: 'bg-yellow-100 text-yellow-800' },
+                    'vip': { text: '尊享会员', class: 'bg-purple-100 text-purple-800' },
+                    'none': { text: '非会员', class: 'bg-gray-100 text-gray-800' }
+                };
+                const statusMap = {
+                    'active': { text: '活跃', class: 'bg-blue-100 text-blue-800' },
+                    'inactive': { text: '非活跃', class: 'bg-gray-100 text-gray-800' }
+                };
+                
+                const memberInfo = memberTypeMap[jobseeker.memberType] || memberTypeMap['none'];
+                const statusInfo = statusMap[jobseeker.status] || statusMap['inactive'];
+                
+                return `
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-10 w-10">
+                                    <img class="h-10 w-10 rounded-full" src="${jobseeker.avatar}" alt="${jobseeker.name}">
+                                </div>
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900">${jobseeker.name}</div>
+                                    <div class="text-sm text-gray-500">ID: ${jobseeker.id}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">${jobseeker.email}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${memberInfo.class}">
+                                ${memberInfo.text}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">${jobseeker.registerDate || '—'}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-normal min-w-[10rem]">
+                            <div class="text-sm text-gray-900">${jobseeker.lastLogin || '—'}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusInfo.class}">
+                                ${statusInfo.text}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button onclick="viewJobseeker(${jobseeker.id})" class="text-primary hover:text-primary/80 mr-3">查看</button>
+                            <button onclick="editJobseeker(${jobseeker.id})" class="text-gray-600 hover:text-gray-900 mr-3">编辑</button>
+                            <button onclick="deleteJobseeker(${jobseeker.id})" class="text-red-600 hover:text-red-800">删除</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+            
+            updatePagination();
+        }
+        
+        // 更新分页
+        function updatePagination() {
+            const paginationContainer = document.getElementById('jobseekers-pagination');
+            if (!paginationContainer) return;
+            
+            const totalItems = totalJobseekersCount;
+            const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
+            const startIndex = totalItems > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0;
+            const endIndex = totalItems > 0 ? Math.min(currentPage * itemsPerPage, totalItems) : 0;
+            
+            let paginationHTML = `
+                <div class="text-sm text-gray-700 mb-3 sm:mb-0">
+                    显示 ${startIndex} 至 ${endIndex}，共 ${totalItems} 条
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button onclick="changePage(${currentPage - 1})" 
+                            class="px-3 py-1 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" 
+                            ${currentPage === 1 ? 'disabled' : ''}>
+                        <i class="fa fa-chevron-left"></i>
+                    </button>
+            `;
+            
+            // 生成页码按钮
+            const maxVisiblePages = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+            
+            if (endPage - startPage < maxVisiblePages - 1) {
+                startPage = Math.max(1, endPage - maxVisiblePages + 1);
+            }
+            
+            if (startPage > 1) {
+                paginationHTML += `
+                    <button onclick="changePage(1)" class="px-3 py-1 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">1</button>
+                `;
+                if (startPage > 2) {
+                    paginationHTML += `<span class="px-2 text-gray-500">...</span>`;
+                }
+            }
+            
+            for (let i = startPage; i <= endPage; i++) {
+                paginationHTML += `
+                    <button onclick="changePage(${i})" 
+                            class="px-3 py-1 border border-gray-300 rounded-md ${i === currentPage ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-50'}">
+                        ${i}
+                    </button>
+                `;
+            }
+            
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    paginationHTML += `<span class="px-2 text-gray-500">...</span>`;
+                }
+                paginationHTML += `
+                    <button onclick="changePage(${totalPages})" class="px-3 py-1 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">${totalPages}</button>
+                `;
+            }
+            
+            paginationHTML += `
+                    <button onclick="changePage(${currentPage + 1})" 
+                            class="px-3 py-1 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            ${currentPage === totalPages ? 'disabled' : ''}>
+                        <i class="fa fa-chevron-right"></i>
+                    </button>
+                </div>
+            `;
+            
+            paginationContainer.innerHTML = paginationHTML;
+        }
+        
+        // 切换页码
+        function changePage(page) {
+            if (page < 1) return;
+            const totalPages = Math.ceil(totalJobseekersCount / itemsPerPage) || 1;
+            if (page > totalPages) return;
+            loadJobseekersFromAPI(page);
+        }
+        
+        // 显示筛选模态框
+        function showFilterModal() {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            modal.id = 'filter-modal';
+            modal.innerHTML = `
+                <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+                    <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+                        <h3 class="text-lg font-semibold text-gray-900">设置筛选条件</h3>
+                        <button onclick="closeFilterModal()" class="text-gray-400 hover:text-gray-600">
+                            <i class="fa fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    <div class="px-6 py-4">
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">会员状态</label>
+                                <select id="filter-member-status" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary">
+                                    <option value="all">全部</option>
+                                    <option value="premium" ${currentFilters.memberStatus === 'premium' ? 'selected' : ''}>高级会员</option>
+                                    <option value="normal" ${currentFilters.memberStatus === 'normal' ? 'selected' : ''}>普通会员</option>
+                                    <option value="none" ${currentFilters.memberStatus === 'none' ? 'selected' : ''}>非会员</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">注册时间</label>
+                                <div class="flex space-x-2">
+                                    <input type="date" id="filter-register-start" value="${currentFilters.registerStart}" class="mt-1 block w-1/2 rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary">
+                                    <input type="date" id="filter-register-end" value="${currentFilters.registerEnd}" class="mt-1 block w-1/2 rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">活跃度</label>
+                                <select id="filter-activity" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary">
+                                    <option value="all">全部</option>
+                                    <option value="active" ${currentFilters.activity === 'active' ? 'selected' : ''}>活跃</option>
+                                    <option value="inactive" ${currentFilters.activity === 'inactive' ? 'selected' : ''}>不活跃</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">搜索关键词</label>
+                                <input type="text" id="filter-keyword" value="${currentFilters.keyword}" placeholder="姓名、邮箱、ID、手机号" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary">
+                            </div>
+                        </div>
+                        <div class="mt-6 flex justify-end space-x-3">
+                            <button onclick="resetFilterConditions()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                                重置
+                            </button>
+                            <button onclick="applyFilterConditions()" class="px-4 py-2 text-sm font-medium text-white bg-primary rounded-md hover:bg-blue-700">
+                                应用筛选
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+        
+        // 关闭筛选模态框
+        function closeFilterModal() {
+            const modal = document.getElementById('filter-modal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+        
+        // 应用筛选条件
+        function applyFilterConditions() {
+            const memberStatus = document.getElementById('filter-member-status').value;
+            const registerStart = document.getElementById('filter-register-start').value;
+            const registerEnd = document.getElementById('filter-register-end').value;
+            const activity = document.getElementById('filter-activity').value;
+            const keyword = document.getElementById('filter-keyword').value.trim().toLowerCase();
+            
+            currentFilters = {
+                memberStatus,
+                registerStart,
+                registerEnd,
+                activity,
+                keyword
+            };
+            
+            // 同步搜索框
+            const searchInput = document.getElementById('search-input');
+            if (searchInput) {
+                searchInput.value = keyword;
+            }
+            
+            // 应用筛选
+            applyFilters();
+            closeFilterModal();
+        }
+        
+        // 重置筛选条件
+        function resetFilterConditions() {
+            document.getElementById('filter-member-status').value = 'all';
+            document.getElementById('filter-register-start').value = '';
+            document.getElementById('filter-register-end').value = '';
+            document.getElementById('filter-activity').value = 'all';
+            document.getElementById('filter-keyword').value = '';
+            
+            const searchInput = document.getElementById('search-input');
+            if (searchInput) {
+                searchInput.value = '';
+            }
+            
+            currentFilters = {
+                memberStatus: 'all',
+                registerStart: '',
+                registerEnd: '',
+                activity: 'all',
+                keyword: ''
+            };
+            
+            loadJobseekersFromAPI(1);
+            closeFilterModal();
+        }
+        
+        // 应用筛选（参数已写入 currentFilters，直接请求接口）
+        function applyFilters() {
+            loadJobseekersFromAPI(1);
+        }
+        
+        // 搜索功能
+        function performSearch() {
+            const searchInput = document.getElementById('search-input');
+            if (!searchInput) return;
+            
+            const keyword = searchInput.value.trim().toLowerCase();
+            currentFilters.keyword = keyword;
+            applyFilters();
+        }
+        
+        // 查看求职者详情
+        function viewJobseeker(id) {
+            const jobseeker = jobseekerById(id);
+            if (!jobseeker) return;
+            
+            const memberTypeMap = {
+                'premium': '高级会员',
+                'normal': '普通会员',
+                'none': '非会员'
+            };
+            
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            modal.innerHTML = `
+                <div class="bg-white rounded-lg shadow-xl max-w-3xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+                    <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+                        <h3 class="text-lg font-semibold text-gray-900">求职者详情</h3>
+                        <button onclick="this.closest('.fixed').remove()" class="text-gray-400 hover:text-gray-600">
+                            <i class="fa fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    <div class="px-6 py-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <div class="flex items-center mb-4">
+                                    <img src="${jobseeker.avatar}" alt="${jobseeker.name}" class="h-20 w-20 rounded-full mr-4">
+                                    <div>
+                                        <h4 class="text-xl font-semibold text-gray-900">${jobseeker.name}</h4>
+                                        <p class="text-sm text-gray-500">ID: ${jobseeker.id}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="space-y-4">
+                                <div>
+                                    <dt class="text-sm font-medium text-gray-500">邮箱</dt>
+                                    <dd class="mt-1 text-sm text-gray-900">${jobseeker.email}</dd>
+                                </div>
+                                <div>
+                                    <dt class="text-sm font-medium text-gray-500">手机号</dt>
+                                    <dd class="mt-1 text-sm text-gray-900">${jobseeker.phone}</dd>
+                                </div>
+                                <div>
+                                    <dt class="text-sm font-medium text-gray-500">会员类型</dt>
+                                    <dd class="mt-1">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${jobseeker.memberType === 'premium' ? 'bg-green-100 text-green-800' : jobseeker.memberType === 'normal' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800'}">
+                                            ${memberTypeMap[jobseeker.memberType] || memberTypeMap['none']}
+                                        </span>
+                                    </dd>
+                                </div>
+                                <div>
+                                    <dt class="text-sm font-medium text-gray-500">注册时间</dt>
+                                    <dd class="mt-1 text-sm text-gray-900">${jobseeker.registerDate}</dd>
+                                </div>
+                                <div>
+                                    <dt class="text-sm font-medium text-gray-500">最后登录</dt>
+                                    <dd class="mt-1 text-sm text-gray-900">${jobseeker.lastLogin}</dd>
+                                </div>
+                                <div>
+                                    <dt class="text-sm font-medium text-gray-500">状态</dt>
+                                    <dd class="mt-1">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${jobseeker.status === 'active' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}">
+                                            ${jobseeker.status === 'active' ? '活跃' : '非活跃'}
+                                        </span>
+                                    </dd>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-6 flex justify-end space-x-3">
+                            <button onclick="this.closest('.fixed').remove()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                                关闭
+                            </button>
+                            <button onclick="editJobseeker(${jobseeker.id}); this.closest('.fixed').remove();" class="px-4 py-2 text-sm font-medium text-white bg-primary rounded-md hover:bg-blue-700">
+                                编辑
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+        
+        // 编辑求职者
+        function editJobseeker(id) {
+            const jobseeker = jobseekerById(id);
+            if (!jobseeker) return;
+            
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            modal.innerHTML = `
+                <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+                    <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+                        <h3 class="text-lg font-semibold text-gray-900">编辑求职者</h3>
+                        <button onclick="this.closest('.fixed').remove()" class="text-gray-400 hover:text-gray-600">
+                            <i class="fa fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    <div class="px-6 py-4">
+                        <form id="edit-jobseeker-form" onsubmit="saveJobseeker(${jobseeker.id}); return false;">
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">姓名</label>
+                                    <input type="text" id="edit-name" value="${jobseeker.name}" required
+                                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">邮箱</label>
+                                    <input type="email" id="edit-email" value="${jobseeker.email}" required
+                                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">手机号</label>
+                                    <input type="tel" id="edit-phone" value="${jobseeker.phone}" required
+                                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">会员类型</label>
+                                    <select id="edit-member-type" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary">
+                                        <option value="none" ${jobseeker.memberType === 'none' ? 'selected' : ''}>非会员</option>
+                                        <option value="normal" ${jobseeker.memberType === 'normal' ? 'selected' : ''}>普通会员</option>
+                                        <option value="premium" ${jobseeker.memberType === 'premium' ? 'selected' : ''}>高级会员</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">状态</label>
+                                    <select id="edit-status" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary">
+                                        <option value="active" ${jobseeker.status === 'active' ? 'selected' : ''}>活跃</option>
+                                        <option value="inactive" ${jobseeker.status === 'inactive' ? 'selected' : ''}>非活跃</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mt-6 flex justify-end space-x-3">
+                                <button type="button" onclick="this.closest('.fixed').remove()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                                    取消
+                                </button>
+                                <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-primary rounded-md hover:bg-blue-700">
+                                    保存
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+        
+        // 保存求职者（调用接口）
+        async function saveJobseeker(id) {
+            const jobseeker = jobseekerById(id);
+            if (!jobseeker) return;
+            
+            const name = document.getElementById('edit-name').value.trim();
+            const email = document.getElementById('edit-email').value.trim();
+            const phone = document.getElementById('edit-phone').value.trim();
+            const memberType = document.getElementById('edit-member-type').value;
+            const status = document.getElementById('edit-status').value;
+            
+            try {
+                const res = await apiRequest(`${API_BASE_URL}/admin/jobseekers/${id}`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ name, email, phone, memberType, status })
+                });
+                if (res && res.success) {
+                    document.querySelector('.fixed') && document.querySelector('.fixed').remove();
+                    showToast('求职者信息已更新', 'success');
+                    loadJobseekersFromAPI(currentPage);
+                } else {
+                    showToast(res && res.message ? res.message : '更新失败', 'error');
+                }
+            } catch (e) {
+                showToast(e.message || '更新失败', 'error');
+            }
+        }
+        
+        // 删除求职者（调用接口，软删/禁用）
+        async function deleteJobseeker(id) {
+            const jobseeker = jobseekerById(id);
+            if (!jobseeker) return;
+            
+            if (!confirm(`确定要禁用求职者 "${jobseeker.name}" 吗？`)) return;
+            
+            try {
+                const res = await apiRequest(`${API_BASE_URL}/admin/jobseekers/${id}`, { method: 'DELETE' });
+                if (res && res.success) {
+                    showToast('已禁用该求职者', 'success');
+                    loadJobseekersFromAPI(1);
+                } else {
+                    showToast(res && res.message ? res.message : '操作失败', 'error');
+                }
+            } catch (e) {
+                showToast(e.message || '操作失败', 'error');
+            }
+        }
+        
+        // 显示导出模态框
+        function showExportModal() {
+            // 确保筛选条件是最新的
+            const searchInput = document.getElementById('search-input');
+            if (searchInput && searchInput.value.trim()) {
+                currentFilters.keyword = searchInput.value.trim().toLowerCase();
+                applyFilters();
+            }
+            
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            modal.id = 'export-modal';
+            modal.innerHTML = `
+                <div class="bg-white rounded-lg shadow-xl max-w-lg w-full mx-4">
+                    <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+                        <h3 class="text-lg font-semibold text-gray-900">导出数据</h3>
+                        <button onclick="document.getElementById('export-modal').remove()" class="text-gray-400 hover:text-gray-600">
+                            <i class="fa fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    <div class="px-6 py-4">
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">导出格式</label>
+                                <div class="space-y-2">
+                                    <label class="flex items-center">
+                                        <input type="radio" name="export-format" value="excel" checked class="mr-2">
+                                        <span>Excel (.xlsx)</span>
+                                    </label>
+                                    <label class="flex items-center">
+                                        <input type="radio" name="export-format" value="csv" class="mr-2">
+                                        <span>CSV (.csv)</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">导出范围</label>
+                                <div class="space-y-2">
+                                    <label class="flex items-center">
+                                        <input type="radio" name="export-range" value="current" checked class="mr-2">
+                                        <span>当前筛选结果 <span class="text-primary font-semibold">(${totalJobseekersCount} 条)</span></span>
+                                    </label>
+                                    <label class="flex items-center">
+                                        <input type="radio" name="export-range" value="all" class="mr-2">
+                                        <span>全部数据 <span class="text-gray-600">(${totalJobseekersCount} 条)</span></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-6 flex justify-end space-x-3">
+                            <button onclick="document.getElementById('export-modal').remove()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                                取消
+                            </button>
+                            <button onclick="executeExport(); document.getElementById('export-modal').remove();" class="px-4 py-2 text-sm font-medium text-white bg-primary rounded-md hover:bg-blue-700">
+                                <i class="fa fa-download mr-2"></i>导出
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+        
+        // 执行导出
+        function executeExport() {
+            const format = document.querySelector('input[name="export-format"]:checked').value;
+            const range = document.querySelector('input[name="export-range"]:checked').value;
+            
+            const dataToExport = jobseekersData;
+            
+            if (dataToExport.length === 0) {
+                showToast('没有可导出的数据', 'error');
+                return;
+            }
+            
+            if (format === 'csv') {
+                exportToCSV(dataToExport, range === 'current');
+            } else {
+                exportToExcel(dataToExport, range === 'current');
+            }
+        }
+        
+        // 导出为CSV
+        function exportToCSV(data, isFiltered = false) {
+            const headers = ['ID', '姓名', '邮箱', '手机号', '会员类型', '注册时间', '最后登录', '状态'];
+            const rows = data.map(j => [
+                j.id,
+                j.name,
+                j.email,
+                j.phone,
+                j.memberType === 'premium' ? '高级会员' : j.memberType === 'normal' ? '普通会员' : '非会员',
+                j.registerDate,
+                j.lastLogin,
+                j.status === 'active' ? '活跃' : '非活跃'
+            ]);
+            
+            let csvContent = [
+                headers.join(','),
+                ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+            ].join('\n');
+            
+            const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            const date = new Date().toISOString().split('T')[0];
+            link.download = `求职者数据_${date}.csv`;
+            link.click();
+            
+            showToast(`数据导出成功，共 ${data.length} 条记录`, 'success');
+        }
+        
+        // 导出为Excel
+        function exportToExcel(data, isFiltered = false) {
+            exportToCSV(data, isFiltered);
+        }
+        
+        
+        // 显示提示消息
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `fixed top-4 right-4 z-50 px-4 py-3 rounded-md shadow-lg ${
+                type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+            } text-white`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+        
+        // 编辑会员套餐
+        function editMembershipPlan(planId) {
+            const plan = membershipPlans.find(p => p.id === planId);
+            if (!plan) return;
+            
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            modal.innerHTML = `
+                <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+                    <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+                        <h3 class="text-lg font-semibold text-gray-900">编辑会员套餐 - ${plan.name}</h3>
+                        <button onclick="this.closest('.fixed').remove()" class="text-gray-400 hover:text-gray-600">
+                            <i class="fa fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    <div class="px-6 py-4">
+                        <form id="edit-plan-form" onsubmit="saveMembershipPlan(${plan.id}); return false;">
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">套餐名称</label>
+                                    <input type="text" id="plan-name" value="${plan.name}" required
+                                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary">
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700">价格</label>
+                                        <input type="number" id="plan-price" value="${plan.price}" min="0" step="0.01" required
+                                               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700">计费周期</label>
+                                        <select id="plan-period" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary">
+                                            <option value="month" ${plan.period === 'month' ? 'selected' : ''}>按月</option>
+                                            <option value="quarter" ${plan.period === 'quarter' ? 'selected' : ''}>按季度</option>
+                                            <option value="year" ${plan.period === 'year' ? 'selected' : ''}>按年</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">套餐功能</label>
+                                    <div id="plan-features" class="space-y-2">
+                                        ${plan.features.map((feature, index) => `
+                                            <div class="flex items-center space-x-2">
+                                                <input type="text" value="${feature}" data-feature-index="${index}" 
+                                                       class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary">
+                                                <button type="button" onclick="removeFeature(this)" class="text-red-600 hover:text-red-800">
+                                                    <i class="fa fa-times"></i>
+                                                </button>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                    <button type="button" onclick="addFeature()" class="mt-2 text-sm text-primary hover:text-primary/80">
+                                        <i class="fa fa-plus mr-1"></i>添加功能
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="mt-6 flex justify-end space-x-3">
+                                <button type="button" onclick="this.closest('.fixed').remove()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                                    取消
+                                </button>
+                                <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-primary rounded-md hover:bg-blue-700">
+                                    保存
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+        
+        // 添加功能项
+        function addFeature() {
+            const container = document.getElementById('plan-features');
+            const index = container.children.length;
+            const div = document.createElement('div');
+            div.className = 'flex items-center space-x-2';
+            div.innerHTML = `
+                <input type="text" placeholder="输入功能描述" data-feature-index="${index}" 
+                       class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary">
+                <button type="button" onclick="removeFeature(this)" class="text-red-600 hover:text-red-800">
+                    <i class="fa fa-times"></i>
+                </button>
+            `;
+            container.appendChild(div);
+        }
+        
+        // 移除功能项
+        function removeFeature(button) {
+            button.parentElement.remove();
+        }
+        
+        // 保存会员套餐
+        async function saveMembershipPlan(planId) {
+            const plan = membershipPlans.find(p => p.id === planId);
+            if (!plan) return;
+            
+            plan.name = document.getElementById('plan-name').value;
+            plan.price = parseFloat(document.getElementById('plan-price').value);
+            plan.period = document.getElementById('plan-period').value;
+            
+            const featureInputs = document.querySelectorAll('#plan-features input[data-feature-index]');
+            plan.features = Array.from(featureInputs)
+                .map(input => input.value.trim())
+                .filter(value => value.length > 0);
+            
+            // 保存到localStorage，供本机求职者端兜底
+            localStorage.setItem('membershipPlans', JSON.stringify(membershipPlans));
+            
+            // 触发存储事件，通知其他页面
+            window.dispatchEvent(new StorageEvent('storage', {
+                key: 'membershipPlans',
+                newValue: JSON.stringify(membershipPlans)
+            }));
+            
+            // 关闭模态框
+            document.querySelector('.fixed').remove();
+            
+            try {
+                await apiRequest(API_BASE_URL + '/admin/membership-plans', {
+                    method: 'PUT',
+                    body: JSON.stringify(membershipPlans)
+                });
+                showToast('会员套餐已更新并同步到服务端', 'success');
+            } catch (e) {
+                console.warn('会员套餐同步服务端失败', e);
+                showToast('已保存到本机，同步服务端失败（请检查网络与「求职者管理」权限）', 'error');
+            }
+            
+            location.reload();
+        }
+        
+        // 初始化时加载会员套餐：优先服务端（全站求职者可见），否则 localStorage / 默认
+        async function initMembershipPlansStorage() {
+            try {
+                const res = await fetch(API_BASE_URL + '/public/site-settings', { cache: 'no-store' });
+                const j = await res.json().catch(() => null);
+                if (j && j.success && j.data && Array.isArray(j.data.membershipPlans) && j.data.membershipPlans.length > 0) {
+                    membershipPlans = j.data.membershipPlans;
+                    localStorage.setItem('membershipPlans', JSON.stringify(membershipPlans));
+                    return;
+                }
+            } catch (e) {
+                console.warn('从服务端加载会员套餐失败', e);
+            }
+            const savedPlans = localStorage.getItem('membershipPlans');
+            if (!savedPlans) {
+                localStorage.setItem('membershipPlans', JSON.stringify(membershipPlans));
+            } else {
+                try {
+                    const parsedPlans = JSON.parse(savedPlans);
+                    if (Array.isArray(parsedPlans) && parsedPlans.length > 0) {
+                        membershipPlans = parsedPlans;
+                    }
+                } catch (e) {
+                    console.error('加载会员套餐数据失败:', e);
+                }
+            }
+            // 升级：本机曾有套餐但服务端尚无时，自动同步一次（免管理员逐台重新保存）
+            try {
+                const res2 = await fetch(API_BASE_URL + '/public/site-settings', { cache: 'no-store' });
+                const j2 = await res2.json().catch(() => null);
+                const srvEmpty =
+                    !j2 ||
+                    !j2.success ||
+                    !j2.data ||
+                    !Array.isArray(j2.data.membershipPlans) ||
+                    j2.data.membershipPlans.length === 0;
+                if (srvEmpty && membershipPlans && membershipPlans.length > 0 && getAuthToken()) {
+                    await apiRequest(API_BASE_URL + '/admin/membership-plans', {
+                        method: 'PUT',
+                        body: JSON.stringify(membershipPlans)
+                    });
+                }
+            } catch (e) {
+                /* 忽略自动同步失败 */
+            }
+        }
+
+        // 用户管理模块收起/展开功能
+        function initUserManagementToggle() {
+        const userManagementToggles = document.querySelectorAll('.user-management-toggle');
+        userManagementToggles.forEach(toggle => {
+                toggle.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    
+                const submenu = this.nextElementSibling;
+                const icon = this.querySelector('.user-management-icon');
+                
+                    if (submenu && icon) {
+                // 切换子菜单显示/隐藏
+                submenu.classList.toggle('hidden');
+                
+                // 旋转图标
+                icon.classList.toggle('transform');
+                icon.classList.toggle('rotate-180');
+                    }
+                });
+            });
+        }
+
+        // 用户菜单初始化标志
+        let userMenuInitialized = false;
+        
+        function initUserMenu() {
+            if (userMenuInitialized) return;
+            userMenuInitialized = true;
+            // 用户菜单、通知由 js/admin-navbar.js 统一处理
+        }
+        
+        function loadAdminInfoToMenu() {
+            const settings = JSON.parse(localStorage.getItem('systemSettings') || '{}');
+            const adminInfo = JSON.parse(localStorage.getItem('adminInfo') || '{}');
+            
+            const userNameEl = document.getElementById('user-menu-name');
+            const userEmailEl = document.getElementById('user-menu-email');
+            const avatarImg = document.getElementById('user-avatar-img');
+            
+            if (userNameEl) {
+                const username = settings.adminUsername || adminInfo.username || '管理员';
+                userNameEl.textContent = username;
+            }
+            if (userEmailEl) {
+                const email = settings.adminEmail || adminInfo.email || 'admin@shengju.com';
+                userEmailEl.textContent = email;
+            }
+            if (avatarImg) {
+                const username = settings.adminUsername || adminInfo.username || '管理员';
+                avatarImg.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=1E40AF&color=fff`;
+                avatarImg.alt = username + '头像';
+            }
+        }
+        
+        window.logout = function() {
+            if (confirm('确定要退出登录吗？')) {
+                localStorage.removeItem('adminLoginStatus');
+                window.location.href = '../index.html';
+            }
+        };
+        
+        window.showAllNotifications = function() {
+            const notificationMenu = document.getElementById('notification-menu');
+            if (notificationMenu) {
+                notificationMenu.classList.add('hidden');
+            }
+            
+            const notificationModal = document.createElement('div');
+            notificationModal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            notificationModal.innerHTML = `
+                <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+                    <div class="flex justify-between items-center px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900">所有通知</h3>
+                        <div class="flex items-center gap-4">
+                            <select id="notification-filter" class="px-3 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-primary focus:border-primary">
+                                <option value="all">全部通知</option>
+                                <option value="system">系统通知</option>
+                                <option value="security">安全提醒</option>
+                                <option value="backup">备份通知</option>
+                                <option value="update">更新通知</option>
+                            </select>
+                            <button class="text-gray-400 hover:text-gray-500" onclick="this.closest('.fixed').remove()">
+                                <i class="fa fa-times text-xl"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-6 overflow-y-auto max-h-[calc(90vh-180px)]" id="all-notifications-list">
+                        <div class="text-center py-12">
+                            <i class="fa fa-bell-slash text-4xl text-gray-300 mb-4"></i>
+                            <p class="text-gray-500">暂无通知</p>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center px-6 py-4 bg-gray-50 border-t border-gray-200">
+                        <div class="text-sm text-gray-500">共 <span id="notification-total-count">0</span> 条通知</div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="markAllNotificationsRead()" class="px-4 py-2 text-sm bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300">
+                                <i class="fa fa-check mr-2"></i>全部标记为已读
+                            </button>
+                            <button onclick="clearAllNotifications()" class="px-4 py-2 text-sm bg-red-600 text-white rounded-md hover:bg-red-700">
+                                <i class="fa fa-trash mr-2"></i>清空通知
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(notificationModal);
+            
+            document.getElementById('notification-filter')?.addEventListener('change', function() {
+                loadAllNotifications(this.value);
+            });
+            
+            notificationModal.addEventListener('click', function(e) {
+                if (e.target === notificationModal) {
+                    notificationModal.remove();
+                }
+            });
+            
+            loadAllNotifications();
+        };
+        
+        function loadAllNotifications(filter = 'all') {
+            const listContainer = document.getElementById('all-notifications-list');
+            const totalCount = document.getElementById('notification-total-count');
+            if (!listContainer) return;
+            
+            const allNotifications = [
+                { id: 1, type: 'system', title: '系统更新通知', content: '系统已更新至最新版本 v2.1.0，新增了多项功能优化，请查看更新日志了解详情。', time: '2小时前', read: false, icon: 'info-circle', color: 'blue' },
+                { id: 2, type: 'security', title: '安全提醒', content: '检测到异常登录尝试，IP地址：192.168.1.100，如果不是您本人操作，请立即修改密码。', time: '5小时前', read: false, icon: 'exclamation-triangle', color: 'yellow' },
+                { id: 3, type: 'backup', title: '数据备份完成', content: '系统数据备份已成功完成，备份文件已保存至服务器，备份时间：2025-01-15 03:00:00', time: '1天前', read: true, icon: 'check-circle', color: 'green' }
+            ];
+            
+            let filteredNotifications = allNotifications;
+            if (filter !== 'all') {
+                filteredNotifications = allNotifications.filter(n => n.type === filter);
+            }
+            
+            if (totalCount) {
+                totalCount.textContent = filteredNotifications.length;
+            }
+            
+            if (filteredNotifications.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="text-center py-12">
+                        <i class="fa fa-bell-slash text-4xl text-gray-300 mb-4"></i>
+                        <p class="text-gray-500">暂无通知</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            listContainer.innerHTML = filteredNotifications.map(notification => `
+                <div class="border border-gray-200 rounded-lg p-4 mb-4 hover:bg-gray-50 transition ${notification.read ? 'opacity-60' : ''}">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <i class="fa fa-${notification.icon} text-${notification.color}-500 text-xl"></i>
+                        </div>
+                        <div class="ml-4 flex-1">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2">
+                                        <h4 class="text-sm font-medium text-gray-900">${notification.title}</h4>
+                                        ${!notification.read ? '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">未读</span>' : ''}
+                                    </div>
+                                    <p class="text-sm text-gray-600 mt-1">${notification.content}</p>
+                                    <p class="text-xs text-gray-400 mt-2">${notification.time}</p>
+                                </div>
+                                <div class="ml-4 flex items-center gap-2">
+                                    ${!notification.read ? `
+                                        <button onclick="markNotificationRead(${notification.id})" class="text-xs text-primary hover:text-blue-700">
+                                            <i class="fa fa-check mr-1"></i>标记已读
+                                        </button>
+                                    ` : ''}
+                                    <button onclick="deleteNotification(${notification.id})" class="text-xs text-red-600 hover:text-red-700">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        window.markNotificationRead = function(id) {
+            const notification = document.querySelector(`[onclick*="markNotificationRead(${id})"]`)?.closest('.border');
+            if (notification) {
+                notification.classList.add('opacity-60');
+                const badge = notification.querySelector('.bg-red-100');
+                if (badge) badge.remove();
+                const button = notification.querySelector(`[onclick*="markNotificationRead(${id})"]`);
+                if (button) button.remove();
+            }
+        };
+        
+        window.deleteNotification = function(id) {
+            if (confirm('确定要删除这条通知吗？')) {
+                const notification = document.querySelector(`[onclick*="deleteNotification(${id})"]`)?.closest('.border');
+                if (notification) {
+                    notification.remove();
+                    const filter = document.getElementById('notification-filter')?.value || 'all';
+                    loadAllNotifications(filter);
+                }
+            }
+        };
+        
+        window.markAllNotificationsRead = function() {
+            if (confirm('确定要将所有通知标记为已读吗？')) {
+                const notifications = document.querySelectorAll('#all-notifications-list .border');
+                notifications.forEach(notification => {
+                    notification.classList.add('opacity-60');
+                    const badge = notification.querySelector('.bg-red-100');
+                    if (badge) badge.remove();
+                    const button = notification.querySelector('[onclick*="markNotificationRead"]');
+                    if (button) button.remove();
+                });
+            }
+        };
+        
+        window.clearAllNotifications = function() {
+            if (confirm('确定要清空所有通知吗？此操作无法撤销。')) {
+                const listContainer = document.getElementById('all-notifications-list');
+                if (listContainer) {
+                    listContainer.innerHTML = `
+                        <div class="text-center py-12">
+                            <i class="fa fa-bell-slash text-4xl text-gray-300 mb-4"></i>
+                            <p class="text-gray-500">暂无通知</p>
+                        </div>
+                    `;
+                }
+                const totalCount = document.getElementById('notification-total-count');
+                if (totalCount) totalCount.textContent = '0';
+            }
+        };
+        
+        // 页面加载时初始化
+        // 更新管理者端导航栏（通用函数）
+        function updateAdminNavbar() {
+            try {
+                const navbarData = JSON.parse(localStorage.getItem('adminNavbar') || 'null');
+                if (navbarData) {
+                    // 更新侧边栏 Logo - 使用更宽泛的选择器
+                    const sidebarLogos = document.querySelectorAll('aside img[alt="圣举人才网"], aside img[alt*="圣举"], aside img[alt*="Logo"]');
+                    sidebarLogos.forEach(logo => {
+                        if (navbarData.siteLogo && logo.alt && (logo.alt.includes('圣举') || logo.alt.includes('Logo'))) {
+                            logo.src = navbarData.siteLogo;
+                        }
+                    });
+                    
+                    // 更新顶部导航栏 Logo - 使用更宽泛的选择器
+                    const headerLogos = document.querySelectorAll('header img[alt="圣举人才网"], header img[alt*="圣举"], header img[alt*="Logo"]');
+                    headerLogos.forEach(logo => {
+                        if (navbarData.siteLogo) {
+                            if (!logo.alt || logo.alt.includes('圣举') || logo.alt.includes('Logo')) {
+                                logo.src = navbarData.siteLogo;
+                            }
+                        }
+                    });
+                    
+                    // 更新网站名称
+                    const siteNameEls = document.querySelectorAll('h1');
+                    siteNameEls.forEach(el => {
+                        if (navbarData.siteName && (el.textContent.includes('圣举') || el.textContent.includes('人才网'))) {
+                            el.textContent = navbarData.siteName;
+                        }
+                    });
+                    
+                    // 更新页面标题
+                    if (navbarData.siteName) {
+                        const currentTitle = document.title;
+                        if (currentTitle.includes(' - ')) {
+                            const parts = currentTitle.split(' - ');
+                            document.title = navbarData.siteName + ' - ' + (parts[1] || '管理后台');
+                        } else {
+                            document.title = navbarData.siteName + ' - 管理后台';
+                        }
+                    }
+                }
+            } catch (e) {
+                console.error('更新管理者端导航栏失败:', e);
+            }
+        }
+        
+        // 监听设置更新事件
+        window.addEventListener('adminNavbarUpdated', function(event) {
+            if (event.detail) {
+                const sidebarLogos = document.querySelectorAll('aside img[alt="圣举人才网"]');
+                const headerLogos = document.querySelectorAll('header img[alt="圣举人才网"]');
+                
+                [...sidebarLogos, ...headerLogos].forEach(logo => {
+                    if (event.detail.siteLogo) {
+                        logo.src = event.detail.siteLogo;
+                    }
+                });
+                
+                const siteNameEls = document.querySelectorAll('h1');
+                siteNameEls.forEach(el => {
+                    if (event.detail.siteName && (el.textContent.includes('圣举') || el.textContent.includes('人才网'))) {
+                        el.textContent = event.detail.siteName;
+                    }
+                });
+                
+                if (event.detail.siteName) {
+                    const currentTitle = document.title;
+                    if (currentTitle.includes(' - ')) {
+                        const parts = currentTitle.split(' - ');
+                        document.title = event.detail.siteName + ' - ' + (parts[1] || '管理后台');
+                    } else {
+                        document.title = event.detail.siteName + ' - 管理后台';
+                    }
+                }
+            }
+        });
+        
+        // 监听 storage 事件（跨标签页同步）
+        window.addEventListener('storage', function(event) {
+            if (event.key === 'adminNavbar') {
+                updateAdminNavbar();
+            }
+        });
+        
+        document.addEventListener('DOMContentLoaded', async function() {
+            updateAdminNavbar();
+            // 初始化会员套餐存储（优先服务端）
+            await initMembershipPlansStorage();
+            
+            // 初始化用户管理展开收起功能
+            initUserManagementToggle();
+            initUserMenu();
+            loadAdminInfoToMenu();
+            
+            // 移动端侧边栏切换
+            const menuToggle = document.getElementById('menu-toggle');
+            const closeSidebar = document.getElementById('close-sidebar');
+            const mobileSidebar = document.getElementById('mobile-sidebar');
+            
+            if (menuToggle && closeSidebar && mobileSidebar) {
+                menuToggle.addEventListener('click', function() {
+                    mobileSidebar.classList.toggle('hidden');
+                });
+                
+                closeSidebar.addEventListener('click', function() {
+                    mobileSidebar.classList.add('hidden');
+                });
+                
+                // 点击侧边栏外部关闭侧边栏
+                document.addEventListener('click', function(event) {
+                    if (!mobileSidebar.contains(event.target) && 
+                        !menuToggle.contains(event.target) && 
+                        !mobileSidebar.classList.contains('hidden')) {
+                        mobileSidebar.classList.add('hidden');
+                    }
+                });
+            }
+            
+            // 筛选按钮
+            const filterBtn = document.getElementById('filterBtn');
+            if (filterBtn) {
+                filterBtn.addEventListener('click', function() {
+                    showFilterModal();
+                });
+            }
+            
+            // 导出按钮
+            const exportBtn = document.getElementById('exportBtn');
+            if (exportBtn) {
+                exportBtn.addEventListener('click', function() {
+                    showExportModal();
+                });
+            }
+            
+            // 搜索功能
+            const searchInput = document.getElementById('search-input');
+            if (searchInput) {
+                let searchTimeout;
+                searchInput.addEventListener('input', function() {
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(() => {
+                        performSearch();
+                    }, 500);
+                });
+            }
+            
+            // 测评包管理（占位：后续可在此绑定测评包相关 UI）
+            initAssessmentPackages();
+            
+            // 从接口加载求职者列表
+            loadJobseekersFromAPI(1);
+            // 加载统计卡片和图表
+            loadJobseekerStatistics();
+
+            (function scrollToMembershipFromHash() {
+                const h = (location.hash || '').replace(/^#/, '');
+                if (h !== 'jobseeker-membership-plans') return;
+                const el = document.getElementById('jobseeker-membership-plans');
+                if (!el) return;
+                requestAnimationFrame(() => {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                });
+            })();
+            window.addEventListener('hashchange', function () {
+                const h = (location.hash || '').replace(/^#/, '');
+                if (h !== 'jobseeker-membership-plans') return;
+                const el = document.getElementById('jobseeker-membership-plans');
+                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+
+        window.viewJobseeker = viewJobseeker;
+        window.editJobseeker = editJobseeker;
+        window.deleteJobseeker = deleteJobseeker;
+        window.saveJobseeker = saveJobseeker;
+        window.changePage = changePage;
+        
+        // 如果DOM已经加载完成，立即初始化
+        if (document.readyState === 'loading') {
+            // DOMContentLoaded 事件还未触发，等待它
+        } else {
+            // DOM已经加载完成，立即初始化
+            initUserMenu();
+            loadAdminInfoToMenu();
+        }
+    </script>
+    <script src="js/admin-navbar.js"></script>
+</body>
+</html>

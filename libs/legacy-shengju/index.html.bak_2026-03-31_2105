@@ -1,0 +1,2480 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>圣举人才网 - 测评驱动的招聘平台</title>
+    <!-- 抑制 Tailwind CDN 与跟踪防护相关控制台警告 -->
+    <script>(function(){var w=console.warn;console.warn=function(){var m=(arguments[0]!=null&&typeof arguments[0]==='string')?arguments[0]:'';if(m.indexOf('cdn.tailwindcss.com')!==-1||m.indexOf('Tracking Prevention')!==-1)return;return w.apply(console,arguments);};})();</script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome（使用 jsDelivr，减少被跟踪防护拦截） -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <script src="js/api-config.js"></script>
+    <script src="js/auth-helper.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1E40AF',
+                        secondary: '#3B82F6',
+                        accent: '#60A5FA',
+                        light: '#EFF6FF',
+                        dark: '#1E293B'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow {
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            }
+            .bg-gradient-blue {
+                background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%);
+            }
+        }
+    </style>
+</head>
+<body class="font-sans bg-gray-50">
+    <!-- 背景图 -->
+    <div class="fixed inset-0 z-0 opacity-10">
+        <svg class="w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
+            <defs>
+                <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#1E40AF;stop-opacity:0.1" />
+                    <stop offset="50%" style="stop-color:#3B82F6;stop-opacity:0.15" />
+                    <stop offset="100%" style="stop-color:#60A5FA;stop-opacity:0.1" />
+                </linearGradient>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#bgGradient)"/>
+        </svg>
+    </div>
+
+    <!-- 主容器 -->
+    <div class="relative z-10 min-h-screen flex flex-col">
+        <!-- 导航栏 -->
+        <header class="bg-white shadow-md">
+            <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+                <!-- Logo -->
+                <div class="flex items-center space-x-2">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%231E40AF' rx='4'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-size='24' font-weight='bold' fill='white'%3E圣%3C/text%3E%3C/svg%3E" 
+                         alt="圣举人才网" class="h-10 w-10">
+                    <h1 class="text-2xl font-bold text-primary">圣举人才网</h1>
+                </div>
+                
+                <!-- 用户操作区域 -->
+                <div class="flex items-center space-x-4">
+                    <!-- 分端登录入口：求职者与企业在不同页面登录，各显示各的账号 -->
+                    <div id="auth-buttons" class="flex items-center space-x-3">
+                        <a href="user/login.html" class="text-sm text-gray-600 hover:text-primary transition font-medium">
+                            求职者登录
+                        </a>
+                        <a href="enterprise/login.html" class="text-sm text-indigo-600 hover:text-indigo-700 transition font-medium">
+                            政企登录
+                        </a>
+                    </div>
+                    <!-- 用户信息显示（登录后显示） -->
+                    <div id="user-info" class="hidden items-center space-x-3">
+                        <span id="welcome-text" class="text-sm text-gray-600">
+                            欢迎，<span id="username" class="font-medium cursor-pointer hover:text-primary transition"></span>
+                        </span>
+                        <button onclick="logout()" class="text-sm text-gray-500 hover:text-primary transition">
+                            退出
+                        </button>
+                    </div>
+                    <!-- 管理者入口 -->
+                    <button id="admin-entry-btn" onclick="handleAdminEntry()" class="text-sm text-gray-500 hover:text-primary transition">
+                        管理者入口 <i class="fa fa-arrow-right ml-1"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- 英雄区 -->
+        <section class="flex-grow flex items-center justify-center py-16 px-4">
+            <div class="container mx-auto text-center">
+                <h1 class="text-4xl md:text-5xl font-bold text-primary mb-6">
+                    测评驱动的招聘平台
+                </h1>
+                <p class="text-xl text-gray-600 mb-12 max-w-3xl mx-auto">
+                    连接求职者与企业，通过科学测评实现精准匹配，打造人才招聘新生态
+                </p>
+                
+                <!-- 两端入口卡片 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-4xl mx-auto">
+                    <!-- 求职者端 -->
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden transform transition hover:scale-105 hover:shadow-xl">
+                        <div class="bg-blue-600 p-6 text-white text-center">
+                            <i class="fa fa-user-circle text-5xl mb-3"></i>
+                            <h3 class="text-2xl font-bold">求职者入口</h3>
+                        </div>
+                        <div class="p-8">
+                            <ul class="text-left mb-8 space-y-3">
+                                <li class="flex items-start">
+                                    <i class="fa fa-check-circle text-green-500 mt-1 mr-3"></i>
+                                    <span class="text-gray-700">职业测评矩阵</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fa fa-check-circle text-green-500 mt-1 mr-3"></i>
+                                    <span class="text-gray-700">智能简历生成</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fa fa-check-circle text-green-500 mt-1 mr-3"></i>
+                                    <span class="text-gray-700">岗位智能推荐</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fa fa-check-circle text-green-500 mt-1 mr-3"></i>
+                                    <span class="text-gray-700">AI职业发展报告</span>
+                                </li>
+                            </ul>
+                            <button onclick="checkAuthBeforeEnter('jobseeker')" class="block w-full bg-primary hover:bg-blue-700 text-white font-medium py-4 px-6 rounded-lg transition text-lg">
+                                立即进入
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 政企端 -->
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden transform transition hover:scale-105 hover:shadow-xl">
+                        <div class="bg-indigo-600 p-6 text-white text-center">
+                            <i class="fa fa-building text-5xl mb-3"></i>
+                            <h3 class="text-2xl font-bold">政企入口</h3>
+                        </div>
+                        <div class="p-8">
+                            <ul class="text-left mb-8 space-y-3">
+                                <li class="flex items-start">
+                                    <i class="fa fa-check-circle text-green-500 mt-1 mr-3"></i>
+                                    <span class="text-gray-700">岗位测评定制</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fa fa-check-circle text-green-500 mt-1 mr-3"></i>
+                                    <span class="text-gray-700">AI人才池管理</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fa fa-check-circle text-green-500 mt-1 mr-3"></i>
+                                    <span class="text-gray-700">企业运营分析</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fa fa-check-circle text-green-500 mt-1 mr-3"></i>
+                                    <span class="text-gray-700">行业解决方案</span>
+                                </li>
+                            </ul>
+                            <button onclick="checkAuthBeforeEnter('enterprise')" class="block w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-4 px-6 rounded-lg transition text-lg">
+                                立即进入
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 定制化服务方案（登录页下方） -->
+        <section class="py-14 bg-white border-t border-gray-100">
+            <div class="container mx-auto px-4">
+                <h2 class="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-10">定制化服务方案</h2>
+                <p class="text-center text-gray-600 max-w-2xl mx-auto mb-12">政企人事考试一体化解决方案，从命题、报名、笔试到面试全流程数字化服务</p>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6">
+                    <a href="enterprise/custom-solutions.html#proposition" class="group bg-gray-50 hover:bg-primary/5 rounded-xl p-6 text-center transition-all duration-300 hover:shadow-lg border border-gray-100 hover:border-primary/20">
+                        <div class="w-14 h-14 bg-primary/10 group-hover:bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4 transition-colors">
+                            <i class="fa fa-file-text-o text-primary text-xl"></i>
+                        </div>
+                        <h3 class="text-base font-semibold text-gray-800 mb-2 group-hover:text-primary transition-colors">人事考试命题服务</h3>
+                        <p class="text-gray-600 text-sm">专业题库建设与命题服务</p>
+                    </a>
+                    <a href="enterprise/custom-solutions.html#registration" class="group bg-gray-50 hover:bg-primary/5 rounded-xl p-6 text-center transition-all duration-300 hover:shadow-lg border border-gray-100 hover:border-primary/20">
+                        <div class="w-14 h-14 bg-primary/10 group-hover:bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4 transition-colors">
+                            <i class="fa fa-user-plus text-primary text-xl"></i>
+                        </div>
+                        <h3 class="text-base font-semibold text-gray-800 mb-2 group-hover:text-primary transition-colors">人事报名系统</h3>
+                        <p class="text-gray-600 text-sm">在线报名与资格审核</p>
+                    </a>
+                    <a href="enterprise/custom-solutions.html#interview" class="group bg-gray-50 hover:bg-primary/5 rounded-xl p-6 text-center transition-all duration-300 hover:shadow-lg border border-gray-100 hover:border-primary/20">
+                        <div class="w-14 h-14 bg-primary/10 group-hover:bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4 transition-colors">
+                            <i class="fa fa-comments text-primary text-xl"></i>
+                        </div>
+                        <h3 class="text-base font-semibold text-gray-800 mb-2 group-hover:text-primary transition-colors">线上面试评审系统</h3>
+                        <p class="text-gray-600 text-sm">智能化面试评价与管理</p>
+                    </a>
+                    <a href="enterprise/custom-solutions.html#online-test" class="group bg-gray-50 hover:bg-primary/5 rounded-xl p-6 text-center transition-all duration-300 hover:shadow-lg border border-gray-100 hover:border-primary/20">
+                        <div class="w-14 h-14 bg-primary/10 group-hover:bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4 transition-colors">
+                            <i class="fa fa-laptop text-primary text-xl"></i>
+                        </div>
+                        <h3 class="text-base font-semibold text-gray-800 mb-2 group-hover:text-primary transition-colors">线上笔试系统</h3>
+                        <p class="text-gray-600 text-sm">安全高效的在线考试平台</p>
+                    </a>
+                </div>
+                
+                <div class="mt-10 flex flex-col sm:flex-row gap-6 justify-center items-center">
+                    <div class="bg-gray-50 rounded-xl p-6 flex-1 max-w-md border border-gray-100">
+                        <h4 class="font-semibold text-gray-800 mb-2">人事考试命题服务</h4>
+                        <p class="text-gray-600 text-sm mb-4">根据需求定制考试题库与命题方案，岗位能力模型构建、专业题库开发、试卷定制与安全组卷。</p>
+                        <a href="enterprise/custom-solutions.html#proposition" class="text-primary text-sm font-medium hover:underline">了解详情</a>
+                    </div>
+                    <div class="bg-gray-50 rounded-xl p-6 flex-1 max-w-md border border-gray-100">
+                        <h4 class="font-semibold text-gray-800 mb-2">线上笔试系统</h4>
+                        <p class="text-gray-600 text-sm mb-4">多种题型支持、智能防作弊、高性能架构，支持万人同时在线考试。</p>
+                        <a href="enterprise/custom-solutions.html#online-test" class="text-primary text-sm font-medium hover:underline">了解详情</a>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-10">
+                    <a href="enterprise/custom-solutions.html" class="inline-block bg-primary hover:bg-blue-700 text-white font-medium py-3 px-8 rounded-lg transition shadow-sm hover:shadow">
+                        查看全部定制服务方案
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 页脚 -->
+        <footer class="bg-white py-8 border-t border-gray-200">
+            <div class="container mx-auto px-4 text-center text-gray-600">
+                <p>© 2025 圣举人才网 版权所有</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- 登录模态框 -->
+    <div id="loginModal" class="fixed inset-0 z-50 hidden">
+        <div class="fixed inset-0 bg-black bg-opacity-50" onclick="closeLoginModal()"></div>
+        <div class="fixed inset-0 flex items-center justify-center p-4">
+            <div class="bg-white rounded-xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold text-primary">用户登录</h2>
+                        <button onclick="closeLoginModal()" class="text-gray-400 hover:text-gray-600">
+                            <i class="fa fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    
+                    <form id="loginForm" onsubmit="handleLogin(event)">
+                        <!-- 用户类型选择 -->
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">用户类型</label>
+                            <div class="grid grid-cols-2 gap-3">
+                                <label class="flex items-center justify-center p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-primary transition">
+                                    <input type="radio" name="userType" value="jobseeker" class="mr-2" checked>
+                                    <i class="fa fa-user-circle mr-2 text-blue-500"></i>
+                                    <span>求职者</span>
+                                </label>
+                                <label class="flex items-center justify-center p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-primary transition">
+                                    <input type="radio" name="userType" value="enterprise" class="mr-2">
+                                    <i class="fa fa-building mr-2 text-indigo-500"></i>
+                                    <span>企业用户</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- 邮箱/手机号 -->
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">邮箱/手机号</label>
+                            <input type="text" id="loginIdentifier" required 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                   placeholder="请输入邮箱或手机号">
+                        </div>
+                        
+                        <!-- 密码 -->
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">密码</label>
+                            <div class="relative">
+                                <input type="password" id="loginPassword" required 
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                       placeholder="请输入密码">
+                                <button type="button" onclick="togglePassword('loginPassword')" 
+                                        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                                    <i class="fa fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- 测试账号提示 -->
+                        <div id="testAccountHint" class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg hidden">
+                            <p class="text-xs text-blue-800 font-medium mb-2">测试账号：</p>
+                            <ul id="testAccountList" class="text-xs text-blue-700 space-y-1">
+                            </ul>
+                        </div>
+                        
+                        <!-- 记住我和忘记密码 -->
+                        <div class="flex items-center justify-between mb-6">
+                            <label class="flex items-center">
+                                <input type="checkbox" class="mr-2">
+                                <span class="text-sm text-gray-600">记住我</span>
+                            </label>
+                            <a href="#" class="text-sm text-primary hover:underline">忘记密码？</a>
+                        </div>
+                        
+                        <!-- 登录按钮 -->
+                        <button type="submit" 
+                                class="w-full bg-primary hover:bg-blue-700 text-white font-medium py-3 rounded-lg transition">
+                            登录
+                        </button>
+                        
+                        <!-- 注册跳转 -->
+                        <div class="text-center text-sm text-gray-600 mt-4">
+                            <p>还没有账号？</p>
+                            <button type="button" onclick="switchToRegisterFromLogin()" class="text-primary hover:underline font-medium">
+                                立即注册
+                            </button>
+                        </div>
+                        
+                        <!-- 分割线 -->
+                        <div class="flex items-center my-6">
+                            <div class="flex-1 h-px bg-gray-300"></div>
+                            <span class="px-4 text-sm text-gray-500">或</span>
+                            <div class="flex-1 h-px bg-gray-300"></div>
+                        </div>
+                        
+                        <!-- 第三方登录 -->
+                        <div class="grid grid-cols-3 gap-3">
+                            <button type="button" onclick="openThirdPartyLogin('wechat')" class="flex flex-col items-center justify-center p-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition group">
+                                <i class="fa fa-weixin text-green-500 text-xl mb-1"></i>
+                                <span class="text-xs text-gray-600 group-hover:text-green-500">微信</span>
+                            </button>
+                            <button type="button" onclick="openThirdPartyLogin('qq')" class="flex flex-col items-center justify-center p-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition group">
+                                <i class="fa fa-qq text-blue-400 text-xl mb-1"></i>
+                                <span class="text-xs text-gray-600 group-hover:text-blue-400">QQ</span>
+                            </button>
+                            <button type="button" onclick="openThirdPartyLogin('weibo')" class="flex flex-col items-center justify-center p-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition group">
+                                <i class="fa fa-weibo text-red-500 text-xl mb-1"></i>
+                                <span class="text-xs text-gray-600 group-hover:text-red-500">微博</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 注册模态框 -->
+    <div id="registerModal" class="fixed inset-0 z-50 hidden">
+        <div class="fixed inset-0 bg-black bg-opacity-50" onclick="closeRegisterModal()"></div>
+        <div class="fixed inset-0 flex items-center justify-center p-4">
+            <div class="bg-white rounded-xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold text-primary">用户注册</h2>
+                        <button onclick="closeRegisterModal()" class="text-gray-400 hover:text-gray-600">
+                            <i class="fa fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    <div id="register-backend-tip" class="hidden mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-800">
+                        <i class="fa fa-exclamation-triangle mr-1"></i> 当前无法连接后端，注册数据无法保存。请先运行根目录下的 <strong>启动服务.bat</strong> 或 <strong>backend\启动后端服务.bat</strong>，再刷新本页后注册。
+                    </div>
+                    <form id="registerForm" onsubmit="handleRegister(event)">
+                        <!-- 用户类型选择 -->
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">用户类型</label>
+                            <div class="grid grid-cols-2 gap-3">
+                                <label class="flex items-center justify-center p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-primary transition">
+                                    <input type="radio" name="registerUserType" value="jobseeker" class="mr-2" checked>
+                                    <i class="fa fa-user-circle mr-2 text-blue-500"></i>
+                                    <span>个人</span>
+                                </label>
+                                <label class="flex items-center justify-center p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-primary transition">
+                                    <input type="radio" name="registerUserType" value="enterprise" class="mr-2">
+                                    <i class="fa fa-building mr-2 text-indigo-500"></i>
+                                    <span>企业用户</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- 用户名 -->
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">用户名</label>
+                            <input type="text" id="registerUsername" required 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                   placeholder="请输入用户名">
+                        </div>
+                        
+                        <!-- 邮箱 -->
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">邮箱</label>
+                            <input type="email" id="registerEmail" required 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                   placeholder="请输入邮箱地址">
+                        </div>
+                        
+                        <!-- 手机号 -->
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">手机号</label>
+                            <input type="tel" id="registerPhone" required 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                   placeholder="请输入手机号">
+                        </div>
+                        
+                        <!-- 密码 -->
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">密码</label>
+                            <div class="relative">
+                                <input type="password" id="registerPassword" required 
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                       placeholder="请输入密码（6-20位）">
+                                <button type="button" onclick="togglePassword('registerPassword')" 
+                                        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                                    <i class="fa fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- 确认密码 -->
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">确认密码</label>
+                            <div class="relative">
+                                <input type="password" id="confirmPassword" required 
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                       placeholder="请再次输入密码">
+                                <button type="button" onclick="togglePassword('confirmPassword')" 
+                                        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                                    <i class="fa fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- 验证码（暂不使用，企业端短信验证已关闭） -->
+                        <div id="register-verify-block" class="mb-4 hidden">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">验证码</label>
+                            <div class="flex space-x-2">
+                                <input type="text" id="verifyCode" 
+                                       class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                       placeholder="请输入验证码">
+                                <button type="button" onclick="sendVerifyCode()" 
+                                        class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition whitespace-nowrap">
+                                    获取验证码
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- 服务条款 -->
+                        <div class="mb-6">
+                            <label class="flex items-start">
+                                <input type="checkbox" id="agreeTerms" required class="mr-2 mt-1">
+                                <span class="text-sm text-gray-600">
+                                    我已阅读并同意
+                                    <a href="#" class="text-primary hover:underline">《用户服务协议》</a>
+                                    和
+                                    <a href="#" class="text-primary hover:underline">《隐私政策》</a>
+                                </span>
+                            </label>
+                        </div>
+                        
+                        <!-- 注册按钮 -->
+                        <button type="submit" 
+                                class="w-full bg-primary hover:bg-blue-700 text-white font-medium py-3 rounded-lg transition">
+                            注册
+                        </button>
+                        
+                        <!-- 已有账号提示 -->
+                        <div class="text-center text-sm text-gray-600 mt-4">
+                            <p>已有账号？</p>
+                            <button type="button" onclick="switchToLoginFromRegister()" class="text-primary hover:underline font-medium">
+                                立即登录
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第三方登录模态框（扫码/账号登录） -->
+    <div id="thirdPartyModal" class="fixed inset-0 z-50 hidden">
+        <div class="fixed inset-0 bg-black bg-opacity-50" onclick="closeThirdPartyModal()"></div>
+        <div class="fixed inset-0 flex items-center justify-center p-4">
+            <div class="bg-white rounded-xl shadow-2xl max-w-md w-full">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 id="thirdPartyTitle" class="text-2xl font-bold text-primary"></h2>
+                        <button onclick="closeThirdPartyModal()" class="text-gray-400 hover:text-gray-600">
+                            <i class="fa fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- 登录方式切换 -->
+                    <div class="mb-6">
+                        <div class="flex border-b border-gray-200">
+                            <button id="scanLoginTab" onclick="switchThirdPartyMode('scan')" 
+                                    class="flex-1 py-3 px-4 text-center font-medium text-primary border-b-2 border-primary transition">
+                                <i class="fa fa-qrcode mr-2"></i>扫码登录
+                            </button>
+                            <button id="accountLoginTab" onclick="switchThirdPartyMode('account')" 
+                                    class="flex-1 py-3 px-4 text-center font-medium text-gray-500 border-b-2 border-transparent hover:text-primary transition">
+                                <i class="fa fa-user mr-2"></i>账号登录
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 扫码登录内容 -->
+                    <div id="scanLoginContent" class="space-y-4">
+                        <div class="text-center">
+                            <div id="qrCodeContainer" class="inline-block p-4 bg-white border-2 border-gray-200 rounded-lg mb-4">
+                                <div class="w-48 h-48 bg-gray-100 flex items-center justify-center">
+                                    <div class="text-center">
+                                        <i id="qrCodeIcon" class="text-6xl mb-2"></i>
+                                        <p class="text-sm text-gray-500">二维码加载中...</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <p id="scanTip" class="text-sm text-gray-600 mb-4"></p>
+                            <div id="scanStatus" class="text-sm text-gray-500">
+                                <i class="fa fa-spinner fa-spin mr-2"></i>等待扫码...
+                            </div>
+                        </div>
+                        <button onclick="refreshQRCode()" class="w-full py-2 text-sm text-primary hover:underline">
+                            <i class="fa fa-refresh mr-2"></i>刷新二维码
+                        </button>
+                    </div>
+                    
+                    <!-- 账号登录内容 -->
+                    <div id="accountLoginContent" class="hidden space-y-4">
+                        <form id="thirdPartyAccountForm" onsubmit="handleThirdPartyAccountLogin(event)">
+                            <!-- 用户类型选择 -->
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">用户类型</label>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <label class="flex items-center justify-center p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-primary transition">
+                                        <input type="radio" name="thirdPartyUserType" value="jobseeker" class="mr-2" checked>
+                                        <i class="fa fa-user-circle mr-2 text-blue-500"></i>
+                                        <span>求职者</span>
+                                    </label>
+                                    <label class="flex items-center justify-center p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-primary transition">
+                                        <input type="radio" name="thirdPartyUserType" value="enterprise" class="mr-2">
+                                        <i class="fa fa-building mr-2 text-indigo-500"></i>
+                                        <span>企业用户</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <!-- 第三方账号输入 -->
+                            <div class="mb-4">
+                                <label id="thirdPartyAccountLabel" class="block text-sm font-medium text-gray-700 mb-2"></label>
+                                <input type="text" id="thirdPartyAccount" required 
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                       placeholder="">
+                            </div>
+                            
+                            <!-- 密码（可选，某些第三方登录需要） -->
+                            <div class="mb-4" id="thirdPartyPasswordContainer">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    密码
+                                    <span class="text-xs text-gray-400 font-normal ml-1">（可选）</span>
+                                </label>
+                                <div class="relative">
+                                    <input type="password" id="thirdPartyPassword" 
+                                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                           placeholder="">
+                                    <button type="button" onclick="togglePassword('thirdPartyPassword')" 
+                                            class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                                        <i class="fa fa-eye"></i>
+                                    </button>
+                                </div>
+                                <p id="thirdPartyPasswordTip" class="text-xs text-gray-400 mt-1"></p>
+                            </div>
+                            
+                            <!-- 登录按钮 -->
+                            <button type="submit" 
+                                    class="w-full bg-primary hover:bg-blue-700 text-white font-medium py-3 rounded-lg transition">
+                                登录
+                            </button>
+                        </form>
+                        
+                        <!-- 未注册提示 -->
+                        <div class="text-center text-sm text-gray-600 mt-4">
+                            <p>还没有账号？</p>
+                            <button onclick="switchToRegisterFromThirdParty()" class="text-primary hover:underline font-medium">
+                                立即注册
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 管理者登录模态框 -->
+    <div id="adminLoginModal" class="fixed inset-0 z-50 hidden">
+        <div class="fixed inset-0 bg-black bg-opacity-50" onclick="closeAdminLoginModal()"></div>
+        <div class="fixed inset-0 flex items-center justify-center p-4">
+            <div class="bg-white rounded-xl shadow-2xl max-w-md w-full">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold text-primary">管理者登录</h2>
+                        <button onclick="closeAdminLoginModal()" class="text-gray-400 hover:text-gray-600">
+                            <i class="fa fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    
+                    <form id="adminLoginForm" onsubmit="handleAdminLogin(event)">
+                        <!-- 用户名 -->
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">用户名</label>
+                            <input type="text" id="adminUsername" required 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                   placeholder="请输入管理员用户名">
+                        </div>
+                        
+                        <!-- 密码 -->
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">密码</label>
+                            <div class="relative">
+                                <input type="password" id="adminPassword" required 
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                       placeholder="请输入密码">
+                                <button type="button" onclick="togglePassword('adminPassword')" 
+                                        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                                    <i class="fa fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- 超级管理员/测试账号提示 -->
+                        <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                            <p class="text-xs text-blue-800 font-medium mb-2">超级管理员（已写入数据库）：</p>
+                            <ul class="text-xs text-blue-700 space-y-1">
+                                <li>• <strong>shangjuceping789</strong> 或 <strong>shengjuceping789</strong> / <strong>li576532</strong></li>
+                            </ul>
+                            <p class="text-xs text-blue-600 mt-2 mb-1">演示用（仅后端不可用时）：admin / admin123</p>
+                        </div>
+                        
+                        <!-- 登录按钮 -->
+                        <button type="submit" 
+                                class="w-full bg-primary hover:bg-blue-700 text-white font-medium py-3 rounded-lg transition">
+                            登录
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 提示消息 -->
+    <div id="toast" class="fixed top-4 right-4 z-50 hidden">
+        <div class="bg-white rounded-lg shadow-lg p-4 flex items-center space-x-3 min-w-[300px]">
+            <div id="toastIcon"></div>
+            <div id="toastMessage" class="flex-1"></div>
+            <button onclick="hideToast()" class="text-gray-400 hover:text-gray-600">
+                <i class="fa fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // 全局错误处理 - 过滤Chrome内部错误
+        window.addEventListener('error', function(event) {
+            // 过滤Chrome内部错误（chrome-error://, chrome-extension://等）
+            if (event.filename && (
+                event.filename.includes('chrome-error://') ||
+                event.filename.includes('chromewebdata') ||
+                event.filename.includes('chrome-extension://') ||
+                event.filename.startsWith('chrome://')
+            )) {
+                event.preventDefault();
+                event.stopPropagation();
+                return false;
+            }
+        }, true);
+        
+        // 过滤未捕获的Promise错误中的Chrome内部错误
+        window.addEventListener('unhandledrejection', function(event) {
+            if (event.reason && typeof event.reason === 'object') {
+                const message = event.reason.message || event.reason.toString() || '';
+                if (message.includes('chrome-error://') || 
+                    message.includes('chromewebdata') ||
+                    message.includes('chrome-extension://')) {
+                    event.preventDefault();
+                    return false;
+                }
+            }
+        });
+        
+        // 测试账号配置（与 seed-mock-data.js 导入的账号一致，后端不可用时回退）
+        const TEST_ACCOUNTS = {
+            jobseeker: [
+                { identifier: 'job1@test.com', password: '123456', username: '张三', displayName: '张三' },
+                { identifier: 'job2@test.com', password: '123456', username: '李四', displayName: '李四' },
+                { identifier: 'job3@test.com', password: '123456', username: '王五', displayName: '王五' },
+                { identifier: 'job4@test.com', password: '123456', username: '赵六', displayName: '赵六' },
+                { identifier: 'job5@test.com', password: '123456', username: '钱七', displayName: '钱七' },
+                { identifier: 'jobseeker@test.com', password: '123456', username: '求职者1', displayName: '求职者1' },
+                { identifier: '13800138000', password: '123456', username: '求职者2', displayName: '求职者2' },
+                { identifier: 'user@example.com', password: '123456', username: '测试用户', displayName: '测试用户' }
+            ],
+            enterprise: [
+                { identifier: 'enterprise@test.com', password: '123456', username: '测试企业', companyName: '圣举科技测试公司', displayName: '测试企业' },
+                { identifier: '13900139000', password: '123456', username: '企业2', companyName: '测试企业2', displayName: '企业2' },
+                { identifier: 'company@example.com', password: '123456', username: '测试企业', companyName: '测试企业', displayName: '测试企业' }
+            ],
+            admin: [
+                { identifier: 'shangjuceping789', password: 'li576532', username: 'shangjuceping789', displayName: '超级管理员' },
+                { identifier: 'shengjuceping789', password: 'li576532', username: 'shengjuceping789', displayName: '超级管理员' },
+                { identifier: 'shangjuceping789@shengju.com', password: 'li576532', username: 'shangjuceping789', displayName: '超级管理员' },
+                { identifier: 'admin', password: 'admin123', username: 'admin', displayName: '管理员' },
+                { identifier: 'manager', password: 'manager123', username: 'manager', displayName: '经理' }
+            ]
+        };
+
+        // 查找测试账号
+        function findTestAccount(identifier, password, userType) {
+            if (typeof TEST_ACCOUNTS === 'undefined' || !TEST_ACCOUNTS[userType]) {
+                return null;
+            }
+            const accounts = TEST_ACCOUNTS[userType];
+            return accounts.find(acc => 
+                ((acc.identifier && acc.identifier.toLowerCase() === identifier.toLowerCase()) ||
+                 (acc.phone === identifier) ||
+                 (acc.username && acc.username.toLowerCase() === identifier.toLowerCase())) &&
+                acc.password === password
+            ) || null;
+        }
+
+        // 更新测试账号提示
+        function updateTestAccountHint() {
+            const userTypeRadios = document.querySelectorAll('input[name="userType"]');
+            const hintDiv = document.getElementById('testAccountHint');
+            const hintList = document.getElementById('testAccountList');
+            
+            if (!hintDiv || !hintList) {
+                console.warn('测试账号提示元素未找到');
+                return;
+            }
+            
+            // 找到选中的用户类型
+            let selectedType = 'jobseeker';
+            userTypeRadios.forEach(radio => {
+                if (radio.checked) {
+                    selectedType = radio.value;
+                }
+            });
+            
+            // 根据用户类型显示测试账号
+            if (typeof TEST_ACCOUNTS !== 'undefined' && TEST_ACCOUNTS[selectedType]) {
+                const accounts = TEST_ACCOUNTS[selectedType];
+                hintList.innerHTML = '';
+                
+                accounts.forEach(account => {
+                    const li = document.createElement('li');
+                    const identifier = account.identifier || account.username || account.phone || '';
+                    const password = account.password || '';
+                    const displayName = account.username || account.displayName || identifier.split('@')[0] || identifier;
+                    
+                    if (selectedType === 'enterprise') {
+                        const companyName = account.companyName ? ` - ${account.companyName}` : '';
+                        li.innerHTML = `• ${identifier} / ${password} (${displayName}${companyName})`;
+                    } else if (selectedType === 'jobseeker') {
+                        li.innerHTML = `• ${identifier} / ${password} (${displayName})`;
+                    } else {
+                        li.innerHTML = `• ${identifier} / ${password}`;
+                    }
+                    hintList.appendChild(li);
+                });
+                
+                hintDiv.classList.remove('hidden');
+            } else {
+                console.warn('未找到测试账号配置，用户类型:', selectedType);
+                hintDiv.classList.add('hidden');
+            }
+        }
+
+        // 检查用户登录状态（支持求职者与企业同时登录）
+        function checkUserAuth() {
+            var js = (typeof AuthHelper !== 'undefined') ? AuthHelper.get('jobseeker') : null;
+            var ent = (typeof AuthHelper !== 'undefined') ? AuthHelper.get('enterprise') : null;
+            if (!js && localStorage.getItem('userType') === 'jobseeker') {
+                js = { token: localStorage.getItem('authToken'), username: localStorage.getItem('username'), userType: 'jobseeker' };
+            }
+            if (!ent && localStorage.getItem('userType') === 'enterprise') {
+                ent = { token: localStorage.getItem('authToken'), username: localStorage.getItem('username'), userType: 'enterprise' };
+            }
+            var isAdmin = localStorage.getItem('userType') === 'admin' && localStorage.getItem('authToken');
+            
+            if (isAdmin || (js && js.token) || (ent && ent.token)) {
+                document.getElementById('auth-buttons').classList.add('hidden');
+                document.getElementById('user-info').classList.remove('hidden');
+                document.getElementById('user-info').classList.add('flex');
+                var welcomeText = document.getElementById('welcome-text');
+                var usernameEl = document.getElementById('username');
+                if (!welcomeText || !usernameEl) return;
+                if (isAdmin) {
+                    welcomeText.innerHTML = '欢迎，<span id="username" class="font-medium cursor-pointer hover:text-primary transition hover:underline" onclick="window.location.href=\'admin/index.html\'">' + (localStorage.getItem('username') || '管理员') + '</span>（点击进入管理端）';
+                } else {
+                    var parts = [];
+                    if (js && js.token) parts.push('<a href="user/index.html" class="text-primary hover:underline">求职者：' + (js.username || '') + '</a>');
+                    if (ent && ent.token) parts.push('<a href="enterprise/company-center.html" class="text-indigo-600 hover:underline">企业：' + (ent.username || '') + '</a>');
+                    usernameEl.innerHTML = parts.length ? parts.join(' &nbsp;|&nbsp; ') : '';
+                }
+            } else {
+                document.getElementById('auth-buttons').classList.remove('hidden');
+                document.getElementById('user-info').classList.add('hidden');
+            }
+        }
+        
+        // 处理管理者入口点击
+        window.handleAdminEntry = function handleAdminEntry() {
+            const token = localStorage.getItem('authToken');
+            const userType = localStorage.getItem('userType');
+            
+            // 如果已登录为管理员，直接进入
+            if (token && userType === 'admin') {
+                window.location.href = 'admin/index.html';
+            } else {
+                // 否则弹出登录框
+                openAdminLoginModal();
+            }
+        };
+
+        // 打开登录模态框
+        function openLoginModal() {
+            document.getElementById('loginModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            // 初始化测试账号提示
+            updateTestAccountHint();
+            // 监听用户类型变化
+            const userTypeRadios = document.querySelectorAll('input[name="userType"]');
+            userTypeRadios.forEach(radio => {
+                radio.addEventListener('change', updateTestAccountHint);
+            });
+        }
+
+        // 关闭登录模态框
+        function closeLoginModal() {
+            document.getElementById('loginModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        // 打开注册模态框（若当前认为后端不可用，会再快速检测一次，避免首次检测未完成或 file:// 导致误报）
+        function openRegisterModal() {
+            captureRegisterReturnFromUrl();
+            document.getElementById('registerModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            toggleRegisterVerifyBlock();
+            var tip = document.getElementById('register-backend-tip');
+            function updateRegisterTip() {
+                if (!tip) return;
+                if (typeof backendStatus !== 'undefined' && backendStatus.available && backendStatus.baseUrl) {
+                    tip.classList.add('hidden');
+                } else {
+                    tip.classList.remove('hidden');
+                }
+            }
+            updateRegisterTip();
+            if (typeof backendStatus !== 'undefined' && !backendStatus.available) {
+                checkBackendHealth().then(updateRegisterTip);
+            }
+        }
+        // 暂不使用企业端短信验证码：求职者与企业均不显示验证码
+        function toggleRegisterVerifyBlock() {
+            const block = document.getElementById('register-verify-block');
+            if (!block) return;
+            block.classList.add('hidden');
+        }
+
+        // 关闭注册模态框
+        function closeRegisterModal() {
+            document.getElementById('registerModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('input[name="registerUserType"]').forEach(function(radio) {
+                radio.addEventListener('change', toggleRegisterVerifyBlock);
+            });
+        });
+
+        // 打开管理者登录模态框
+        function openAdminLoginModal() {
+            document.getElementById('adminLoginModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // 关闭管理者登录模态框
+        function closeAdminLoginModal() {
+            document.getElementById('adminLoginModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        // 检查登录状态后进入相应页面（未登录时跳转到对应端登录页，不在首页弹窗登录）
+        function checkAuthBeforeEnter(targetType) {
+            var auth = (typeof AuthHelper !== 'undefined') ? AuthHelper.get(targetType) : null;
+            if (!auth) auth = (localStorage.getItem('userType') === targetType) ? { token: localStorage.getItem('authToken'), userType: targetType } : null;
+            if (!auth || !auth.token) {
+                if (targetType === 'jobseeker') {
+                    window.location.href = 'user/login.html';
+                } else if (targetType === 'enterprise') {
+                    window.location.href = 'enterprise/login.html';
+                }
+                return;
+            }
+            if (targetType === 'jobseeker') {
+                window.location.href = 'user/index.html';
+            } else if (targetType === 'enterprise') {
+                window.location.href = 'enterprise/company-center.html';
+            }
+        }
+
+        // 处理管理者登录（优先调用后端 API 获取真实 JWT，以便系统设置等接口可用）
+        async function handleAdminLogin(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('adminUsername').value.trim();
+            const password = document.getElementById('adminPassword').value.trim();
+            
+            if (!username || !password) {
+                showToast('请输入用户名和密码', 'error');
+                return;
+            }
+            
+            const apiBase = (typeof backendStatus !== 'undefined' && backendStatus.available && backendStatus.baseUrl)
+                ? backendStatus.baseUrl + '/api/v1'
+                : API_BASE_URL;
+            
+            try {
+                // 优先调用后端登录接口，获取真实 JWT（系统设置等管理接口需要）
+                const loginUrl = apiBase + '/auth/login';
+                const res = await fetch(loginUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        identifier: username,
+                        password: password,
+                        userType: 'admin'
+                    })
+                });
+                let result = null;
+                try { result = await res.json(); } catch (_) {}
+                if (res.ok && result && result.success && result.data && (result.data.token || result.data.accessToken)) {
+                    const token = result.data.accessToken || result.data.token;
+                    if (result.data.userType !== 'admin') {
+                        showToast('该账号不是管理员，请使用管理员账号登录', 'error');
+                        return;
+                    }
+                    if (typeof AuthHelper !== 'undefined') {
+                        AuthHelper.set('admin', { token: token, userId: result.data.userId || '', username: result.data.username || username, userType: 'admin', email: result.data.email || '' });
+                    } else {
+                        localStorage.setItem('authToken', token);
+                        localStorage.setItem('userId', result.data.userId || '');
+                        localStorage.setItem('username', result.data.username || username);
+                        localStorage.setItem('userType', 'admin');
+                    }
+                    localStorage.setItem('loginMethod', 'admin');
+                    if (typeof backendStatus !== 'undefined') {
+                        backendStatus.available = true;
+                        backendStatus.baseUrl = apiBase.replace('/api/v1', '');
+                    }
+                    showToast('登录成功！您可以点击"欢迎，管理员"或"管理者入口"进入管理端', 'success');
+                    closeAdminLoginModal();
+                    checkUserAuth();
+                    return;
+                }
+                // 后端不可用或账号不存在时，使用测试账号（仅前端演示，系统设置等接口会 401）
+                const account = findTestAccount(username, password, 'admin');
+                if (account) {
+                    if (typeof AuthHelper !== 'undefined') {
+                        AuthHelper.set('admin', { token: 'admin_token_' + Date.now(), userId: '', username: account.displayName || account.username, userType: 'admin', email: '' });
+                    } else {
+                        localStorage.setItem('authToken', 'admin_token_' + Date.now());
+                        localStorage.setItem('username', account.displayName || account.username);
+                        localStorage.setItem('userType', 'admin');
+                    }
+                    localStorage.setItem('loginMethod', 'admin');
+                    showToast('登录成功（演示模式）。系统设置等需在后端可用时使用管理员账号登录。', 'success');
+                    closeAdminLoginModal();
+                    checkUserAuth();
+                } else {
+                    const msg = (result && result.message) ? result.message : '账号或密码错误，请检查后重试';
+                    showToast(msg, 'error');
+                    if (res.status === 401) console.warn('登录 401：', msg, '（请确认账号 shangjuceping789 或 shengjuceping789，密码 li576532，或运行 backend 下 node scripts/seed-super-admin.js 重置）');
+                }
+            } catch (error) {
+                // 网络错误等：回退到测试账号
+                const account = findTestAccount(username, password.trim(), 'admin');
+                if (account) {
+                    if (typeof AuthHelper !== 'undefined') {
+                        AuthHelper.set('admin', { token: 'admin_token_' + Date.now(), userId: '', username: account.displayName || account.username, userType: 'admin', email: '' });
+                    } else {
+                        localStorage.setItem('authToken', 'admin_token_' + Date.now());
+                        localStorage.setItem('username', account.displayName || account.username);
+                        localStorage.setItem('userType', 'admin');
+                    }
+                    localStorage.setItem('loginMethod', 'admin');
+                    showToast('登录成功（演示模式）。系统设置需在后端可用时重新登录。', 'success');
+                    closeAdminLoginModal();
+                    checkUserAuth();
+                } else {
+                    showToast('无法连接服务器或用户名密码错误，请检查后端是否启动', 'error');
+                }
+            }
+        }
+
+        // 切换密码显示
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            const icon = event.currentTarget.querySelector('i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        // 发送验证码
+        function sendVerifyCode() {
+            const phone = document.getElementById('registerPhone').value;
+            if (!phone) {
+                showToast('请先输入手机号', 'warning');
+                return;
+            }
+            
+            // 模拟发送验证码
+            showToast('验证码已发送到您的手机', 'success');
+            
+            // 倒计时
+            let countdown = 60;
+            const button = event.currentTarget;
+            button.disabled = true;
+            
+            const timer = setInterval(() => {
+                countdown--;
+                button.textContent = `${countdown}秒后重试`;
+                
+                if (countdown <= 0) {
+                    clearInterval(timer);
+                    button.disabled = false;
+                    button.textContent = '获取验证码';
+                }
+            }, 1000);
+        }
+
+        // 当前第三方登录平台
+        let currentThirdParty = null;
+        let currentThirdPartyMode = 'scan'; // 'scan' 或 'account'
+        let qrCodeTimer = null;
+
+        // 打开第三方登录模态框
+        function openThirdPartyLogin(platform) {
+            currentThirdParty = platform;
+            currentThirdPartyMode = 'scan';
+            
+            const platformNames = {
+                wechat: '微信登录',
+                qq: 'QQ登录',
+                weibo: '微博登录'
+            };
+            
+            const platformIcons = {
+                wechat: 'fa-weixin',
+                qq: 'fa-qq',
+                weibo: 'fa-weibo'
+            };
+            
+            const platformColors = {
+                wechat: 'text-green-500',
+                qq: 'text-blue-400',
+                weibo: 'text-red-500'
+            };
+            
+            document.getElementById('thirdPartyTitle').textContent = platformNames[platform];
+            document.getElementById('qrCodeIcon').className = `fa ${platformIcons[platform]} ${platformColors[platform]} text-6xl mb-2`;
+            
+            const scanTips = {
+                wechat: '请使用微信扫描上方二维码',
+                qq: '请使用QQ扫描上方二维码',
+                weibo: '请使用微博扫描上方二维码'
+            };
+            document.getElementById('scanTip').textContent = scanTips[platform];
+            
+            // 设置账号登录的标签和占位符
+            const accountLabels = {
+                wechat: '微信号/手机号',
+                qq: 'QQ号/手机号',
+                weibo: '微博账号/手机号'
+            };
+            const accountPlaceholders = {
+                wechat: '请输入微信号或手机号',
+                qq: '请输入QQ号或手机号',
+                weibo: '请输入微博账号或手机号'
+            };
+            document.getElementById('thirdPartyAccountLabel').textContent = accountLabels[platform];
+            document.getElementById('thirdPartyAccount').placeholder = accountPlaceholders[platform];
+            
+            // 根据平台设置密码字段的显示和必填性
+            const passwordContainer = document.getElementById('thirdPartyPasswordContainer');
+            const passwordInput = document.getElementById('thirdPartyPassword');
+            const passwordTip = document.getElementById('thirdPartyPasswordTip');
+            
+            // 所有平台都支持密码登录（可选）
+            passwordInput.required = false;
+            passwordContainer.classList.remove('hidden');
+            
+            // 根据平台设置不同的提示信息
+            const passwordConfig = {
+                wechat: {
+                    placeholder: '请输入微信密码（可选）',
+                    tip: '部分微信账号需要密码验证'
+                },
+                qq: {
+                    placeholder: '请输入QQ密码（可选）',
+                    tip: 'QQ快速登录无需密码，部分账号需要密码验证'
+                },
+                weibo: {
+                    placeholder: '请输入微博密码（可选）',
+                    tip: '微博快速登录无需密码，部分账号需要密码验证'
+                }
+            };
+            
+            const config = passwordConfig[platform];
+            passwordInput.placeholder = config.placeholder;
+            passwordTip.textContent = config.tip;
+            
+            // 重置模式
+            switchThirdPartyMode('scan');
+            
+            // 显示模态框
+            document.getElementById('thirdPartyModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            
+            // 生成二维码
+            generateQRCode(platform);
+        }
+
+        // 关闭第三方登录模态框
+        function closeThirdPartyModal() {
+            document.getElementById('thirdPartyModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            currentThirdParty = null;
+            if (qrCodeTimer) {
+                clearInterval(qrCodeTimer);
+                qrCodeTimer = null;
+            }
+        }
+
+        // 切换第三方登录模式
+        function switchThirdPartyMode(mode) {
+            currentThirdPartyMode = mode;
+            
+            const scanTab = document.getElementById('scanLoginTab');
+            const accountTab = document.getElementById('accountLoginTab');
+            const scanContent = document.getElementById('scanLoginContent');
+            const accountContent = document.getElementById('accountLoginContent');
+            
+            if (mode === 'scan') {
+                scanTab.classList.add('text-primary', 'border-primary');
+                scanTab.classList.remove('text-gray-500', 'border-transparent');
+                accountTab.classList.remove('text-primary', 'border-primary');
+                accountTab.classList.add('text-gray-500', 'border-transparent');
+                scanContent.classList.remove('hidden');
+                accountContent.classList.add('hidden');
+                
+                // 重新生成二维码
+                if (currentThirdParty) {
+                    generateQRCode(currentThirdParty);
+                }
+            } else {
+                accountTab.classList.add('text-primary', 'border-primary');
+                accountTab.classList.remove('text-gray-500', 'border-transparent');
+                scanTab.classList.remove('text-primary', 'border-primary');
+                scanTab.classList.add('text-gray-500', 'border-transparent');
+                accountContent.classList.remove('hidden');
+                scanContent.classList.add('hidden');
+                
+                // 停止二维码轮询
+                if (qrCodeTimer) {
+                    clearInterval(qrCodeTimer);
+                    qrCodeTimer = null;
+                }
+            }
+        }
+
+        // 生成二维码
+        function generateQRCode(platform) {
+            const qrCodeContainer = document.getElementById('qrCodeContainer');
+            const scanStatus = document.getElementById('scanStatus');
+            
+            // 根据平台设置二维码样式和提示
+            const platformConfig = {
+                wechat: {
+                    icon: 'fa-weixin',
+                    color: 'text-green-500',
+                    bgColor: 'bg-green-50',
+                    borderColor: 'border-green-300'
+                },
+                qq: {
+                    icon: 'fa-qq',
+                    color: 'text-blue-400',
+                    bgColor: 'bg-blue-50',
+                    borderColor: 'border-blue-300'
+                },
+                weibo: {
+                    icon: 'fa-weibo',
+                    color: 'text-red-500',
+                    bgColor: 'bg-red-50',
+                    borderColor: 'border-red-300'
+                }
+            };
+            
+            const config = platformConfig[platform];
+            
+            // 模拟生成二维码（实际应用中应该调用后端API）
+            qrCodeContainer.innerHTML = `
+                <div class="w-48 h-48 ${config.bgColor} flex items-center justify-center border-2 border-dashed ${config.borderColor} rounded-lg">
+                    <div class="text-center p-4">
+                        <i class="fa ${config.icon} ${config.color} text-6xl mb-2"></i>
+                        <p class="text-xs text-gray-600 font-medium">${platform === 'wechat' ? '微信' : platform === 'qq' ? 'QQ' : '微博'}二维码</p>
+                        <p class="text-xs text-gray-400 mt-1">请使用${platform === 'wechat' ? '微信' : platform === 'qq' ? 'QQ' : '微博'}扫描</p>
+                    </div>
+                </div>
+            `;
+            
+            scanStatus.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i>等待扫码...';
+            
+            // 模拟扫码状态检测
+            let scanAttempts = 0;
+            if (qrCodeTimer) {
+                clearInterval(qrCodeTimer);
+            }
+            
+            // 根据平台设置不同的扫码检测逻辑（实际应用中应该调用不同的API）
+            qrCodeTimer = setInterval(() => {
+                scanAttempts++;
+                
+                // 模拟扫码过程状态
+                if (scanAttempts === 1) {
+                    scanStatus.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i>等待扫码...';
+                } else if (scanAttempts === 2) {
+                    scanStatus.innerHTML = '<i class="fa fa-check-circle text-yellow-500 mr-2"></i>已扫描，等待确认...';
+                } else if (scanAttempts >= 3) {
+                    // 模拟用户扫码并确认
+                    scanStatus.innerHTML = '<i class="fa fa-check-circle text-green-500 mr-2"></i>扫码成功，正在登录...';
+                    
+                    setTimeout(() => {
+                        handleThirdPartyScanLogin(platform);
+                    }, 1000);
+                    
+                    clearInterval(qrCodeTimer);
+                    qrCodeTimer = null;
+                }
+            }, 2000);
+        }
+
+        // 刷新二维码
+        function refreshQRCode() {
+            if (currentThirdParty) {
+                generateQRCode(currentThirdParty);
+                showToast('二维码已刷新', 'success');
+            }
+        }
+
+        // 处理第三方扫码登录
+        async function handleThirdPartyScanLogin(platform) {
+            try {
+                const response = await mockThirdPartyLogin(platform, null, 'scan');
+                
+                if (response.success) {
+                    if (response.needRegister) {
+                        // 需要注册，引导用户注册
+                        showToast('检测到您是新用户，请完成注册', 'info');
+                        closeThirdPartyModal();
+                        openRegisterModalWithThirdParty(platform, response.thirdPartyInfo);
+                    } else {
+                        // 直接登录成功
+                        if (typeof AuthHelper !== 'undefined') AuthHelper.set(response.userType, response);
+                        else { localStorage.setItem('authToken', response.token); localStorage.setItem('username', response.username); localStorage.setItem('userType', response.userType); }
+                        localStorage.setItem('loginMethod', platform);
+                        
+                        showToast('登录成功！', 'success');
+                        closeThirdPartyModal();
+                        checkUserAuth();
+                        
+                        setTimeout(() => {
+                            if (response.userType === 'jobseeker') {
+                                window.location.href = 'user/profile.html';
+                            } else if (response.userType === 'enterprise') {
+                                window.location.href = 'enterprise/company-center.html';
+                            }
+                        }, 1000);
+                    }
+                } else {
+                    showToast(response.message || '登录失败', 'error');
+                }
+            } catch (error) {
+                showToast('登录失败，请稍后重试', 'error');
+            }
+        }
+
+        // 处理第三方账号登录
+        async function handleThirdPartyAccountLogin(event) {
+            event.preventDefault();
+            
+            const userType = document.querySelector('input[name="thirdPartyUserType"]:checked').value;
+            const account = document.getElementById('thirdPartyAccount').value;
+            const password = document.getElementById('thirdPartyPassword').value;
+            
+            try {
+                const response = await mockThirdPartyLogin(currentThirdParty, { account, password }, 'account', userType);
+                
+                if (response.success) {
+                    if (response.needRegister) {
+                        // 需要注册
+                        showToast('检测到您是新用户，请完成注册', 'info');
+                        closeThirdPartyModal();
+                        openRegisterModalWithThirdParty(currentThirdParty, response.thirdPartyInfo, { account, password });
+                    } else {
+                        // 登录成功
+                        if (typeof AuthHelper !== 'undefined') AuthHelper.set(response.userType, response);
+                        else { localStorage.setItem('authToken', response.token); localStorage.setItem('username', response.username); localStorage.setItem('userType', response.userType); }
+                        localStorage.setItem('loginMethod', currentThirdParty);
+                        
+                        showToast('登录成功！', 'success');
+                        closeThirdPartyModal();
+                        checkUserAuth();
+                        
+                        setTimeout(() => {
+                            if (response.userType === 'jobseeker') {
+                                window.location.href = 'user/profile.html';
+                            } else if (response.userType === 'enterprise') {
+                                window.location.href = 'enterprise/company-center.html';
+                            }
+                        }, 1000);
+                    }
+                } else {
+                    showToast(response.message || '登录失败', 'error');
+                }
+            } catch (error) {
+                showToast('登录失败，请稍后重试', 'error');
+            }
+        }
+
+        // 从登录切换到注册
+        function switchToRegisterFromLogin() {
+            closeLoginModal();
+            openRegisterModal();
+        }
+
+        // 从第三方登录切换到注册
+        function switchToRegisterFromThirdParty() {
+            closeThirdPartyModal();
+            openRegisterModalWithThirdParty(currentThirdParty);
+        }
+
+        // 打开注册模态框（带第三方信息）
+        function openRegisterModalWithThirdParty(platform, thirdPartyInfo = null, accountInfo = null) {
+            openRegisterModal();
+            
+            // 保存第三方信息，用于注册后绑定
+            if (thirdPartyInfo) {
+                localStorage.setItem('pendingThirdPartyInfo', JSON.stringify({
+                    platform: platform,
+                    thirdPartyInfo: thirdPartyInfo
+                }));
+            }
+            
+            // 如果提供了第三方信息，预填充表单
+            if (thirdPartyInfo || accountInfo) {
+                setTimeout(() => {
+                    if (accountInfo && accountInfo.account) {
+                        // 根据平台类型预填充邮箱或手机号
+                        if (platform === 'qq') {
+                            // QQ登录，账号可能是QQ号，尝试填充手机号
+                            const phoneInput = document.getElementById('registerPhone');
+                            if (phoneInput && /^1[3-9]\d{9}$/.test(accountInfo.account)) {
+                                phoneInput.value = accountInfo.account;
+                            }
+                        } else {
+                            // 微信或微博，可能是手机号
+                            const phoneInput = document.getElementById('registerPhone');
+                            if (phoneInput && /^1[3-9]\d{9}$/.test(accountInfo.account)) {
+                                phoneInput.value = accountInfo.account;
+                            }
+                        }
+                    }
+                    
+                    // 如果第三方信息中有昵称，预填充用户名
+                    if (thirdPartyInfo && thirdPartyInfo.nickname) {
+                        const usernameInput = document.getElementById('registerUsername');
+                        if (usernameInput) {
+                            usernameInput.value = thirdPartyInfo.nickname;
+                        }
+                    }
+                    
+                    // 显示提示信息
+                    showToast('请完善注册信息完成账号绑定', 'info');
+                }, 100);
+            }
+        }
+
+        // 处理登录
+        async function handleLogin(event) {
+            event.preventDefault();
+            
+            const userType = document.querySelector('input[name="userType"]:checked').value;
+            const identifier = document.getElementById('loginIdentifier').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            
+            // 验证输入
+            if (!identifier) {
+                showToast('请输入邮箱/手机号/用户名', 'error');
+                return;
+            }
+            if (!password) {
+                showToast('请输入密码', 'error');
+                return;
+            }
+            
+            // 禁用登录按钮，防止重复提交
+            const loginButton = document.querySelector('#loginForm button[type="submit"]');
+            const originalButtonText = loginButton ? loginButton.innerHTML : '';
+            if (loginButton) {
+                loginButton.disabled = true;
+                loginButton.innerHTML = '<i class="fa fa-spinner fa-spin"></i> 登录中...';
+            }
+            
+            try {
+                // 调用登录API
+                const response = await mockLogin(identifier, password, userType);
+                
+                if (response.success) {
+                    // 使用分端存储，求职者与企业可同时登录
+                    if (typeof AuthHelper !== 'undefined') {
+                        AuthHelper.set(response.userType, {
+                            token: response.token,
+                            refreshToken: response.refreshToken,
+                            userId: response.userId || '',
+                            username: response.username,
+                            userType: response.userType,
+                            email: response.email || '',
+                            currentCompanyId: response.userType === 'enterprise' ? (response.userId || '') : undefined,
+                            enterpriseId: response.userType === 'enterprise' ? (response.userId || '') : undefined
+                        });
+                    } else {
+                        localStorage.setItem('authToken', response.token);
+                        if (response.refreshToken) localStorage.setItem('refreshToken', response.refreshToken);
+                        localStorage.setItem('userId', response.userId || '');
+                        localStorage.setItem('username', response.username);
+                        localStorage.setItem('userType', response.userType);
+                        localStorage.setItem('email', response.email || '');
+                        if (response.userType === 'enterprise') {
+                            localStorage.setItem('currentCompanyId', response.userId || '');
+                            localStorage.setItem('enterpriseId', response.userId || '');
+                        }
+                    }
+                    localStorage.setItem('loginMethod', 'normal');
+                    
+                    // 显示成功提示
+                    showToast('登录成功！', 'success');
+                    closeLoginModal();
+                    checkUserAuth();
+                    
+                    // 延迟跳转，让用户看到成功提示
+                    setTimeout(() => {
+                        if (response.userType === 'jobseeker') {
+                            window.location.href = 'user/profile.html';
+                        } else if (response.userType === 'enterprise') {
+                            window.location.href = 'enterprise/company-center.html';
+                        } else if (response.userType === 'admin') {
+                            window.location.href = 'admin/index.html';
+                        }
+                    }, 500);
+                } else {
+                    // 登录失败，显示错误信息
+                    const errorMsg = response.message || '登录失败，请检查账号密码';
+                    showToast(errorMsg, 'error');
+                    
+                    // 如果是后端服务未启动的错误，显示额外提示
+                    if (errorMsg.includes('后端服务') || errorMsg.includes('无法连接')) {
+                        console.warn('后端服务可能未启动，请检查后端服务状态');
+                    }
+                }
+            } catch (error) {
+                console.error('登录错误:', error);
+                let errorMessage = error.message || '登录失败，请稍后重试';
+                
+                // 处理不同类型的错误
+                if (errorMessage.includes('Failed to fetch') || 
+                    errorMessage.includes('NetworkError') ||
+                    errorMessage.includes('ERR_CONNECTION_REFUSED')) {
+                    errorMessage = '无法连接到服务器，请确保后端服务已启动\n\n提示：运行 "登录问题诊断.bat" 检查服务状态';
+                } else if (errorMessage.includes('timeout') || errorMessage.includes('Request timeout')) {
+                    errorMessage = '请求超时，请检查网络连接或后端服务状态';
+                }
+                
+                // 显示错误提示（只显示第一行，避免过长）
+                showToast(errorMessage.split('\n')[0], 'error');
+                
+                // 如果是连接错误，在控制台显示详细提示
+                if (errorMessage.includes('无法连接') || errorMessage.includes('后端服务')) {
+                    console.error('登录失败原因：', errorMessage);
+                    console.info('解决方案：');
+                    console.info('1. 运行 "登录问题诊断.bat" 检查服务状态');
+                    console.info('2. 运行 "启动完整网站.bat" 启动后端服务');
+                    console.info('3. 检查浏览器控制台是否有CORS错误');
+                }
+            } finally {
+                // 恢复登录按钮
+                if (loginButton) {
+                    loginButton.disabled = false;
+                    loginButton.innerHTML = originalButtonText;
+                }
+            }
+            
+        }
+
+        // 注册成功后的跳转目标（由 URL ?return= 传入，如从公告页来注册后回公告）
+        window.__postRegisterReturnUrl = null;
+        var SJ_REGISTER_RETURN_KEY = 'sj_post_register_return';
+        function normalizeRegisterReturn(raw) {
+            if (!raw || typeof raw !== 'string') return null;
+            var dec = raw.trim();
+            // URLSearchParams.get 通常已解码一次；若仍含 %xx 再解一次（容错）
+            try {
+                if (dec.indexOf('%') >= 0) dec = decodeURIComponent(dec);
+            } catch (e) { /* 保持 dec */ }
+            if (dec.indexOf('://') >= 0 || dec.indexOf('javascript:') === 0) return null;
+            if (dec.indexOf('//') === 0) return null;
+            if (!/^[\w\-\.\/?&=%]+$/.test(dec)) return null;
+            return dec;
+        }
+        function captureRegisterReturnFromUrl() {
+            try {
+                var params = new URLSearchParams(window.location.search);
+                if (!params.has('return')) {
+                    window.__postRegisterReturnUrl = null;
+                    try { sessionStorage.removeItem(SJ_REGISTER_RETURN_KEY); } catch (e0) {}
+                    return;
+                }
+                var raw = params.get('return');
+                var dec = normalizeRegisterReturn(raw || '');
+                if (dec) {
+                    window.__postRegisterReturnUrl = dec;
+                    try { sessionStorage.setItem(SJ_REGISTER_RETURN_KEY, dec); } catch (e2) {}
+                }
+            } catch (e) {}
+        }
+        function getRegisterReturnTarget() {
+            var u = (typeof window.__postRegisterReturnUrl === 'string' && window.__postRegisterReturnUrl) ? window.__postRegisterReturnUrl : null;
+            if (!u) {
+                try {
+                    var s = sessionStorage.getItem(SJ_REGISTER_RETURN_KEY);
+                    u = normalizeRegisterReturn(s || '');
+                } catch (e) {}
+            }
+            return u || null;
+        }
+        function clearRegisterReturnTarget() {
+            window.__postRegisterReturnUrl = null;
+            try { sessionStorage.removeItem(SJ_REGISTER_RETURN_KEY); } catch (e) {}
+        }
+
+        // 处理注册
+        async function handleRegister(event) {
+            event.preventDefault();
+            
+            const userType = document.querySelector('input[name="registerUserType"]:checked').value;
+            const username = document.getElementById('registerUsername').value;
+            const email = document.getElementById('registerEmail').value;
+            const phone = document.getElementById('registerPhone').value;
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const verifyCode = document.getElementById('verifyCode').value;
+            
+            // 验证密码
+            if (password !== confirmPassword) {
+                showToast('两次输入的密码不一致', 'warning');
+                return;
+            }
+            
+            if (password.length < 6 || password.length > 20) {
+                showToast('密码长度应为6-20位', 'warning');
+                return;
+            }
+            
+            try {
+                // 模拟API调用
+                const response = await mockRegister(username, email, phone, password, verifyCode, userType);
+                
+                if (response.success) {
+                    // 检查是否有第三方登录信息需要绑定
+                    const thirdPartyInfo = localStorage.getItem('pendingThirdPartyInfo');
+                    if (thirdPartyInfo) {
+                        // 绑定第三方账号
+                        const info = JSON.parse(thirdPartyInfo);
+                        await bindThirdPartyAccount(info.platform, info.thirdPartyInfo, { username, email, phone, password, userType });
+                        localStorage.removeItem('pendingThirdPartyInfo');
+                    }
+                    
+                    showToast('注册成功！正在登录...', 'success');
+                    closeRegisterModal();
+                    
+                    // 如果注册返回了token和userId，直接使用；否则自动登录
+                    if (response.data && response.data.userId) {
+                        var d = response.data;
+                        if (typeof AuthHelper !== 'undefined') AuthHelper.set(d.userType || userType, { token: d.token, refreshToken: d.refreshToken, userId: d.userId, username: d.username, userType: d.userType, email: d.email || email });
+                        else {
+                            localStorage.setItem('authToken', d.token);
+                            if (d.refreshToken) localStorage.setItem('refreshToken', d.refreshToken);
+                            localStorage.setItem('userId', d.userId); localStorage.setItem('username', d.username); localStorage.setItem('userType', d.userType); localStorage.setItem('email', d.email || email);
+                        }
+                        checkUserAuth();
+                        showToast('登录成功！', 'success');
+                        
+                        setTimeout(() => {
+                            if (userType === 'jobseeker') {
+                                var nr = getRegisterReturnTarget();
+                                clearRegisterReturnTarget();
+                                if (nr) window.location.href = nr;
+                                else window.location.href = 'user/index.html';
+                            } else if (userType === 'enterprise') {
+                                window.location.href = 'enterprise/company-center.html';
+                            }
+                        }, 1000);
+                    } else {
+                        // 自动登录
+                        setTimeout(async () => {
+                            const loginResponse = await mockLogin(email, password, userType);
+                            if (loginResponse.success) {
+                                if (typeof AuthHelper !== 'undefined') AuthHelper.set(loginResponse.userType, loginResponse);
+                                else {
+                                    localStorage.setItem('authToken', loginResponse.token);
+                                    if (loginResponse.refreshToken) localStorage.setItem('refreshToken', loginResponse.refreshToken);
+                                    localStorage.setItem('userId', loginResponse.userId || ''); localStorage.setItem('username', loginResponse.username); localStorage.setItem('userType', loginResponse.userType); localStorage.setItem('email', loginResponse.email || email);
+                                }
+                                checkUserAuth();
+                                showToast('登录成功！', 'success');
+                                
+                                setTimeout(() => {
+                                    if (userType === 'jobseeker') {
+                                        var nr2 = getRegisterReturnTarget();
+                                        clearRegisterReturnTarget();
+                                        if (nr2) window.location.href = nr2;
+                                        else window.location.href = 'user/index.html';
+                                    } else if (userType === 'enterprise') {
+                                        window.location.href = 'enterprise/company-center.html';
+                                    }
+                                }, 1000);
+                            } else {
+                                openLoginModal();
+                            }
+                        }, 50); // 优化：减少延迟到50ms
+                    }
+                } else {
+                    showToast(response.message || '注册失败', 'error');
+                }
+            } catch (error) {
+                showToast('注册失败，请稍后重试', 'error');
+            }
+        }
+
+        // 从注册切换到登录
+        function switchToLoginFromRegister() {
+            closeRegisterModal();
+            openLoginModal();
+        }
+
+        // 绑定第三方账号
+        async function bindThirdPartyAccount(platform, thirdPartyInfo, userInfo) {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    // 模拟绑定逻辑
+                    console.log('绑定第三方账号:', platform, thirdPartyInfo, userInfo);
+                    resolve({ success: true });
+                }, 500);
+            });
+        }
+
+        // 退出登录（清除求职者与企业端登录状态）
+        function logout() {
+            if (confirm('确定要退出登录吗？')) {
+                if (typeof AuthHelper !== 'undefined') {
+                    AuthHelper.clear('jobseeker');
+                    AuthHelper.clear('enterprise');
+                }
+                ['authToken','refreshToken','userId','username','userType','email','currentCompanyId','enterpriseId'].forEach(function(k){
+                    localStorage.removeItem(k); sessionStorage.removeItem(k);
+                });
+                showToast('已退出登录', 'success');
+                checkUserAuth();
+            }
+        }
+
+        // API基础URL配置：仅当页面通过 http(s) 访问时才用当前来源，否则用本机默认，避免 file:// 打开时健康检查失败
+        const BACKEND_BASE_URL = (function () {
+            if (window.BACKEND_BASE_URL) return window.BACKEND_BASE_URL.replace(/\/$/, '');
+            var origin = window.location && window.location.origin;
+            if (origin && (origin.indexOf('http://') === 0 || origin.indexOf('https://') === 0)) {
+                return origin.replace(/\/$/, '');
+            }
+            return 'http://127.0.0.1:3001';
+        })();
+        const API_BASE_URL = window.API_BASE_URL || `${BACKEND_BASE_URL}/api/v1`;
+        
+        // 检查后端服务状态
+        let backendStatus = {
+            checked: false,
+            available: false,
+            checking: false,
+            baseUrl: BACKEND_BASE_URL
+        };
+        
+        // 带超时的fetch封装
+        function fetchWithTimeout(url, options = {}, timeout = 5000) {
+            return Promise.race([
+                fetch(url, options),
+                new Promise((_, reject) =>
+                    setTimeout(() => reject(new Error('Request timeout')), timeout)
+                )
+            ]);
+        }
+        
+        // 页面加载时检查后端服务（优化版本：优先使用CORS模式，可读取响应验证）
+        async function checkBackendHealth(retryCount = 0) {
+            // 如果正在检查且不是重试，等待当前检查完成
+            if (backendStatus.checking && retryCount === 0) {
+                let waitCount = 0;
+                while (backendStatus.checking && waitCount < 30) {
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                    waitCount++;
+                }
+                if (waitCount >= 30) {
+                    console.warn('健康检查等待超时，返回当前状态');
+                }
+                return backendStatus;
+            }
+            
+            backendStatus.checking = true;
+            console.log(`[后端服务检测] 开始检测 (重试次数: ${retryCount})...`);
+            
+            // 尝试多个URL和端口（与后端路由一致：/api/v1/health），优先使用当前访问来源
+            const healthPath = '/api/v1/health';
+            const testUrls = [
+                BACKEND_BASE_URL + healthPath,
+                'http://127.0.0.1:3001' + healthPath,
+                'http://localhost:3001' + healthPath,
+                'http://127.0.0.1:3000' + healthPath,
+                'http://localhost:3000' + healthPath
+            ];
+            
+            // 方法1: 优先使用CORS模式检测（可以读取响应验证，最可靠）
+            for (const url of testUrls) {
+                try {
+                    console.log(`[后端服务检测] 尝试CORS模式: ${url}`);
+                    const response = await fetchWithTimeout(url, { 
+                        method: 'GET',
+                        mode: 'cors',
+                        cache: 'no-cache',
+                        credentials: 'omit'
+                    }, 5000); // 5秒超时
+                    
+                    if (response && response.ok) {
+                        // 验证响应内容，确保返回正确的JSON格式
+                        try {
+                            const data = await response.json();
+                            if (data && (data.success === true || data.message)) {
+                                const baseUrl = url.replace(/\/api\/v1\/health$/, '');
+                                backendStatus.available = true;
+                                backendStatus.checked = true;
+                                backendStatus.baseUrl = baseUrl;
+                                backendStatus.checking = false;
+                                backendStatus.lastCheckTime = Date.now();
+                                console.log('✅ 后端服务检测成功（CORS模式，已验证响应）:', baseUrl);
+                                return backendStatus;
+                            }
+                        } catch (jsonError) {
+                            console.warn(`[后端服务检测] ${url} 响应不是有效的JSON，继续尝试...`);
+                            // 即使JSON解析失败，如果状态码是200，也认为服务在运行
+                            const baseUrl = url.replace(/\/api\/v1\/health$/, '');
+                            backendStatus.available = true;
+                            backendStatus.checked = true;
+                            backendStatus.baseUrl = baseUrl;
+                            backendStatus.checking = false;
+                            backendStatus.lastCheckTime = Date.now();
+                            console.log('✅ 后端服务检测成功（CORS模式，状态码200）:', baseUrl);
+                            return backendStatus;
+                        }
+                    }
+                } catch (error) {
+                    console.debug(`[后端服务检测] CORS模式失败 ${url}:`, error.message);
+                    // 继续尝试下一个URL
+                }
+            }
+            
+            // 方法2: 如果CORS模式失败，尝试no-cors模式（作为备用方案）
+            console.log('[后端服务检测] CORS模式全部失败，尝试no-cors模式...');
+            for (const url of testUrls) {
+                try {
+                    console.log(`[后端服务检测] 尝试no-cors模式: ${url}`);
+                    const response = await fetch(url, { 
+                        method: 'GET',
+                        mode: 'no-cors',
+                        cache: 'no-cache'
+                    });
+                    // no-cors模式下能发送请求就说明服务在运行（但无法验证响应）
+                    const baseUrl = url.replace(/\/api\/v1\/health$/, '');
+                    backendStatus.available = true;
+                    backendStatus.checked = true;
+                    backendStatus.baseUrl = baseUrl;
+                    backendStatus.checking = false;
+                    backendStatus.lastCheckTime = Date.now();
+                    console.log('⚠️ 后端服务检测成功（no-cors模式，未验证响应）:', baseUrl);
+                    return backendStatus;
+                } catch (error) {
+                    console.debug(`[后端服务检测] no-cors模式失败 ${url}:`, error.message);
+                    // 继续尝试
+                }
+            }
+            
+            // 如果所有方法都失败，且重试次数未达到上限，进行重试
+            if (retryCount < 1) {
+                console.log('[后端服务检测] 所有检测方法失败，500ms后重试...');
+                backendStatus.checking = false;
+                await new Promise(resolve => setTimeout(resolve, 500));
+                return checkBackendHealth(retryCount + 1);
+            }
+            
+            // 所有方法都失败
+            backendStatus.available = false;
+            backendStatus.checked = true;
+            backendStatus.checking = false;
+            backendStatus.lastCheckTime = Date.now();
+            console.warn('❌ 后端服务检测失败：所有URL和检测方法都失败');
+            return backendStatus;
+        }
+        
+        // 页面加载时检查后端服务（简化版本，不显示警告）
+        document.addEventListener('DOMContentLoaded', () => {
+            // 延迟检查，给后端服务更多启动时间
+            setTimeout(() => {
+                checkBackendHealth().then(status => {
+                    if (status.available) {
+                        console.log('✅ 后端服务连接正常:', status.baseUrl);
+                    } else {
+                        console.warn('⚠️ 后端服务检测失败，将在登录时再次检测');
+                        // 不显示警告，让用户在登录时再检测
+                    }
+                });
+            }, 500); // 延迟500ms开始检查
+        });
+        
+        // 显示后端服务警告（避免重复显示）
+        let warningShown = false;
+        function showBackendServiceWarning() {
+            // 检查是否已经显示过警告（避免重复显示）
+            if (warningShown || document.getElementById('backend-service-warning')) {
+                return;
+            }
+            
+            // 最后验证：直接尝试调用登录API（最可靠的方法）
+            fetch(BACKEND_BASE_URL + '/api/v1/auth/login', {
+                method: 'POST',
+                mode: 'no-cors',
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email: 'test@test.com', password: 'test' })
+            }).then(() => {
+                // 如果能发送请求，说明服务在运行，不显示警告
+                console.log('✅ 后端服务在运行（登录API验证），取消显示警告');
+                backendStatus.available = true;
+                backendStatus.baseUrl = BACKEND_BASE_URL;
+                return;
+            }).catch(() => {
+                // 确实无法连接，显示警告
+                console.warn('❌ 后端服务确实未启动，显示警告');
+                displayBackendWarning();
+            });
+        }
+        
+        function displayBackendWarning() {
+            if (warningShown || document.getElementById('backend-service-warning')) {
+                return;
+            }
+            
+            warningShown = true;
+            
+            const warning = document.createElement('div');
+            warning.id = 'backend-service-warning';
+            warning.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #ff4444;
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                z-index: 10000;
+                max-width: 400px;
+                font-size: 14px;
+                line-height: 1.5;
+            `;
+            warning.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: start;">
+                    <div>
+                        <strong>⚠️ 后端服务未启动</strong>
+                        <p style="margin: 8px 0 0 0; font-size: 12px;">
+                            请运行 "启动后端服务-修复版.bat" 启动后端服务
+                        </p>
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove(); window.warningShown = false;" 
+                            style="background: none; border: none; color: white; 
+                                   cursor: pointer; font-size: 18px; margin-left: 10px; font-weight: bold;">×</button>
+                </div>
+            `;
+            document.body.appendChild(warning);
+            
+            // 15秒后自动关闭
+            setTimeout(() => {
+                if (warning.parentElement) {
+                    warning.remove();
+                    warningShown = false;
+                }
+            }, 15000);
+        }
+        
+        // 登录API（默认使用真实API，失败时回退到模拟登录）
+        async function mockLogin(identifier, password, userType) {
+            // 优化：快速检测后端服务状态（减少延迟）
+            const now = Date.now();
+            const lastCheck = backendStatus.lastCheckTime || 0;
+            const shouldRecheck = !backendStatus.checked || (now - lastCheck > 60000) || !backendStatus.available;
+            
+            // 如果最近检测过且可用，直接使用（不重新检测）
+            if (!shouldRecheck && backendStatus.available) {
+                console.log('[登录] 使用缓存的后端服务状态:', backendStatus.baseUrl);
+            } else {
+                // 快速检测：只检测当前访问来源地址，超时时间短（500ms），路径与后端一致
+                const healthCheckUrl = BACKEND_BASE_URL + '/api/v1/health';
+                try {
+                    const response = await fetchWithTimeout(healthCheckUrl, {
+                        method: 'GET',
+                        mode: 'cors',
+                        cache: 'no-cache',
+                        credentials: 'omit'
+                    }, 500); // 优化：500ms超时，快速失败
+                    
+                    if (response && response.ok) {
+                        backendStatus.available = true;
+                        backendStatus.baseUrl = BACKEND_BASE_URL;
+                        backendStatus.checked = true;
+                        backendStatus.lastCheckTime = Date.now();
+                        console.log('✅ [登录] 后端服务运行正常');
+                    } else {
+                        backendStatus.available = false;
+                        backendStatus.checked = true;
+                    }
+                } catch (error) {
+                    // 快速失败，使用模拟登录
+                    backendStatus.available = false;
+                    backendStatus.checked = true;
+                }
+            }
+            
+            const status = backendStatus;
+            const apiBaseUrl = status.available ? `${status.baseUrl}/api/v1` : API_BASE_URL;
+            
+            // 如果后端服务不可用，直接尝试多个可能的URL
+            const loginUrls = status.available 
+                ? [`${apiBaseUrl}/auth/login`]
+                : [
+                    BACKEND_BASE_URL + '/api/v1/auth/login',
+                    'http://localhost:3001/api/v1/auth/login',
+                    'http://127.0.0.1:3001/api/v1/auth/login',
+                    'http://localhost:3000/api/v1/auth/login',
+                    'http://127.0.0.1:3000/api/v1/auth/login'
+                ];
+            
+            // 首先尝试调用真实API
+            let lastError = null;
+            for (const loginUrl of loginUrls) {
+                try {
+                    const response = await fetchWithTimeout(loginUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        mode: 'cors',
+                        cache: 'no-cache',
+                        body: JSON.stringify({
+                            identifier: identifier,
+                            password: password,
+                            userType: userType
+                        })
+                    }, 2000); // 优化：2秒超时，快速失败
+
+                    if (response.ok) {
+                        const result = await response.json();
+                        if (result.success && result.data) {
+                            // 真实API登录成功，更新后端服务状态
+                            const baseUrl = loginUrl.replace('/api/v1/auth/login', '');
+                            backendStatus.available = true;
+                            backendStatus.baseUrl = baseUrl;
+                            console.log('✅ 登录成功，后端服务地址:', baseUrl);
+                            
+                            return {
+                                success: true,
+                                token: result.data.accessToken || result.data.token,
+                                refreshToken: result.data.refreshToken,
+                                userId: result.data.userId,
+                                username: result.data.username,
+                                userType: result.data.userType,
+                                email: result.data.email
+                            };
+                        } else {
+                            // API返回了响应，但登录失败（如账号密码错误）
+                            throw new Error(result.message || '登录失败');
+                        }
+                    } else {
+                        // HTTP错误（如400, 401, 500等），说明后端服务在运行
+                        const errorData = await response.json().catch(() => ({}));
+                        const errorMessage = errorData.message || `HTTP ${response.status}`;
+                        
+                        // 更新后端服务状态为可用（因为收到了HTTP响应）
+                        const baseUrl = loginUrl.replace('/api/v1/auth/login', '');
+                        backendStatus.available = true;
+                        backendStatus.baseUrl = baseUrl;
+                        console.log('⚠️ 后端服务运行正常，但登录失败:', errorMessage);
+                        
+                        // 抛出业务错误，不是连接错误
+                        throw new Error(errorMessage);
+                    }
+                } catch (apiError) {
+                    lastError = apiError;
+                    // 继续尝试下一个URL
+                    console.debug('登录尝试失败:', loginUrl, apiError.message);
+                    continue;
+                }
+            }
+            
+            // 所有URL都失败，使用最后一个错误
+            const apiError = lastError || new Error('无法连接到服务器');
+            
+            // 检查是否是真正的连接错误（没有收到HTTP响应）
+            const isConnectionError = (
+                apiError.message.includes('Failed to fetch') || 
+                apiError.message.includes('NetworkError') ||
+                apiError.message.includes('ERR_CONNECTION_REFUSED') ||
+                (apiError.name === 'TypeError' && apiError.message.includes('fetch')) ||
+                apiError.message.includes('timeout') ||
+                apiError.message.includes('Request timeout')
+            ) && !apiError.message.includes('HTTP'); // 如果包含HTTP状态码，说明收到了响应，不是连接错误
+            
+            console.log('登录API调用失败:', {
+                error: apiError.message,
+                errorName: apiError.name,
+                isConnectionError: isConnectionError,
+                backendAvailable: backendStatus.available,
+                backendBaseUrl: backendStatus.baseUrl
+            });
+            
+            // 如果错误信息包含HTTP状态码（如"HTTP 500"、"用户不存在"等），说明后端服务在运行
+            // 但如果是"用户不存在"或"密码错误"，可能是真实API中没有该账号，尝试模拟登录
+            const isBusinessError = apiError.message.includes('HTTP') || 
+                apiError.message.includes('用户不存在') ||
+                apiError.message.includes('密码错误') ||
+                apiError.message.includes('用户已被禁用') ||
+                apiError.message.includes('邮箱和密码不能为空');
+            
+            if (isBusinessError) {
+                // 这是业务错误，后端服务在运行
+                console.log('✅ 后端服务运行正常，这是业务错误:', apiError.message);
+                // 更新后端服务状态
+                backendStatus.available = true;
+                backendStatus.baseUrl = backendStatus.baseUrl || BACKEND_BASE_URL;
+                
+                // 如果是"用户不存在"或"密码错误"或"账号或密码错误"，尝试使用模拟账号登录
+                if (apiError.message.includes('用户不存在') || apiError.message.includes('密码错误') || apiError.message.includes('账号或密码错误')) {
+                    console.log('[登录] 真实API中账号不存在或密码错误，尝试模拟账号登录...');
+                    // 回退到模拟登录
+                    return new Promise((resolve) => {
+                        setTimeout(() => {
+                            try {
+                                // 使用测试账号验证
+                                const account = findTestAccount(identifier, password, userType);
+                                
+                                if (account) {
+                                    console.log('✅ [登录] 模拟账号登录成功:', account.username || account.identifier);
+                                    resolve({
+                                        success: true,
+                                        token: 'mock_token_' + Date.now(),
+                                        refreshToken: 'mock_refresh_' + Date.now(),
+                                        userId: 'mock_' + Date.now(),
+                                        username: account.username || account.displayName || identifier.split('@')[0] || identifier,
+                                        userType: userType,
+                                        email: account.identifier || account.email || identifier
+                                    });
+                                } else {
+                                    // 模拟账号也不存在，抛出原始错误
+                                    resolve({
+                                        success: false,
+                                        message: apiError.message
+                                    });
+                                }
+                            } catch (error) {
+                                console.error('模拟登录错误:', error);
+                                resolve({
+                                    success: false,
+                                    message: apiError.message
+                                });
+                            }
+                        }, 50); // 优化：减少延迟到50ms
+                    });
+                } else {
+                    // 其他业务错误（如用户已被禁用），直接抛出
+                    throw apiError;
+                }
+            }
+            
+            // 如果是连接错误，回退到模拟登录
+            if (isConnectionError) {
+                console.log('[登录] 检测到连接错误，回退到模拟登录...');
+                
+                // 回退到模拟登录（用于开发/测试）- 优化：立即执行，无延迟
+                try {
+                    // 使用测试账号验证
+                    const account = findTestAccount(identifier, password, userType);
+                    
+                    if (account) {
+                        console.log('✅ [登录] 模拟账号登录成功（后端服务不可用）:', account.username || account.identifier);
+                        return {
+                            success: true,
+                            token: 'mock_token_' + Date.now(),
+                            refreshToken: 'mock_refresh_' + Date.now(),
+                            userId: 'mock_' + Date.now(),
+                            username: account.username || account.displayName || identifier.split('@')[0] || identifier,
+                            userType: userType,
+                            email: account.identifier || account.email || identifier
+                        };
+                    } else {
+                        // 提供更详细的错误信息
+                        let errorMessage = '用户名或密码错误';
+                        if (typeof TEST_ACCOUNTS !== 'undefined' && TEST_ACCOUNTS[userType]) {
+                            const accounts = TEST_ACCOUNTS[userType];
+                            const foundById = accounts.find(acc => 
+                                acc.identifier && acc.identifier.toLowerCase() === identifier.toLowerCase() ||
+                                acc.phone === identifier ||
+                                acc.username && acc.username.toLowerCase() === identifier.toLowerCase()
+                            );
+                            if (foundById && foundById.password !== password) {
+                                errorMessage = '密码错误';
+                            } else if (!foundById) {
+                                errorMessage = '账号不存在，请检查邮箱/手机号/用户名';
+                            }
+                        }
+                        return {
+                            success: false,
+                            message: errorMessage + '\n\n提示：后端服务不可用，请确保后端服务已启动'
+                        };
+                    }
+                } catch (error) {
+                    console.error('模拟登录错误:', error);
+                    return {
+                        success: false,
+                        message: '登录失败: ' + error.message
+                    };
+                }
+            }
+            
+            // 其他类型的错误，直接抛出
+            throw apiError;
+        }
+
+        // 注册API（默认使用真实API，失败时回退到模拟注册）
+        async function mockRegister(username, email, phone, password, verifyCode, userType) {
+            // 首先尝试调用真实API
+            try {
+                // 暂不使用企业端短信验证码，不校验验证码
+
+                var registerBaseUrl = (typeof backendStatus !== 'undefined' && backendStatus.baseUrl)
+                    ? (backendStatus.baseUrl + '/api/v1') : API_BASE_URL;
+                const response = await fetch(registerBaseUrl + '/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        email: email,
+                        phone: phone,
+                        password: password,
+                        userType: userType
+                    })
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.success && result.data) {
+                        // 真实API注册成功
+                        return {
+                            success: true,
+                            message: '注册成功',
+                            data: {
+                                userId: result.data.userId,
+                                username: result.data.username,
+                                email: result.data.email,
+                                userType: result.data.userType,
+                                token: result.data.accessToken || result.data.token,
+                                refreshToken: result.data.refreshToken
+                            }
+                        };
+                    } else {
+                        throw new Error(result.message || '注册失败');
+                    }
+                } else {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.message || `HTTP ${response.status}`);
+                }
+            } catch (apiError) {
+                var isConnectionError = apiError.message && (
+                    apiError.message.includes('Failed to fetch') ||
+                    apiError.message.includes('NetworkError') ||
+                    apiError.message.includes('ERR_CONNECTION_REFUSED') ||
+                    apiError.message.includes('timeout') ||
+                    apiError.message.includes('Request timeout')
+                );
+                if (isConnectionError) {
+                    console.warn('真实API注册失败（后端未连接）:', apiError.message, '- 请先运行「启动服务.bat」或「backend/启动后端服务.bat」');
+                } else {
+                    console.warn('真实API注册失败:', apiError.message);
+                }
+                // 连接类错误：不落库，直接提示用户
+                if (isConnectionError) {
+                    return {
+                        success: false,
+                        message: '无法连接后端服务，注册数据未保存，请启动后端服务后重试'
+                    };
+                }
+                // 业务错误（如邮箱已注册）返回失败信息
+                return {
+                    success: false,
+                    message: apiError.message || '注册失败，请稍后重试'
+                };
+            }
+        }
+
+        // 模拟第三方登录API
+        async function mockThirdPartyLogin(platform, accountInfo, loginType, userType = 'jobseeker') {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    // 模拟登录逻辑
+                    // 这里模拟：如果账号不存在，需要注册
+                    const needRegister = Math.random() > 0.5; // 50%概率需要注册
+                    
+                    // 根据平台生成不同的用户信息
+                    const platformUserInfo = {
+                        wechat: {
+                            nickname: '微信用户',
+                            defaultAccount: 'wechat_user_' + Math.floor(Math.random() * 10000)
+                        },
+                        qq: {
+                            nickname: 'QQ用户',
+                            defaultAccount: 'qq_user_' + Math.floor(Math.random() * 10000)
+                        },
+                        weibo: {
+                            nickname: '微博用户',
+                            defaultAccount: 'weibo_user_' + Math.floor(Math.random() * 10000)
+                        }
+                    };
+                    
+                    const userInfo = platformUserInfo[platform];
+                    
+                    if (needRegister) {
+                        // 需要注册
+                        resolve({
+                            success: false,
+                            needRegister: true,
+                            thirdPartyInfo: {
+                                platform: platform,
+                                openId: 'mock_openid_' + platform + '_' + Date.now(),
+                                nickname: userInfo.nickname,
+                                account: accountInfo ? accountInfo.account : userInfo.defaultAccount
+                            },
+                            message: '检测到您是新用户，请完成注册'
+                        });
+                    } else {
+                        // 直接登录成功
+                        const username = accountInfo ? accountInfo.account : userInfo.defaultAccount;
+                        resolve({
+                            success: true,
+                            token: 'mock_token_' + platform + '_' + Date.now(),
+                            username: username,
+                            userType: userType,
+                            loginMethod: platform,
+                            platform: platform
+                        });
+                    }
+                }, 1500);
+            });
+        }
+
+        // 显示提示消息
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            const toastIcon = document.getElementById('toastIcon');
+            
+            // 设置消息
+            toastMessage.textContent = message;
+            
+            // 设置图标
+            const icons = {
+                success: '<i class="fa fa-check-circle text-green-500 text-xl"></i>',
+                error: '<i class="fa fa-times-circle text-red-500 text-xl"></i>',
+                warning: '<i class="fa fa-exclamation-circle text-yellow-500 text-xl"></i>',
+                info: '<i class="fa fa-info-circle text-blue-500 text-xl"></i>'
+            };
+            toastIcon.innerHTML = icons[type] || icons.info;
+            
+            // 显示提示
+            toast.classList.remove('hidden');
+            
+            // 自动隐藏
+            setTimeout(() => {
+                hideToast();
+            }, 3000);
+        }
+
+        // 隐藏提示消息
+        function hideToast() {
+            document.getElementById('toast').classList.add('hidden');
+        }
+
+        // 更新首页导航栏
+        function updateHomepageNavbar() {
+            try {
+                const navbarData = JSON.parse(localStorage.getItem('homepageNavbar') || 'null');
+                if (navbarData) {
+                    // 更新 Logo - 使用更宽泛的选择器
+                    const logoImgs = document.querySelectorAll('header img[alt="圣举人才网"], header img[alt*="圣举"], header img[alt*="Logo"]');
+                    logoImgs.forEach(logoImg => {
+                        if (logoImg && navbarData.siteLogo) {
+                            if (!logoImg.alt || logoImg.alt.includes('圣举') || logoImg.alt.includes('Logo')) {
+                                logoImg.src = navbarData.siteLogo;
+                            }
+                        }
+                    });
+                    
+                    // 更新网站名称
+                    const siteNameEl = document.querySelector('header h1');
+                    if (siteNameEl && navbarData.siteName) {
+                        siteNameEl.textContent = navbarData.siteName;
+                    }
+                    
+                    // 更新页面标题
+                    if (navbarData.siteName) {
+                        document.title = navbarData.siteName + ' - 测评驱动的招聘平台';
+                    }
+                }
+            } catch (e) {
+                console.error('更新首页导航栏失败:', e);
+            }
+        }
+        
+        // 页面加载时检查用户状态
+        document.addEventListener('DOMContentLoaded', function() {
+            checkUserAuth();
+            // 确保页面加载时从systemSettings读取Logo（如果homepageNavbar没有数据）
+            const homepageNavbar = JSON.parse(localStorage.getItem('homepageNavbar') || 'null');
+            if (!homepageNavbar || !homepageNavbar.siteLogo) {
+                const systemSettings = JSON.parse(localStorage.getItem('systemSettings') || '{}');
+                if (systemSettings.siteLogo || systemSettings.siteName) {
+                    // 同步systemSettings到homepageNavbar
+                    const navbarData = {
+                        siteName: systemSettings.siteName || '圣举人才网',
+                        siteLogo: systemSettings.siteLogo || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22 viewBox=%220 0 40 40%22%3E%3Crect width=%2240%22 height=%2240%22 fill=%22%231E40AF%22 rx=%224%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22Arial, sans-serif%22 font-size=%2224%22 font-weight=%22bold%22 fill=%22white%22%3E圣%3C/text%3E%3C/svg%3E'
+                    };
+                    localStorage.setItem('homepageNavbar', JSON.stringify(navbarData));
+                }
+            }
+            updateHomepageNavbar();
+            
+            // 检查是否有菜单切换按钮
+            const menuToggle = document.getElementById('menu-toggle');
+            if (menuToggle) {
+                menuToggle.addEventListener('click', function() {
+                    const mobileMenu = document.getElementById('mobile-menu');
+                    if (mobileMenu) {
+                        mobileMenu.classList.toggle('hidden');
+                    }
+                });
+            }
+        });
+        
+        // 监听设置更新事件
+        window.addEventListener('homepageNavbarUpdated', function(event) {
+            if (event.detail) {
+                // 更新 Logo - 使用更宽泛的选择器
+                const logoImgs = document.querySelectorAll('header img[alt="圣举人才网"], header img[alt*="圣举"], header img[alt*="Logo"]');
+                logoImgs.forEach(logoImg => {
+                    if (logoImg && event.detail.siteLogo) {
+                        if (!logoImg.alt || logoImg.alt.includes('圣举') || logoImg.alt.includes('Logo')) {
+                            logoImg.src = event.detail.siteLogo;
+                        }
+                    }
+                });
+                
+                const siteNameEl = document.querySelector('header h1');
+                if (siteNameEl && event.detail.siteName) {
+                    siteNameEl.textContent = event.detail.siteName;
+                }
+                
+                if (event.detail.siteName) {
+                    document.title = event.detail.siteName + ' - 测评驱动的招聘平台';
+                }
+            }
+        });
+        
+        // 监听 storage 事件（跨标签页同步）
+        window.addEventListener('storage', function(event) {
+            if (event.key === 'homepageNavbar') {
+                updateHomepageNavbar();
+            }
+        });
+
+        // ESC键关闭模态框
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeLoginModal();
+                closeRegisterModal();
+                closeThirdPartyModal();
+                closeAdminLoginModal();
+            }
+        });
+        
+        // 检查URL参数，自动打开登录模态框
+        document.addEventListener('DOMContentLoaded', function() {
+            captureRegisterReturnFromUrl();
+            const urlParams = new URLSearchParams(window.location.search);
+            const action = urlParams.get('action');
+            const userType = urlParams.get('userType');
+            
+            if (action === 'login') {
+                setTimeout(() => {
+                    openLoginModal();
+                    if (userType) {
+                        const userTypeRadio = document.querySelector(`input[name="userType"][value="${userType}"]`);
+                        if (userTypeRadio) {
+                            userTypeRadio.checked = true;
+                            updateTestAccountHint();
+                        }
+                    }
+                }, 100);
+            } else if (action === 'register') {
+                setTimeout(() => {
+                    openRegisterModal();
+                    if (userType) {
+                        const regRadio = document.querySelector(`input[name="registerUserType"][value="${userType}"]`);
+                        if (regRadio) regRadio.checked = true;
+                        toggleRegisterVerifyBlock();
+                    }
+                }, 100);
+            }
+        });
+    </script>
+</body>
+</html>

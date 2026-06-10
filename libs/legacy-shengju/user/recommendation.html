@@ -1,0 +1,2128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>岗位推荐 - 圣举人才网</title>
+    <!-- Tailwind CSS -->
+    <script>(function(){function msg(a){var m=(a!=null&&typeof a==='string')?a:'';return m.indexOf('cdn.tailwindcss.com')!==-1||m.indexOf('Tracking Prevention')!==-1||m.indexOf('blocked access to storage')!==-1;}var w=console.warn,l=console.log,i=console.info;console.warn=function(){if(arguments.length&&msg(arguments[0]))return;return w.apply(console,arguments);};console.log=function(){if(arguments.length&&msg(arguments[0]))return;return l.apply(console,arguments);};console.info=function(){if(arguments.length&&msg(arguments[0]))return;return i.apply(console,arguments);};})();</script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <!-- Chart.js（Tracking Prevention 提示已通过上方 console 过滤屏蔽） -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <script src="../js/api-config.js"></script>
+    <script src="../js/auth-helper.js"></script>
+    <script src="../js/user-navbar.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#1E40AF',
+                        accent: '#60A5FA',
+                        light: '#EFF6FF',
+                        dark: '#1E293B'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow {
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            }
+            .bg-gradient-blue {
+                background: linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%);
+            }
+        }
+    </style>
+</head>
+<body class="font-sans bg-gray-50">
+    <!-- 导航栏 -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+            <!-- Logo -->
+            <div class="flex items-center space-x-2">
+                <a href="../index.html" class="flex items-center space-x-2">
+                    <img data-site-brand-logo src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%231E40AF' rx='4'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-size='24' font-weight='bold' fill='white'%3E圣%3C/text%3E%3C/svg%3E" 
+                         alt="圣举人才网" class="h-10 w-10 rounded-full">
+                    <h1 class="text-2xl font-bold text-primary">圣举人才网</h1>
+                </a>
+                <span class="text-gray-400">|</span>
+                <span class="text-gray-600 font-medium">求职者中心</span>
+            </div>
+            
+            <!-- 导航链接（与首页一致，当前页高亮由 user-navbar.js 设置） -->
+            <nav class="hidden md:flex items-center space-x-8">
+                <a href="index.html" class="text-gray-700 hover:text-primary font-medium border-b-2 border-transparent">首页</a>
+                <a href="assessment.html" class="text-gray-700 hover:text-primary font-medium border-b-2 border-transparent">测评中心</a>
+                <a href="recommendation.html" class="text-gray-700 hover:text-primary font-medium border-b-2 border-transparent">岗位推荐</a>
+                <a href="announcements.html" class="text-gray-700 hover:text-primary font-medium border-b-2 border-transparent">招聘公告</a>
+                <a href="talent-pool.html" class="text-gray-700 hover:text-primary font-medium border-b-2 border-transparent">人才池</a>
+                <a href="payment.html" class="text-gray-700 hover:text-primary font-medium border-b-2 border-transparent">付费服务</a>
+                <a href="profile.html" class="text-gray-700 hover:text-primary font-medium border-b-2 border-transparent">个人中心</a>
+            </nav>
+            
+            <!-- 用户菜单 -->
+            <div class="flex items-center space-x-4">
+                <div class="hidden md:flex items-center space-x-2" id="user-menu">
+                    <img id="user-avatar-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="" class="h-8 w-8 rounded-full">
+                    <span class="text-gray-700" id="user-name-display"></span>
+                </div>
+                <button type="button" onclick="showLogoutModal()" class="hidden md:flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition">
+                    <i class="fa fa-sign-out"></i> 退出
+                </button>
+                <button class="md:hidden text-gray-700 focus:outline-none" id="menu-toggle">
+                    <i class="fa fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- 移动端菜单（与首页一致） -->
+        <div class="md:hidden hidden bg-white border-t border-gray-200" id="mobile-menu">
+            <div class="container mx-auto px-4 py-2">
+                <a href="index.html" class="block py-2 text-gray-700 hover:text-primary pl-2">首页</a>
+                <a href="assessment.html" class="block py-2 text-gray-700 hover:text-primary pl-2">测评中心</a>
+                <a href="recommendation.html" class="block py-2 text-gray-700 hover:text-primary pl-2">岗位推荐</a>
+                <a href="announcements.html" class="block py-2 text-gray-700 hover:text-primary pl-2">招聘公告</a>
+                <a href="talent-pool.html" class="block py-2 text-gray-700 hover:text-primary pl-2">人才池</a>
+                <a href="payment.html" class="block py-2 text-gray-700 hover:text-primary pl-2">付费服务</a>
+                <a href="profile.html" class="block py-2 text-gray-700 hover:text-primary pl-2">个人中心</a>
+                <div class="border-t border-gray-200 my-2"></div>
+                <button type="button" onclick="showLogoutModal()" class="block w-full text-left py-2 text-primary font-medium pl-2"><i class="fa fa-sign-out mr-2"></i>退出</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 退出确认弹窗 -->
+    <div id="logout-modal" class="fixed inset-0 z-50 hidden">
+        <div class="fixed inset-0 bg-black bg-opacity-50" onclick="closeLogoutModal()"></div>
+        <div class="fixed inset-0 flex items-center justify-center p-4">
+            <div class="bg-white rounded-xl shadow-xl max-w-sm w-full p-6">
+                <p class="text-center text-gray-800 mb-6">确定要退出登录吗？</p>
+                <div class="flex gap-3">
+                    <button type="button" onclick="closeLogoutModal()" class="flex-1 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">取消</button>
+                    <button type="button" onclick="confirmLogout()" class="flex-1 py-2 bg-primary text-white rounded-lg hover:bg-blue-700">确定退出</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+    function showLogoutModal() { document.getElementById('logout-modal').classList.remove('hidden'); }
+    function closeLogoutModal() { document.getElementById('logout-modal').classList.add('hidden'); }
+    function confirmLogout() {
+        if (typeof AuthHelper !== 'undefined') AuthHelper.clear('jobseeker');
+        else { localStorage.removeItem('authToken'); sessionStorage.removeItem('authToken'); localStorage.removeItem('userId'); localStorage.removeItem('userType'); localStorage.removeItem('username'); }
+        closeLogoutModal();
+        window.location.href = 'login.html';
+    }
+    </script>
+
+    <!-- 主内容区 -->
+    <main>
+        <!-- 页面标题 -->
+        <section class="bg-gradient-blue text-white py-8">
+            <div class="container mx-auto px-4">
+                <h1 class="text-3xl font-bold text-center">岗位推荐</h1>
+                <p class="text-center mt-2">基于测评结果与个人偏好智能匹配推荐岗位，下方可按条件筛选</p>
+            </div>
+        </section>
+        
+        <!-- 岗位推荐内容 -->
+        <section class="py-8">
+            <div class="container mx-auto px-4">
+                <!-- 基于测评结果的适合岗位推荐：根据测评结果匹配并推荐合适岗位 -->
+                <div id="matched-jobs-section" class="mb-8">
+                    <div class="bg-gradient-to-r from-primary to-indigo-600 rounded-lg shadow-md p-6 mb-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h2 class="text-2xl font-bold text-white mb-2">
+                                    <i class="fa fa-star mr-2"></i>基于测评结果的适合岗位推荐
+                                </h2>
+                                <p class="text-blue-100">根据您的测评结果（性格/抗压/智力/职业能力/兴趣等）与简历信息，智能匹配并推荐最适合的岗位</p>
+                                <p class="text-blue-200 text-sm mt-1">数据来源：个人中心·我的简历（含 AI 生成简历）与测评中心·测评结果。匹配度由简历与测评结果同岗位要求实际匹配计算得出。</p>
+                                <p class="text-blue-200 text-sm mt-1">同一测评结果会匹配多个岗位。不同岗位的职位类型与要求不同，因此匹配到的岗位列表和匹配度会有所不同。</p>
+                            </div>
+                            <div class="hidden md:block">
+                                <i class="fa fa-chart-line text-white text-5xl opacity-50"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="matched-jobs-list" class="space-y-6">
+                        <!-- 匹配岗位数据将通过JavaScript动态加载 -->
+                    </div>
+                </div>
+
+                <!-- 筛选条件 -->
+                <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                    <!-- 第一行筛选条件 -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-4">
+                        <div>
+                            <label for="job-type" class="block text-sm font-medium text-gray-700 mb-1">职位类型</label>
+                            <select id="job-type" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <option value="所有类型">所有类型</option>
+                                <option value="技术类">技术类</option>
+                                <option value="产品类">产品类</option>
+                                <option value="设计类">设计类</option>
+                                <option value="运营类">运营类</option>
+                                <option value="市场类">市场类</option>
+                                <option value="销售类">销售类</option>
+                                <option value="财务类">财务类</option>
+                                <option value="人力资源类">人力资源类</option>
+                                <option value="行政类">行政类</option>
+                                <option value="法务类">法务类</option>
+                                <option value="咨询类">咨询类</option>
+                                <option value="教育类">教育类</option>
+                                <option value="医疗类">医疗类</option>
+                                <option value="金融类">金融类</option>
+                                <option value="制造业">制造业</option>
+                                <option value="服务业">服务业</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="location" class="block text-sm font-medium text-gray-700 mb-1">工作地点</label>
+                            <select id="location" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <option value="">全部城市</option>
+                                <optgroup label="一线城市">
+                                    <option value="北京">北京</option>
+                                    <option value="上海">上海</option>
+                                    <option value="广州">广州</option>
+                                    <option value="深圳">深圳</option>
+                                </optgroup>
+                                <optgroup label="新一线城市">
+                                    <option value="杭州">杭州</option>
+                                    <option value="成都">成都</option>
+                                    <option value="南京">南京</option>
+                                    <option value="武汉">武汉</option>
+                                    <option value="西安">西安</option>
+                                    <option value="重庆">重庆</option>
+                                    <option value="苏州">苏州</option>
+                                    <option value="天津">天津</option>
+                                    <option value="长沙">长沙</option>
+                                    <option value="郑州">郑州</option>
+                                    <option value="东莞">东莞</option>
+                                    <option value="青岛">青岛</option>
+                                    <option value="沈阳">沈阳</option>
+                                    <option value="宁波">宁波</option>
+                                    <option value="昆明">昆明</option>
+                                </optgroup>
+                                <optgroup label="其他主要城市">
+                                    <option value="大连">大连</option>
+                                    <option value="厦门">厦门</option>
+                                    <option value="无锡">无锡</option>
+                                    <option value="福州">福州</option>
+                                    <option value="合肥">合肥</option>
+                                    <option value="济南">济南</option>
+                                    <option value="石家庄">石家庄</option>
+                                    <option value="哈尔滨">哈尔滨</option>
+                                    <option value="长春">长春</option>
+                                    <option value="太原">太原</option>
+                                    <option value="南昌">南昌</option>
+                                    <option value="南宁">南宁</option>
+                                    <option value="贵阳">贵阳</option>
+                                    <option value="海口">海口</option>
+                                    <option value="兰州">兰州</option>
+                                    <option value="银川">银川</option>
+                                    <option value="西宁">西宁</option>
+                                    <option value="乌鲁木齐">乌鲁木齐</option>
+                                    <option value="拉萨">拉萨</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="salary" class="block text-sm font-medium text-gray-700 mb-1">薪资范围</label>
+                            <select id="salary" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <option value="所有薪资">所有薪资</option>
+                                <option value="10k以下">10k以下</option>
+                                <option value="10k-15k">10k-15k</option>
+                                <option value="15k-20k">15k-20k</option>
+                                <option value="20k-30k">20k-30k</option>
+                                <option value="30k-50k">30k-50k</option>
+                                <option value="50k以上">50k以上</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="education" class="block text-sm font-medium text-gray-700 mb-1">学历要求</label>
+                            <select id="education" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <option value="不限">不限</option>
+                                <option value="博士">博士</option>
+                                <option value="硕士">硕士</option>
+                                <option value="本科">本科</option>
+                                <option value="大专">大专</option>
+                                <option value="中专/中技">中专/中技</option>
+                                <option value="高中">高中</option>
+                                <option value="初中">初中</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- 第二行筛选条件 -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-4">
+                        <div>
+                            <label for="experience" class="block text-sm font-medium text-gray-700 mb-1">工作经验</label>
+                            <select id="experience" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <option value="不限">不限</option>
+                                <option value="应届生">应届生</option>
+                                <option value="1-3年">1-3年</option>
+                                <option value="3-5年">3-5年</option>
+                                <option value="5-10年">5-10年</option>
+                                <option value="10年以上">10年以上</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="company-size" class="block text-sm font-medium text-gray-700 mb-1">公司规模</label>
+                            <select id="company-size" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <option value="不限">不限</option>
+                                <option value="50人以下">50人以下</option>
+                                <option value="50-150人">50-150人</option>
+                                <option value="150-500人">150-500人</option>
+                                <option value="500-2000人">500-2000人</option>
+                                <option value="2000人以上">2000人以上</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="company-type" class="block text-sm font-medium text-gray-700 mb-1">公司性质</label>
+                            <select id="company-type" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <option value="不限">不限</option>
+                                <option value="国企">国企</option>
+                                <option value="外企">外企</option>
+                                <option value="民企">民企</option>
+                                <option value="事业单位">事业单位</option>
+                                <option value="政府机构">政府机构</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="industry" class="block text-sm font-medium text-gray-700 mb-1">行业类型</label>
+                            <select id="industry" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <option value="不限">不限</option>
+                                <option value="互联网">互联网</option>
+                                <option value="金融">金融</option>
+                                <option value="教育">教育</option>
+                                <option value="医疗">医疗</option>
+                                <option value="制造业">制造业</option>
+                                <option value="房地产">房地产</option>
+                                <option value="零售">零售</option>
+                                <option value="物流">物流</option>
+                                <option value="能源">能源</option>
+                                <option value="通信">通信</option>
+                                <option value="媒体">媒体</option>
+                                <option value="咨询">咨询</option>
+                                <option value="旅游">旅游</option>
+                                <option value="餐饮">餐饮</option>
+                                <option value="其他">其他</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 flex flex-col md:flex-row justify-between items-center">
+                        <div class="flex items-center space-x-4 mb-4 md:mb-0">
+                            <div class="flex items-center">
+                                <input type="checkbox" id="full-time" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded" checked>
+                                <label for="full-time" class="ml-2 block text-sm text-gray-700">全职</label>
+                            </div>
+                            <div class="flex items-center">
+                                <input type="checkbox" id="part-time" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+                                <label for="part-time" class="ml-2 block text-sm text-gray-700">兼职</label>
+                            </div>
+                            <div class="flex items-center">
+                                <input type="checkbox" id="internship" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+                                <label for="internship" class="ml-2 block text-sm text-gray-700">实习</label>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center space-x-4">
+                            <div class="relative">
+                                <input type="text" id="job-search-input" placeholder="搜索岗位..." class="w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <i class="fa fa-search absolute left-3 top-3 text-gray-400"></i>
+                            </div>
+                            
+                            <button id="filter-btn" class="bg-primary hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition">
+                                筛选
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 岗位列表：仅从后台 GET /api/v1/jobs 拉取，同步显示企业端已发布岗位 -->
+                <div id="job-recommend-section" class="mb-8">
+                    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                        <div class="flex flex-wrap items-center justify-between gap-4">
+                            <div>
+                                <h2 class="text-xl font-bold text-gray-800 mb-1">岗位列表</h2>
+                                <p class="text-sm text-gray-500">下方展示平台全部已发布岗位，可使用上方条件进行筛选。多机访问时请用<strong>同一地址</strong>（如服务器 IP:3001）打开本页，后端只需在服务器电脑上启动一次。</p>
+                            </div>
+                            <button type="button" onclick="loadJobsFromAPI()" class="text-sm px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition whitespace-nowrap">刷新岗位</button>
+                        </div>
+                    </div>
+                    <div id="job-list" class="space-y-6">
+                        <!-- 由 loadJobsFromAPI() 拉取 GET /api/v1/jobs 后渲染 -->
+                    </div>
+                    <div id="job-pagination" class="mt-8 flex justify-center">
+                        <!-- 分页由 renderPagination() 渲染 -->
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-gray-800 text-white py-10">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">关于我们</h4>
+                    <p class="text-gray-400">
+                        圣举人才网是一家以测评驱动的招聘平台，致力于连接求职者与企业，通过科学测评实现精准匹配。
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">求职者服务</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="assessment.html" class="hover:text-white">职业测评</a></li>
+                        <li><a href="profile.html" class="hover:text-white">个人中心</a></li>
+                        <li><a href="recommendation.html" class="hover:text-white">岗位推荐</a></li>
+                        <li><a href="payment.html" class="hover:text-white">付费服务</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">帮助中心</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white">常见问题</a></li>
+                        <li><a href="#" class="hover:text-white">使用指南</a></li>
+                        <li><a href="#" class="hover:text-white">隐私政策</a></li>
+                        <li><a href="#" class="hover:text-white">用户协议</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">联系我们</h4>
+                    <ul class="space-y-2 text-gray-400" id="footer-contact">
+                        <li class="flex items-center">
+                            <i class="fa fa-phone mr-2"></i>
+                            <span id="footer-phone">400-123-4567</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fa fa-envelope mr-2"></i>
+                            <span id="footer-email">contact@shengju.com</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fa fa-map-marker mr-2"></i>
+                            <span id="footer-address">北京市海淀区中关村大街1号</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                <p id="footer-copyright">&copy; 2025 圣举人才网 版权所有</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // 岗位接口：必须通过 http://127.0.0.1:3001 访问本页时与后端同源；file:// 或其它域时使用固定地址
+        function getJobsApiBase() {
+            if (typeof window !== 'undefined' && window.API_BASE_URL) return window.API_BASE_URL;
+            try {
+                var origin = typeof location !== 'undefined' && location.origin;
+                var protocol = typeof location !== 'undefined' && location.protocol;
+                if (origin && (protocol === 'http:' || protocol === 'https:')) return origin + '/api/v1';
+            } catch (e) {}
+            return (window.location.origin && window.location.origin.indexOf('http') === 0) ? (window.location.origin + '/api/v1') : 'http://127.0.0.1:3001/api/v1';
+        }
+        var API_BASE_URL = getJobsApiBase();
+        function getAuthToken() { var a = (typeof AuthHelper !== 'undefined') ? AuthHelper.get('jobseeker') : null; return (a && a.token) || localStorage.getItem('authToken') || sessionStorage.getItem('authToken'); }
+        async function apiRequest(url, options) {
+            const token = getAuthToken();
+            const headers = { 'Content-Type': 'application/json', ...(options && options.headers) };
+            if (token) headers['Authorization'] = 'Bearer ' + token;
+            const res = await fetch(url, { ...options, headers });
+            if (res.status === 401) { if (typeof AuthHelper !== 'undefined') AuthHelper.clear('jobseeker'); window.location.href = 'login.html'; throw new Error('未登录'); }
+            const text = await res.text();
+            if (!text) return null;
+            try { return JSON.parse(text); } catch (e) { throw new Error(text || res.statusText); }
+        }
+        function apiJobToLocal(apiJob) {
+            var req = apiJob.requirement || '';
+            return {
+                id: String(apiJob.id),
+                name: apiJob.title,
+                companyName: apiJob.companyName || '',
+                salary: apiJob.salaryRange || '面议',
+                location: apiJob.location || '',
+                description: apiJob.description || '',
+                department: apiJob.department || '',
+                jobType: apiJob.department || '技术类',
+                requirement: req,
+                requireAttachments: apiJob.requireAttachments || null,
+                publishDate: (apiJob.publishedAt || apiJob.createdAt || '').toString().slice(0, 10),
+                deadline: (apiJob.deadlineDate || apiJob.deadline || '').toString().slice(0, 10),
+                skills: req ? req.split(/[、,，\s]+/).filter(Boolean) : []
+            };
+        }
+        // 岗位数据
+        let allJobsData = [];
+        let filteredJobsData = [];
+        let currentPage = 1;
+        const itemsPerPage = 10;
+        
+        // 筛选条件
+        let filters = {
+            jobType: '所有类型',
+            location: '',
+            salary: '所有薪资',
+            education: '不限',
+            experience: '不限',
+            companySize: '不限',
+            companyType: '不限',
+            industry: '不限',
+            workType: ['全职'],
+            keyword: ''
+        };
+        
+        // 岗位推荐数据仅来自 GET /api/v1/jobs（未登录/求职者时为已发布岗位，与企业端同步）
+        async function loadJobsFromAPI() {
+            allJobsData = [];
+            var listEl = document.getElementById('job-list');
+            var matchedEl = document.getElementById('matched-jobs-list');
+            if (listEl) listEl.innerHTML = '<div class="text-center py-8 text-gray-500"><i class="fa fa-spinner fa-spin fa-2x mb-2"></i><p>正在从后台加载岗位…</p></div>';
+            if (matchedEl) matchedEl.innerHTML = '<div class="text-center py-8 text-gray-500"><i class="fa fa-spinner fa-spin fa-2x mb-2"></i><p>正在加载…</p></div>';
+            var base = getJobsApiBase();
+            var url = base + '/jobs';
+            var opts = { method: 'GET', headers: { 'Content-Type': 'application/json' } };
+            var token = getAuthToken();
+            if (token) opts.headers['Authorization'] = 'Bearer ' + token;
+            var res = null;
+            var json = null;
+            try {
+                res = await fetch(url, opts);
+                try { json = await res.json(); } catch (_) { json = null; }
+            } catch (e) {
+                console.warn('从API加载岗位失败', e);
+                allJobsData = [];
+                if (listEl) listEl.innerHTML = '<div class="bg-white rounded-lg shadow-md p-8 text-center"><i class="fa fa-exclamation-triangle text-amber-500 text-4xl mb-4"></i><p class="text-gray-500">岗位加载失败</p><p class="text-gray-400 text-sm mt-2">请确保后端已启动（端口 3001），并用同一地址（如本机或服务器 IP:3001）打开本页。</p></div>';
+                if (matchedEl) matchedEl.innerHTML = '<div class="bg-white rounded-lg shadow-md p-8 text-center"><i class="fa fa-exclamation-triangle text-amber-500 text-4xl mb-4"></i><p class="text-gray-500">岗位加载失败</p></div>';
+                applyFilters();
+                return;
+            }
+            if (!res.ok) {
+                allJobsData = [];
+                if (listEl) listEl.innerHTML = '<div class="bg-white rounded-lg shadow-md p-8 text-center"><i class="fa fa-exclamation-triangle text-amber-500 text-4xl mb-4"></i><p class="text-gray-500">接口异常 ' + res.status + '</p><p class="text-gray-400 text-sm mt-2">请用同一地址打开本页并确认后端已启动（端口 3001）。</p></div>';
+                if (matchedEl) matchedEl.innerHTML = '<div class="bg-white rounded-lg shadow-md p-8 text-center"><i class="fa fa-exclamation-triangle text-amber-500 text-4xl mb-4"></i><p class="text-gray-500">接口异常 ' + res.status + '</p></div>';
+                return;
+            }
+            if (json && json.success === true && Array.isArray(json.data)) {
+                allJobsData = json.data.map(apiJobToLocal);
+            } else {
+                allJobsData = [];
+                if (listEl) listEl.innerHTML = '<div class="bg-white rounded-lg shadow-md p-8 text-center"><i class="fa fa-inbox text-gray-400 text-4xl mb-4"></i><p class="text-gray-500">当前暂无发布中的岗位</p><p class="text-gray-400 text-sm mt-2">企业端在「测评管理」→「岗位管理」中发布并设为已发布后，会同步显示在此。</p></div>';
+                if (matchedEl) matchedEl.innerHTML = '<div class="bg-white rounded-lg shadow-md p-8 text-center"><i class="fa fa-inbox text-gray-400 text-4xl mb-4"></i><p class="text-gray-500">当前暂无发布中的岗位</p></div>';
+                applyFilters();
+                return;
+            }
+            applyFilters();
+            await renderMatchedJobs();
+        }
+        
+        // 应用筛选条件
+        function applyFilters() {
+            filteredJobsData = allJobsData.filter(job => {
+                // 职位类型筛选
+                if (filters.jobType !== '所有类型' && job.jobType !== filters.jobType) {
+                    return false;
+                }
+                
+                // 地点筛选
+                if (filters.location && job.location !== filters.location) {
+                    return false;
+                }
+                
+                // 薪资筛选
+                if (filters.salary !== '所有薪资') {
+                    const salaryRange = parseSalaryRange(filters.salary);
+                    const jobSalary = parseJobSalary(job.salary);
+                    if (!isSalaryInRange(jobSalary, salaryRange)) {
+                        return false;
+                    }
+                }
+                
+                // 学历筛选
+                if (filters.education !== '不限' && job.education && job.education !== filters.education) {
+                    return false;
+                }
+                
+                // 工作经验筛选
+                if (filters.experience !== '不限' && job.experience && job.experience !== filters.experience) {
+                    return false;
+                }
+                
+                // 公司规模筛选
+                if (filters.companySize !== '不限' && job.companySize && job.companySize !== filters.companySize) {
+                    return false;
+                }
+                
+                // 公司性质筛选
+                if (filters.companyType !== '不限' && job.companyType && job.companyType !== filters.companyType) {
+                    return false;
+                }
+                
+                // 行业类型筛选
+                if (filters.industry !== '不限' && job.industry && job.industry !== filters.industry) {
+                    return false;
+                }
+                
+                // 工作类型筛选
+                if (filters.workType.length > 0 && !filters.workType.includes(job.workType || '全职')) {
+                    return false;
+                }
+                
+                // 关键词搜索
+                if (filters.keyword) {
+                    const keyword = filters.keyword.toLowerCase();
+                    const searchText = `${job.name} ${job.companyName || ''} ${job.description || ''} ${(job.skills || []).join(' ')}`.toLowerCase();
+                    if (!searchText.includes(keyword)) {
+                        return false;
+                    }
+                }
+                
+                return true;
+            });
+            
+            // 按发布时间排序（最新的在前）
+            filteredJobsData.sort((a, b) => {
+                return new Date(b.publishDate) - new Date(a.publishDate);
+            });
+            
+            currentPage = 1;
+            renderJobList();
+            renderPagination();
+            renderMatchedJobs();
+        }
+        
+        // 解析薪资范围字符串（如"10k-15k"）
+        function parseSalaryRange(salaryStr) {
+            if (salaryStr === '10k以下') return { min: 0, max: 10 };
+            if (salaryStr === '10k-15k') return { min: 10, max: 15 };
+            if (salaryStr === '15k-20k') return { min: 15, max: 20 };
+            if (salaryStr === '20k-30k') return { min: 20, max: 30 };
+            if (salaryStr === '30k-50k') return { min: 30, max: 50 };
+            if (salaryStr === '50k以上') return { min: 50, max: Infinity };
+            return { min: 0, max: Infinity };
+        }
+        
+        // 解析岗位薪资字符串（如"25K-35K"）
+        function parseJobSalary(salaryStr) {
+            const match = salaryStr.match(/(\d+)K?-?(\d+)?K?/i);
+            if (match) {
+                const min = parseInt(match[1]);
+                const max = match[2] ? parseInt(match[2]) : min;
+                return { min, max };
+            }
+            return { min: 0, max: Infinity };
+        }
+        
+        // 判断薪资是否在范围内
+        function isSalaryInRange(jobSalary, salaryRange) {
+            return jobSalary.min <= salaryRange.max && jobSalary.max >= salaryRange.min;
+        }
+        
+        // 将系统测评记录转为 matchJobsByProfile 可用的格式
+        function systemRecordToAssessmentResult(record) {
+            if (!record || !record.raw) return null;
+            var r = record.raw;
+            var recommendedJobTypes = [];
+            var personality = [];
+            if (record.systemType === 'personality' && r.personality) {
+                var jobs = r.personality.jobs || [];
+                var jobTypeMap = {
+                    '项目经理': '技术类', '行政主管': '行政类', '运营总监': '运营类', '财务经理': '财务类', '人力资源': '人力资源类',
+                    '工程师': '技术类', '设计师': '设计类', '产品经理': '产品类', '市场': '市场类', '销售': '销售类',
+                    '咨询': '咨询类', '教师': '教育类', '医生': '医疗类', '作家': '媒体类', '心理咨询师': '教育类'
+                };
+                jobs.forEach(function(j) {
+                    for (var key in jobTypeMap) {
+                        if (j.indexOf(key) !== -1 && recommendedJobTypes.indexOf(jobTypeMap[key]) === -1) recommendedJobTypes.push(jobTypeMap[key]);
+                    }
+                });
+                if (r.mbti) personality.push(r.mbti);
+            } else if (record.systemType === 'stress' && r.level === '高') {
+                recommendedJobTypes = recommendedJobTypes.concat(['技术类', '运营类', '市场类']);
+            } else if (record.systemType === 'intelligence' && (r.level === '优秀' || r.level === '良好')) {
+                recommendedJobTypes = recommendedJobTypes.concat(['技术类', '产品类', '咨询类']);
+            } else if (record.systemType === 'ability' && r.level === '高') {
+                recommendedJobTypes = recommendedJobTypes.concat(['技术类', '运营类', '市场类', '管理类']);
+            } else if (record.systemType === 'interest' && r.dominant) {
+                var interestJobMap = { R: ['技术类', '工程类'], I: ['技术类', '产品类', '咨询类'], A: ['设计类', '媒体类'], S: ['教育类', '医疗类', '人力资源类'], E: ['市场类', '销售类', '管理类'], C: ['行政类', '财务类'] };
+                var types = interestJobMap[r.dominant];
+                if (types) recommendedJobTypes = recommendedJobTypes.concat(types);
+                if (r.interest && r.interest.jobs) {
+                    var jobTypeMap = { '技术员': '技术类', '工程师': '技术类', '研究员': '咨询类', '分析师': '产品类', '设计师': '设计类', '教师': '教育类', '护士': '医疗类', '经理': '管理类', '销售': '销售类', '会计': '财务类', '文员': '行政类' };
+                    r.interest.jobs.forEach(function(j) {
+                        for (var key in jobTypeMap) { if (j.indexOf(key) !== -1 && recommendedJobTypes.indexOf(jobTypeMap[key]) === -1) recommendedJobTypes.push(jobTypeMap[key]); }
+                    });
+                }
+            }
+            if (recommendedJobTypes.length === 0) recommendedJobTypes = ['技术类', '产品类', '运营类', '市场类', '设计类'];
+            return { recommendedJobTypes: recommendedJobTypes, personality: personality, skills: [] };
+        }
+
+        // 读取测评结果和简历数据（已登录时优先使用 API 简历参与匹配；含系统测评记录）
+        async function loadUserProfile() {
+            try {
+                let assessmentResults = JSON.parse(localStorage.getItem('assessmentResults') || '[]');
+                var systemRecords = JSON.parse(localStorage.getItem('systemAssessmentRecords') || '[]');
+                if (systemRecords.length > 0) {
+                    var latest = systemRecords[0];
+                    var converted = systemRecordToAssessmentResult(latest);
+                    if (converted) assessmentResults = assessmentResults.concat([converted]);
+                }
+                let resume = JSON.parse(localStorage.getItem('resumeData') || '{}');
+                var hasResumeFromAPI = false;
+                try {
+                    var localList = JSON.parse(localStorage.getItem('userResumeData') || '[]');
+                    if (Array.isArray(localList) && localList.length > 0) {
+                        resume = resume || {};
+                        if (!resume.name && localList[0]) resume.name = localList[0].name || '已生成简历';
+                    }
+                } catch (e) {}
+                var hasResumeFromLocal = (function() {
+                    try {
+                        var list = JSON.parse(localStorage.getItem('userResumeData') || '[]');
+                        return Array.isArray(list) && list.length > 0;
+                    } catch (e) { return false; }
+                })();
+                const token = getAuthToken();
+                if (token) {
+                    try {
+                        const res = await apiRequest(API_BASE_URL + '/users/resume');
+                        if (res && res.success && res.data) {
+                            hasResumeFromAPI = true;
+                            const r = res.data;
+                            resume = {
+                                ...resume,
+                                name: r.name || resume.name,
+                                education: r.education,
+                                experience: r.workYears != null ? (r.workYears + '年') : (resume.experience || ''),
+                                location: resume.location || '',
+                                industry: resume.industry || '',
+                                major: r.major,
+                                workYears: r.workYears,
+                                skills: r.skills || [],
+                                selfIntro: r.selfIntro
+                            };
+                        }
+                    } catch (e) { /* 接口失败时沿用 localStorage 简历 */ }
+                }
+                return { assessmentResults, resume, hasResumeFromAPI: hasResumeFromAPI, hasResumeFromLocal: hasResumeFromLocal };
+            } catch (e) {
+                console.error('读取用户信息失败:', e);
+                return { assessmentResults: [], resume: {}, hasResumeFromAPI: false, hasResumeFromLocal: false };
+            }
+        }
+        
+        function isResumeValid(resume) {
+            if (!resume || typeof resume !== 'object') return false;
+            if (resume.education) return true;
+            if (resume.workYears != null && resume.workYears !== '') return true;
+            if (Array.isArray(resume.skills) && resume.skills.length > 0) return true;
+            if (resume.location) return true;
+            if (resume.industry) return true;
+            if (resume.major) return true;
+            if (resume.selfIntro) return true;
+            if (resume.experience) return true;
+            if (resume.name && String(resume.name).trim()) return true;
+            return false;
+        }
+        
+        // 根据测评结果和简历匹配岗位
+        function matchJobsByProfile(jobs, userProfile) {
+            const { assessmentResults, resume } = userProfile;
+            
+            return jobs.map(job => {
+                let matchScore = 0;
+                let matchReasons = [];
+                
+                // 基于测评结果匹配
+                if (assessmentResults.length > 0) {
+                    const latestResult = assessmentResults[assessmentResults.length - 1];
+                    
+                    // 职位类型匹配
+                    if (latestResult.recommendedJobTypes && latestResult.recommendedJobTypes.includes(job.jobType)) {
+                        matchScore += 30;
+                        matchReasons.push('符合测评推荐的职位类型');
+                    }
+                    
+                    // 能力匹配
+                    if (latestResult.skills && job.skills) {
+                        const commonSkills = latestResult.skills.filter(skill => 
+                            job.skills.some(jobSkill => 
+                                jobSkill.toLowerCase().includes(skill.toLowerCase()) || 
+                                skill.toLowerCase().includes(jobSkill.toLowerCase())
+                            )
+                        );
+                        matchScore += commonSkills.length * 10;
+                        if (commonSkills.length > 0) {
+                            matchReasons.push(`技能匹配：${commonSkills.join('、')}`);
+                        }
+                    }
+                    
+                    // 性格匹配
+                    if (latestResult.personality && job.jobType) {
+                        const personalityJobMap = {
+                            '技术类': ['逻辑思维', '分析能力', '专注'],
+                            '产品类': ['创新思维', '沟通能力', '逻辑思维'],
+                            '设计类': ['创造力', '审美能力', '细节关注'],
+                            '运营类': ['执行力', '数据分析', '沟通能力'],
+                            '市场类': ['沟通能力', '创新思维', '执行力']
+                        };
+                        if (personalityJobMap[job.jobType]) {
+                            const matchedTraits = personalityJobMap[job.jobType].filter(trait =>
+                                latestResult.personality.includes(trait)
+                            );
+                            matchScore += matchedTraits.length * 5;
+                            if (matchedTraits.length > 0) {
+                                matchReasons.push(`性格特质匹配`);
+                            }
+                        }
+                    }
+                }
+                
+                    // 基于简历信息匹配
+                    if (resume) {
+                    // 学历匹配
+                    if (resume.education && job.education) {
+                        const educationLevels = {
+                            '初中': 0,
+                            '高中': 0.5,
+                            '中专/中技': 0.8,
+                            '大专': 1,
+                            '本科': 2,
+                            '硕士': 3,
+                            '博士': 4
+                        };
+                        const userLevel = educationLevels[resume.education] || 0;
+                        const jobLevel = educationLevels[job.education] || 0;
+                        if (userLevel >= jobLevel) {
+                            matchScore += 15;
+                            matchReasons.push('学历符合要求');
+                        }
+                    }
+                    
+                    // 工作经验匹配
+                    if (resume.experience && job.experience) {
+                        if (resume.experience === job.experience || 
+                            (job.experience === '不限' || job.experience === '应届生')) {
+                            matchScore += 10;
+                            matchReasons.push('工作经验匹配');
+                        }
+                    }
+                    
+                    // 工作地点匹配
+                    if (resume.location && job.location) {
+                        if (resume.location === job.location || job.location.includes(resume.location)) {
+                            matchScore += 10;
+                            matchReasons.push('工作地点匹配');
+                        }
+                    }
+                    
+                    // 行业匹配
+                    if (resume.industry && job.industry) {
+                        if (resume.industry === job.industry) {
+                            matchScore += 15;
+                            matchReasons.push('行业背景匹配');
+                        }
+                    }
+                }
+                // 只要完成过任意测评即参与匹配：有测评结果时给予基础分，确保有推荐可展示（越完善测评/简历，匹配度越高）
+                if (assessmentResults.length > 0 && matchScore < 10) {
+                    matchScore = 10;
+                    if (matchReasons.indexOf('已根据测评结果推荐') === -1) matchReasons.push('已根据测评结果推荐');
+                }
+                // 确保匹配度在合理范围内
+                matchScore = Math.min(100, Math.max(0, matchScore));
+                
+                return {
+                    ...job,
+                    matchScore: matchScore,
+                    matchReasons: matchReasons
+                };
+            }).filter(job => job.matchScore > 0)
+              .sort((a, b) => b.matchScore - a.matchScore);
+        }
+        
+        // 渲染匹配岗位列表
+        async function renderMatchedJobs() {
+            const matchedJobsContainer = document.getElementById('matched-jobs-list');
+            if (!matchedJobsContainer) return;
+            
+            // 如果没有岗位数据，不显示匹配岗位模块
+            if (allJobsData.length === 0) {
+                const matchedJobsSection = document.getElementById('matched-jobs-section');
+                if (matchedJobsSection) {
+                    matchedJobsSection.style.display = 'block';
+                }
+                matchedJobsContainer.innerHTML = `
+                    <div class="bg-white rounded-lg shadow-md p-8 text-center">
+                        <i class="fa fa-inbox text-gray-400 text-4xl mb-4"></i>
+                        <p class="text-gray-500">当前暂无发布中的岗位</p>
+                        <p class="text-gray-400 text-sm mt-2">请稍后再来查看或尝试浏览其他模块</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const userProfile = await loadUserProfile();
+            const hasValidResume = isResumeValid(userProfile.resume);
+            const hasAnyResume = hasValidResume || (userProfile.hasResumeFromAPI === true) || (userProfile.hasResumeFromLocal === true);
+            // 基于已筛选结果做匹配，与「企业发布岗位」共用同一套筛选条件
+            const matchedJobs = matchJobsByProfile(filteredJobsData, userProfile);
+            
+            // 只显示匹配度最高的前5个岗位
+            const topMatchedJobs = matchedJobs.slice(0, 5);
+            
+            var hasAssessment = userProfile.assessmentResults.length > 0;
+            if (topMatchedJobs.length === 0 || (!hasAnyResume && !hasAssessment)) {
+                var emptyTitle, emptyDesc, emptyButtons, emptyFooter;
+                if (hasAssessment) {
+                    // 已做过测评：弱化「去完成测评」，主推「查看岗位列表」；体现「几项测评都可匹配、越完善越准」
+                    emptyTitle = '暂无匹配度较高的岗位';
+                    emptyDesc = '已根据您的测评结果进行匹配，当前在招岗位中暂无匹配度较高的职位。完善简历或完成更多测评可提升匹配度。';
+                    emptyButtons = '<a href="#job-recommend-section" class="inline-block bg-primary hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition mr-2">查看岗位列表</a><a href="assessment.html" class="inline-block bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 px-6 rounded-lg transition">去完成测评</a>';
+                    emptyFooter = '测评与简历越完善，匹配结果越精准。';
+                } else if (hasAnyResume) {
+                    emptyTitle = '暂无匹配度较高的岗位';
+                    emptyDesc = '已识别到您的简历。当前在招岗位中暂无匹配度较高的职位，完成测评后可获取推荐，您也可以先查看下方岗位列表。';
+                    emptyButtons = '<a href="assessment.html" class="inline-block bg-primary hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition mr-2">去完成测评</a><a href="#job-recommend-section" class="inline-block bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 px-6 rounded-lg transition">查看岗位列表</a>';
+                    emptyFooter = '完成测评后，系统将根据结果为您推荐岗位；补充简历中的学历、技能等可提升匹配精准度';
+                } else {
+                    emptyTitle = '暂无基于测评结果的适合岗位推荐';
+                    emptyDesc = '本区块依据个人中心·我的简历（含一键生成简历）与测评中心·测评结果进行匹配。完善个人中心简历（含一键生成简历）并完成测评中心测评后，将据此推荐适合岗位。';
+                    emptyButtons = '<a href="assessment.html" class="inline-block bg-primary hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition mr-2">去完成测评</a><a href="profile.html#resume" class="inline-block bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 px-6 rounded-lg transition">完善简历</a>';
+                    emptyFooter = '完成测评或完善简历后，系统将根据实际匹配结果推荐岗位';
+                }
+                matchedJobsContainer.innerHTML = `
+                    <div class="bg-white rounded-lg shadow-md p-8 text-center">
+                        <i class="fa fa-info-circle text-gray-400 text-4xl mb-4"></i>
+                        <p class="text-gray-500">${emptyTitle}</p>
+                        <p class="text-gray-400 text-sm mt-2">${emptyDesc}</p>
+                        <div class="mt-4 flex justify-center">${emptyButtons}</div>
+                        <p class="text-gray-400 text-xs mt-3">${emptyFooter}</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            var resumeHintHtml = hasValidResume ? '<div class="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg text-sm text-green-800"><i class="fa fa-check-circle mr-1"></i>已根据个人中心简历（含 AI 生成）与测评中心测评结果匹配推荐以下岗位，匹配度按实际匹配结果显示</div>' : (hasAnyResume ? '<div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800"><i class="fa fa-info-circle mr-1"></i>已根据您的简历与测评结果匹配推荐。完善学历、技能等信息可获得更精准推荐</div>' : '');
+            var improveHint = '<p class="text-gray-500 text-xs mt-2 mb-4">测评与简历越完善，匹配结果越精准。</p>';
+            matchedJobsContainer.innerHTML = resumeHintHtml + improveHint + topMatchedJobs.map(job => {
+                const skills = job.skills || [];
+                const applicants = job.applicants || Math.floor(Math.random() * 10) + 1;
+                
+                return `
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition border-l-4 border-primary">
+                        <div class="p-6">
+                            <div class="flex flex-col md:flex-row justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center mb-2">
+                                        <h2 class="text-xl font-bold text-gray-800 mr-3">${job.name}</h2>
+                                        <span class="bg-gradient-to-r from-primary to-indigo-600 text-white text-xs font-medium px-3 py-1 rounded-full" title="由简历与测评结果同岗位要求实际匹配计算得出">
+                                            匹配度 ${job.matchScore}%
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center text-gray-500 text-sm mb-4">
+                                        <span class="mr-4"><i class="fa fa-building mr-1"></i> ${job.companyName || '未知公司'}</span>
+                                        <span class="mr-4"><i class="fa fa-map-marker mr-1"></i> ${job.location || '未知地点'}</span>
+                                        <span class="mr-4"><i class="fa fa-money mr-1"></i> ${job.salary}</span>
+                                        <span><i class="fa fa-clock-o mr-1"></i> 报名截止：${job.deadline || '-'}</span>
+                                    </div>
+                                    ${job.matchReasons.length > 0 ? `
+                                    <div class="mb-4">
+                                        <div class="flex flex-wrap gap-2">
+                                            ${job.matchReasons.map(reason => `
+                                                <span class="bg-green-50 text-green-700 text-xs px-2 py-1 rounded border border-green-200">
+                                                    <i class="fa fa-check-circle mr-1"></i>${reason}
+                                                </span>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                    ` : ''}
+                                    ${skills.length > 0 ? `
+                                    <div class="flex flex-wrap gap-2 mb-4">
+                                        ${skills.slice(0, 5).map(skill => `
+                                            <span class="bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded">${skill}</span>
+                                        `).join('')}
+                                    </div>
+                                    ` : ''}
+                                    <p class="text-gray-600 text-sm line-clamp-2 mb-4">
+                                        ${job.description || '暂无描述'}
+                                    </p>
+                                </div>
+                                <div class="mt-4 md:mt-0 md:ml-6 flex flex-col items-end">
+                                    <div class="flex items-center mb-4">
+                                        <div class="flex -space-x-2">
+                                            ${Array.from({ length: Math.min(applicants, 3) }, (_, i) => `
+                                                <img class="h-8 w-8 rounded-full border-2 border-white" 
+                                                     src="https://ui-avatars.com/api/?name=HR${i+1}&background=3B82F6&color=fff" 
+                                                     alt="HR${i+1}">
+                                            `).join('')}
+                                        </div>
+                                        <span class="ml-2 text-xs text-gray-500">${applicants}人正在沟通</span>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <button onclick="showJobDetail('${job.id}')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg transition">查看详情</button>
+                                        <button onclick="applyJob('${job.id}')" class="bg-primary hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition">
+                                            立即申请
+                                        </button>
+                                        <button onclick="toggleFavorite('${job.id}')" class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium py-2 px-4 rounded-lg transition">
+                                            <i class="fa fa-star-o"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // 计算匹配度（模拟）
+        function calculateMatchRate(job) {
+            // 简单的匹配度计算逻辑
+            let matchRate = 70;
+            // 可以根据用户的个人信息和岗位要求计算匹配度
+            return matchRate + Math.floor(Math.random() * 25);
+        }
+        
+        // 渲染岗位列表
+        function renderJobList() {
+            const jobListContainer = document.getElementById('job-list');
+            if (!jobListContainer) return;
+            
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const pageData = filteredJobsData.slice(startIndex, endIndex);
+            
+            if (pageData.length === 0) {
+                if (allJobsData.length === 0) {
+                    jobListContainer.innerHTML = `
+                        <div class="bg-white rounded-lg shadow-md p-12 text-center">
+                            <i class="fa fa-inbox text-gray-400 text-5xl mb-4"></i>
+                            <p class="text-gray-500 text-lg">当前暂无发布中的岗位</p>
+                            <p class="text-gray-400 text-sm mt-2">请稍后再来查看或关注公告栏目</p>
+                        </div>
+                    `;
+                } else {
+                    jobListContainer.innerHTML = `
+                        <div class="bg-white rounded-lg shadow-md p-12 text-center">
+                            <i class="fa fa-inbox text-gray-400 text-5xl mb-4"></i>
+                            <p class="text-gray-500 text-lg">暂无匹配的岗位</p>
+                            <p class="text-gray-400 text-sm mt-2">请尝试调整筛选条件</p>
+                        </div>
+                    `;
+                }
+                return;
+            }
+            
+            jobListContainer.innerHTML = pageData.map(job => {
+                const matchRate = calculateMatchRate(job);
+                const skills = job.skills || [];
+                const applicants = job.applicants || Math.floor(Math.random() * 10) + 1;
+                
+                return `
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition">
+                        <div class="p-6">
+                            <div class="flex flex-col md:flex-row justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center mb-2">
+                                        <h2 class="text-xl font-bold text-gray-800 mr-3">${job.name}</h2>
+                                        <span class="bg-blue-100 text-primary text-xs font-medium px-2.5 py-0.5 rounded-full">
+                                            匹配度 ${matchRate}%
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center text-gray-500 text-sm mb-4">
+                                        <span class="mr-4"><i class="fa fa-building mr-1"></i> ${job.companyName || '未知公司'}</span>
+                                        <span class="mr-4"><i class="fa fa-map-marker mr-1"></i> ${job.location || '未知地点'}</span>
+                                        <span class="mr-4"><i class="fa fa-money mr-1"></i> ${job.salary}</span>
+                                        <span><i class="fa fa-clock-o mr-1"></i> 报名截止：${job.deadline || '-'}</span>
+                                    </div>
+                                    ${skills.length > 0 ? `
+                                    <div class="flex flex-wrap gap-2 mb-4">
+                                        ${skills.slice(0, 5).map(skill => `
+                                            <span class="bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded">${skill}</span>
+                                        `).join('')}
+                                    </div>
+                                    ` : ''}
+                                    <p class="text-gray-600 text-sm line-clamp-2 mb-4">
+                                        ${job.description || '暂无描述'}
+                                    </p>
+                                </div>
+                                <div class="mt-4 md:mt-0 md:ml-6 flex flex-col items-end">
+                                    <div class="flex items-center mb-4">
+                                        <div class="flex -space-x-2">
+                                            ${Array.from({ length: Math.min(applicants, 3) }, (_, i) => `
+                                                <img class="h-8 w-8 rounded-full border-2 border-white" 
+                                                     src="https://ui-avatars.com/api/?name=HR${i+1}&background=3B82F6&color=fff" 
+                                                     alt="HR${i+1}">
+                                            `).join('')}
+                                        </div>
+                                        <span class="ml-2 text-xs text-gray-500">${applicants}人正在沟通</span>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <button onclick="showJobDetail('${job.id}')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg transition">查看详情</button>
+                                        <button onclick="applyJob('${job.id}')" class="bg-primary hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition">
+                                            立即申请
+                                        </button>
+                                        <button onclick="toggleFavorite('${job.id}')" class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium py-2 px-4 rounded-lg transition">
+                                            <i class="fa fa-star-o"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // 渲染分页
+        function renderPagination() {
+            const paginationContainer = document.getElementById('job-pagination');
+            if (!paginationContainer) return;
+            
+            const totalPages = Math.ceil(filteredJobsData.length / itemsPerPage);
+            
+            if (totalPages <= 1) {
+                paginationContainer.innerHTML = '';
+                return;
+            }
+            
+            let paginationHTML = `
+                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                    <button onclick="changePage(${currentPage - 1})" 
+                            class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}"
+                            ${currentPage === 1 ? 'disabled' : ''}>
+                        <span class="sr-only">上一页</span>
+                        <i class="fa fa-chevron-left"></i>
+                    </button>
+            `;
+            
+            const maxVisiblePages = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+            
+            if (endPage - startPage < maxVisiblePages - 1) {
+                startPage = Math.max(1, endPage - maxVisiblePages + 1);
+            }
+            
+            if (startPage > 1) {
+                paginationHTML += `
+                    <button onclick="changePage(1)" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">1</button>
+                `;
+                if (startPage > 2) {
+                    paginationHTML += `<span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">...</span>`;
+                }
+            }
+            
+            for (let i = startPage; i <= endPage; i++) {
+                paginationHTML += `
+                    <button onclick="changePage(${i})" 
+                            class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium ${i === currentPage ? 'bg-primary text-white' : 'bg-white text-gray-700 hover:bg-gray-50'}">
+                        ${i}
+                    </button>
+                `;
+            }
+            
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    paginationHTML += `<span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">...</span>`;
+                }
+                paginationHTML += `
+                    <button onclick="changePage(${totalPages})" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">${totalPages}</button>
+                `;
+            }
+            
+            paginationHTML += `
+                    <button onclick="changePage(${currentPage + 1})" 
+                            class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''}"
+                            ${currentPage === totalPages ? 'disabled' : ''}>
+                        <span class="sr-only">下一页</span>
+                        <i class="fa fa-chevron-right"></i>
+                    </button>
+                </nav>
+            `;
+            
+            paginationContainer.innerHTML = paginationHTML;
+        }
+        
+        // 切换页码
+        function changePage(page) {
+            const totalPages = Math.ceil(filteredJobsData.length / itemsPerPage);
+            if (page < 1 || page > totalPages) return;
+            currentPage = page;
+            renderJobList();
+            renderPagination();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        async function showJobDetail(jobId) {
+            try {
+                const res = await apiRequest(API_BASE_URL + '/jobs/' + jobId);
+                if (!res || !res.success || !res.data) { alert('岗位不存在'); return; }
+                const j = res.data;
+                const html = `
+                    <div id="job-detail-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                        <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                            <div class="p-6">
+                                <div class="flex justify-between items-start mb-4">
+                                    <h3 class="text-xl font-bold text-gray-900">${j.title || ''}</h3>
+                                    <button onclick="document.getElementById('job-detail-modal').remove()" class="text-gray-400 hover:text-gray-600"><i class="fa fa-times text-xl"></i></button>
+                                </div>
+                                <p class="text-gray-600 mb-2"><i class="fa fa-building mr-2"></i>${j.companyName || ''}</p>
+                                <p class="text-gray-600 mb-2"><i class="fa fa-map-marker mr-2"></i>${j.location || ''}</p>
+                                <p class="text-gray-600 mb-2"><i class="fa fa-money mr-2"></i>${j.salaryRange || '面议'}</p>
+                                <p class="text-gray-600 mb-4"><i class="fa fa-clock-o mr-2"></i>报名截止：${j.deadlineDate || j.deadline || '-'}</p>
+                                <div class="mb-4"><h4 class="font-medium text-gray-800 mb-2">岗位描述</h4><p class="text-gray-600 whitespace-pre-wrap">${(j.description || '').replace(/</g,'&lt;')}</p></div>
+                                <div class="mb-4"><h4 class="font-medium text-gray-800 mb-2">任职要求</h4><p class="text-gray-600 whitespace-pre-wrap">${(j.requirement || '').replace(/</g,'&lt;')}</p></div>
+                                <div class="flex justify-end gap-2 pt-4 border-t">
+                                    <button onclick="document.getElementById('job-detail-modal').remove()" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">关闭</button>
+                                    <button onclick="applyJob('${j.id}'); document.getElementById('job-detail-modal').remove();" class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-blue-700">申请岗位</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+                const el = document.createElement('div');
+                el.innerHTML = html;
+                document.body.appendChild(el.firstElementChild);
+            } catch (e) { alert('加载失败：' + (e.message || '网络错误')); }
+        }
+        var APPLY_IMAGE_MAX_SIZE = 2 * 1024 * 1024;
+        function fileToBase64(file) {
+            return new Promise(function(resolve, reject) {
+                if (!file || !file.type || !file.type.startsWith('image/')) { resolve(null); return; }
+                var reader = new FileReader();
+                reader.onload = function() { resolve(reader.result); };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+        function applyAttachmentFields(req) {
+            var out = [];
+            var hasIdCard = req.indexOf('id_card') !== -1;
+            req.forEach(function(k) {
+                if (k === 'id_card') {
+                    out.push({ key: 'id_card_front', label: '身份证正面', required: true });
+                    out.push({ key: 'id_card_back', label: '身份证反面', required: true });
+                } else if (k === 'certificate') {
+                    out.push({ key: 'certificate', label: '其他证书（选填）', required: false });
+                } else {
+                    out.push({ key: k, label: (k === 'photo' ? '寸照' : k === 'education' ? '学历证明' : k), required: true });
+                }
+            });
+            return out;
+        }
+
+        // 简单签名板：在 canvas 上手写签名，返回一个获取签名图片的函数
+        function initSignaturePad(canvas, clearBtn) {
+            if (!canvas) return function() { return null; };
+            var ctx = canvas.getContext('2d');
+            if (!ctx) return function() { return null; };
+            var drawing = false;
+            var hasDrawn = false;
+            ctx.strokeStyle = '#111827';
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+
+            function getPos(e) {
+                var rect = canvas.getBoundingClientRect();
+                var x = (e.clientX || (e.touches && e.touches[0].clientX) || 0) - rect.left;
+                var y = (e.clientY || (e.touches && e.touches[0].clientY) || 0) - rect.top;
+                return { x: x, y: y };
+            }
+
+            function start(e) {
+                e.preventDefault();
+                drawing = true;
+                hasDrawn = true;
+                var p = getPos(e);
+                ctx.beginPath();
+                ctx.moveTo(p.x, p.y);
+            }
+            function move(e) {
+                if (!drawing) return;
+                e.preventDefault();
+                var p = getPos(e);
+                ctx.lineTo(p.x, p.y);
+                ctx.stroke();
+            }
+            function end(e) {
+                if (!drawing) return;
+                e.preventDefault();
+                drawing = false;
+            }
+
+            canvas.addEventListener('pointerdown', start);
+            canvas.addEventListener('pointermove', move);
+            canvas.addEventListener('pointerup', end);
+            canvas.addEventListener('pointerleave', end);
+            canvas.addEventListener('touchstart', start, { passive: false });
+            canvas.addEventListener('touchmove', move, { passive: false });
+            canvas.addEventListener('touchend', end);
+
+            if (clearBtn) {
+                clearBtn.addEventListener('click', function() {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    hasDrawn = false;
+                });
+            }
+
+            return function getSignatureDataUrl() {
+                if (!hasDrawn) return null;
+                try {
+                    return canvas.toDataURL('image/png');
+                } catch (e) {
+                    return null;
+                }
+            };
+        }
+
+        // 岗位申请报名表模态框：个人资料 + 简历关键信息 + 附件上传 + 签字
+        function openApplyFormModal(job, numId) {
+            var existing = document.getElementById('apply-form-modal');
+            if (existing) existing.remove();
+
+            var req = job.requireAttachments && Array.isArray(job.requireAttachments) ? job.requireAttachments : [];
+            var fields = applyAttachmentFields(req);
+
+            var parts = [];
+            parts.push('<div id="apply-form-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] p-4">');
+            parts.push('<div class="bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[95vh] overflow-y-auto">');
+            parts.push('<div class="p-6 border-b flex items-center justify-between">');
+            parts.push('<div>');
+            parts.push('<h3 class="text-xl font-bold text-gray-900">岗位申请报名表</h3>');
+            parts.push('<p class="text-sm text-gray-500 mt-1">岗位：' + (job.name || job.title || '') + '（' + (job.companyName || '') + '）</p>');
+            parts.push('</div>');
+            parts.push('<button type="button" id="apply-form-close" class="text-gray-400 hover:text-gray-600"><i class="fa fa-times text-xl"></i></button>');
+            parts.push('</div>');
+
+            parts.push('<div class="p-6 space-y-6">');
+
+            // 基本信息
+            parts.push('<section>');
+            parts.push('<h4 class="text-lg font-semibold text-gray-800 mb-3">一、基本信息</h4>');
+            parts.push('<div class="grid grid-cols-1 md:grid-cols-2 gap-4">');
+            parts.push('<div><label class="block text-sm font-medium text-gray-700 mb-1">姓名 *</label><input id="apply-name" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"/></div>');
+            parts.push('<div><label class="block text-sm font-medium text-gray-700 mb-1">性别</label><select id="apply-gender" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"><option value="">请选择</option><option value="男">男</option><option value="女">女</option><option value="保密">保密</option></select></div>');
+            parts.push('<div><label class="block text-sm font-medium text-gray-700 mb-1">出生年月</label><input id="apply-birth-date" type="date" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"/></div>');
+            parts.push('<div><label class="block text-sm font-medium text-gray-700 mb-1">民族</label><input id="apply-ethnicity" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary" placeholder="如：汉族、回族等"/></div>');
+            parts.push('<div><label class="block text-sm font-medium text-gray-700 mb-1">出生地</label><input id="apply-birth-place" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary" placeholder="请填写出生地，不限制字数"/></div>');
+            parts.push('<div><label class="block text-sm font-medium text-gray-700 mb-1">参加工作时间</label><input id="apply-work-start" type="date" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"/></div>');
+            parts.push('<div><label class="block text-sm font-medium text-gray-700 mb-1">入党时间</label><input id="apply-party-join" type="date" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"/></div>');
+            parts.push('<div><label class="block text-sm font-medium text-gray-700 mb-1">健康状况</label><input id="apply-health" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary" placeholder="如：良好"/></div>');
+            parts.push('<div><label class="block text-sm font-medium text-gray-700 mb-1">工作单位</label><input id="apply-work-unit" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"/></div>');
+            parts.push('<div><label class="block text-sm font-medium text-gray-700 mb-1">现任岗位及等级</label><input id="apply-current-position" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"/></div>');
+            parts.push('<div><label class="block text-sm font-medium text-gray-700 mb-1">报考单位</label><input id="apply-unit" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary" value="' + (job.companyName || '') + '"/></div>');
+            parts.push('<div><label class="block text-sm font-medium text-gray-700 mb-1">报考岗位名称</label><input id="apply-job-name" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary" value="' + (job.name || job.title || '') + '"/></div>');
+            parts.push('<div><label class="block text-sm font-medium text-gray-700 mb-1">岗位代码</label><input id="apply-position-code" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary" value="' + (job.id || '') + '"/></div>');
+            parts.push('<div><label class="block text-sm font-medium text-gray-700 mb-1">身份证号 *</label><input id="apply-id-number" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"/></div>');
+            parts.push('<div><label class="block text-sm font-medium text-gray-700 mb-1">联系电话 *</label><input id="apply-phone" type="tel" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"/></div>');
+            parts.push('<div><label class="block text-sm font-medium text-gray-700 mb-1">电子邮箱</label><input id="apply-email" type="email" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"/></div>');
+            parts.push('</div>');
+            parts.push('</section>');
+
+            // 教育经历和简历概览（文本形式，后端/企业端按需拆分）
+            parts.push('<section>');
+            parts.push('<h4 class="text-lg font-semibold text-gray-800 mb-3">二、教育与简历信息</h4>');
+            parts.push('<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">');
+            parts.push('<div><label class="block text-sm font-medium text-gray-700 mb-1">全日制教育</label><select id="apply-fulltime-education" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"><option value="">请选择</option><option value="博士">博士</option><option value="硕士">硕士</option><option value="本科">本科</option><option value="大专">大专</option><option value="中专/中技">中专/中技</option><option value="高中">高中</option><option value="初中">初中</option><option value="其他">其他</option></select></div>');
+            parts.push('<div><label class="block text-sm font-medium text-gray-700 mb-1">全日制毕业院校及专业</label><input id="apply-fulltime-major" type="text" placeholder="学校 + 专业" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"/></div>');
+            parts.push('</div>');
+            // 简历附件选择
+            parts.push('<div class="mt-4 border-t border-dashed border-gray-200 pt-4">');
+            parts.push('<label class="block text-sm font-medium text-gray-700 mb-1">随本次申请附加简历</label>');
+            parts.push('<p class="text-xs text-gray-500 mb-2">可选择一份在个人中心生成/优化的简历，作为附件一并提交给企业。</p>');
+            parts.push('<select id="resume-attachment-select" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">');
+            parts.push('<option value="">（不附加简历）</option>');
+            parts.push('</select>');
+            parts.push('<p class="text-xs text-gray-400 mt-1">如需管理简历内容，请前往“个人中心 - 我的简历”。</p>');
+            parts.push('</div>');
+            parts.push('</section>');
+
+            // 附件上传
+            parts.push('<section>');
+            parts.push('<h4 class="text-lg font-semibold text-gray-800 mb-3">三、附件上传</h4>');
+            if (fields.length === 0) {
+                parts.push('<p class="text-sm text-gray-500">该岗位未要求必须上传附件，如有身份证、学历证书等资料可在下方自愿上传。</p>');
+            } else {
+                parts.push('<p class="text-sm text-gray-500 mb-2">根据岗位要求上传对应附件，单张图片不超过 2MB。</p>');
+            }
+            parts.push('<div class="space-y-4">');
+            fields.forEach(function(f) {
+                parts.push('<div>');
+                parts.push('<label class="block text-sm font-medium text-gray-700 mb-1">' + f.label + (f.required ? ' *' : '') + '</label>');
+                parts.push('<input type="file" accept="image/*" class="apply-attach-file block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-primary file:text-white" data-type="' + f.key + '">');
+                parts.push('<div class="apply-attach-preview mt-2" data-type="' + f.key + '" style="min-height:24px;"></div>');
+                parts.push('</div>');
+            });
+            parts.push('</div>');
+            parts.push('</section>');
+
+            // 签字承诺
+            parts.push('<section>');
+            parts.push('<h4 class="text-lg font-semibold text-gray-800 mb-3">四、本人承诺与签字</h4>');
+            parts.push('<p class="text-sm text-gray-600 mb-3">我已认真阅读选调/招聘公告，理解并同意公告中的各项要求，保证报名时所提交的信息及证件材料真实、准确、完整，如有虚假，愿意承担相应责任。</p>');
+            parts.push('<div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">');
+            parts.push('<div class="md:col-span-2">');
+            parts.push('<label class="block text-sm font-medium text-gray-700 mb-1">考生签字（在下方空白处手写签名）</label>');
+            parts.push('<div class="border border-gray-300 rounded-lg p-2 bg-gray-50">');
+            parts.push('<canvas id="apply-signature-canvas" class="w-full h-32 bg-white rounded" width="600" height="160"></canvas>');
+            parts.push('<div class="mt-2 text-right"><button type="button" id="apply-signature-clear" class="text-xs text-primary hover:text-blue-700">重写签名</button></div>');
+            parts.push('</div>');
+            parts.push('</div>');
+            parts.push('<div>');
+            parts.push('<label class="block text-sm font-medium text-gray-700 mb-1">签字日期</label>');
+            parts.push('<input id="apply-sign-date" type="date" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"/>');
+            parts.push('</div>');
+            parts.push('</div>');
+            parts.push('</section>');
+
+            parts.push('</div>'); // p-6
+            parts.push('<div class="px-6 py-4 border-t bg-gray-50 flex justify-end gap-3">');
+            parts.push('<button type="button" id="apply-form-cancel" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100">取消</button>');
+            parts.push('<button type="button" id="apply-form-submit" class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-blue-700">提交申请</button>');
+            parts.push('</div>');
+            parts.push('</div></div>');
+
+            var wrap = document.createElement('div');
+            wrap.innerHTML = parts.join('');
+            document.body.appendChild(wrap.firstElementChild);
+
+            var modal = document.getElementById('apply-form-modal');
+            if (!modal) return;
+
+            // 关闭事件
+            function closeModal() {
+                var m = document.getElementById('apply-form-modal');
+                if (m) m.remove();
+            }
+            document.getElementById('apply-form-close').addEventListener('click', closeModal);
+            document.getElementById('apply-form-cancel').addEventListener('click', closeModal);
+
+            // 签名板初始化
+            var canvas = document.getElementById('apply-signature-canvas');
+            var clearBtn = document.getElementById('apply-signature-clear');
+            var getSignatureDataUrl = initSignaturePad(canvas, clearBtn);
+            var signDateInput = document.getElementById('apply-sign-date');
+            if (signDateInput && !signDateInput.value) {
+                try {
+                    signDateInput.value = new Date().toISOString().slice(0, 10);
+                } catch (e) {}
+            }
+
+            // 附件上传预览：选择图片后显示缩略图
+            modal.querySelectorAll('.apply-attach-file').forEach(function(input) {
+                input.addEventListener('change', function() {
+                    var type = input.getAttribute('data-type');
+                    var previewEl = modal.querySelector('.apply-attach-preview[data-type="' + type + '"]');
+                    if (!previewEl) return;
+                    var file = input.files && input.files[0];
+                    if (!file) {
+                        previewEl.innerHTML = '';
+                        return;
+                    }
+                    if (!file.type || !file.type.startsWith('image/')) {
+                        previewEl.innerHTML = '<span class="text-sm text-gray-500">仅支持图片预览</span>';
+                        return;
+                    }
+                    if (file.size > APPLY_IMAGE_MAX_SIZE) {
+                        previewEl.innerHTML = '<span class="text-sm text-red-600">图片超过 2MB，请重新选择</span>';
+                        return;
+                    }
+                    var url = URL.createObjectURL(file);
+                    previewEl.innerHTML = '<img src="' + url + '" alt="预览" class="max-h-24 rounded border border-gray-300 object-contain cursor-pointer" onclick="window.open(this.src)">';
+                    input._previewUrl = url;
+                });
+            });
+
+            // 预填充个人资料和简历关键信息
+            (async function initProfileAndResume() {
+                try {
+                    const profileRes = await apiRequest(API_BASE_URL + '/users/profile');
+                    if (profileRes && profileRes.success && profileRes.data) {
+                        var p = profileRes.data;
+                        var nameInput = document.getElementById('apply-name');
+                        if (nameInput && !nameInput.value) nameInput.value = p.realName || p.username || '';
+                        var genderInput = document.getElementById('apply-gender');
+                        if (genderInput && !genderInput.value && p.gender) {
+                            var g = p.gender;
+                            if (g === 'male') g = '男';
+                            else if (g === 'female') g = '女';
+                            genderInput.value = g;
+                        }
+                        var phoneInput = document.getElementById('apply-phone');
+                        if (phoneInput && !phoneInput.value) phoneInput.value = p.phone || '';
+                        var emailInput = document.getElementById('apply-email');
+                        if (emailInput && !emailInput.value) emailInput.value = p.email || '';
+                        var birthInput = document.getElementById('apply-birth-date');
+                        if (birthInput && !birthInput.value && p.birthDate) birthInput.value = p.birthDate;
+                        var locationInput = document.getElementById('apply-work-unit');
+                        if (locationInput && !locationInput.value && p.location) locationInput.value = p.location;
+                    }
+                } catch (e) {
+                    // ignore
+                }
+                try {
+                    const resumeRes = await apiRequest(API_BASE_URL + '/users/resume');
+                    if (resumeRes && resumeRes.success && resumeRes.data) {
+                        var r = resumeRes.data;
+                        var fullEdu = document.getElementById('apply-fulltime-education');
+                        if (fullEdu && !fullEdu.value && r.education) fullEdu.value = r.education;
+                    }
+                } catch (e) {
+                    // ignore
+                }
+            })();
+
+            // 若已有该岗位的申请记录，从后端回填表单与附件展示；已拒绝也可修改后重新提交
+            (async function loadMyApplicationAndPrefill() {
+                if (!getAuthToken()) return;
+                try {
+                    var res = await apiRequest(API_BASE_URL + '/jobs/' + numId + '/my-application');
+                    if (!res || !res.success || !res.data) return;
+                    var d = res.data;
+                    var isRejected = d.status === 'rejected' || d.status === '已拒绝';
+                    if (isRejected) {
+                        var submitBtn = document.getElementById('apply-form-submit');
+                        if (submitBtn) {
+                            submitBtn.textContent = '修改并重新提交';
+                            submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                        }
+                        var tip = document.createElement('p');
+                        tip.className = 'text-amber-700 bg-amber-50 text-sm mt-2 p-2 rounded';
+                        tip.textContent = '您的申请未通过审核，可修改报名信息后重新提交，等待企业再次审核。';
+                        var firstSection = modal.querySelector('section');
+                        if (firstSection) firstSection.insertBefore(tip, firstSection.firstChild);
+                    }
+                    var ex = d.extraJson || {};
+                    var basic = ex.basicInfo || {};
+                    var edu = ex.educationInfo || {};
+                    var setVal = function(id, v) {
+                        var el = document.getElementById(id);
+                        if (el && v != null && String(v).trim() !== '') el.value = String(v).trim();
+                    };
+                    setVal('apply-name', basic.name);
+                    setVal('apply-gender', basic.gender);
+                    setVal('apply-birth-date', basic.birthDate);
+                    setVal('apply-ethnicity', basic.ethnicity);
+                    if (basic.birthPlace) { var el = document.getElementById('apply-birth-place'); if (el) el.value = basic.birthPlace; }
+                    setVal('apply-work-start', basic.workStartDate);
+                    setVal('apply-party-join', basic.partyJoinDate);
+                    setVal('apply-health', basic.healthStatus);
+                    setVal('apply-work-unit', basic.workUnit);
+                    setVal('apply-current-position', basic.currentPosition);
+                    setVal('apply-unit', basic.applyUnit);
+                    setVal('apply-job-name', basic.appliedJobName);
+                    setVal('apply-position-code', basic.positionCode);
+                    setVal('apply-id-number', basic.idNumber);
+                    setVal('apply-phone', basic.phone);
+                    setVal('apply-email', basic.email);
+                    setVal('apply-fulltime-education', edu.fulltimeEducation);
+                    setVal('apply-fulltime-major', edu.fulltimeMajor);
+                    var sig = ex.signature || {};
+                    if (sig.signDate) setVal('apply-sign-date', sig.signDate);
+                    if (sig.imageUrl) {
+                        var sigWrap = modal.querySelector('#apply-signature-canvas');
+                        if (sigWrap && sigWrap.parentNode) {
+                            var img = document.createElement('img');
+                            img.src = (sig.imageUrl.indexOf('http') === 0 || sig.imageUrl.indexOf('/') === 0) ? (sig.imageUrl.indexOf('/') === 0 ? (window.location.origin + sig.imageUrl) : sig.imageUrl) : sig.imageUrl;
+                            img.alt = '已签';
+                            img.className = 'max-h-32 object-contain';
+                            sigWrap.parentNode.appendChild(img);
+                        }
+                    }
+                    var att = ex.attachments || {};
+                    Object.keys(att).forEach(function(key) {
+                        var url = typeof att[key] === 'string' ? att[key] : (att[key] && att[key].url) ? att[key].url : null;
+                        if (!url) return;
+                        existingAttachmentKeys[key] = true;
+                        var previewEl = modal.querySelector('.apply-attach-preview[data-type="' + key + '"]');
+                        if (!previewEl) return;
+                        var fullUrl = (url.indexOf('http') === 0 || url.indexOf('//') === 0) ? url : (window.API_BASE_URL ? (window.API_BASE_URL.replace(/\/api\/v1.*$/, '') + url) : (window.location.origin + url));
+                        previewEl.innerHTML = '<span class="text-sm text-gray-600">已上传</span> <a href="' + fullUrl + '" target="_blank" class="text-primary">查看</a>';
+                    });
+                } catch (e) {
+                    // 404 等视为无记录，不处理
+                }
+            })();
+
+            // 填充「随本次申请附加简历」下拉选项（来自个人中心生成/优化的简历）
+            try {
+                var resumeSelect = document.getElementById('resume-attachment-select');
+                if (resumeSelect) {
+                    var userResumeData = [];
+                    try {
+                        userResumeData = JSON.parse(localStorage.getItem('userResumeData') || '[]');
+                    } catch (e) {
+                        userResumeData = [];
+                    }
+                    userResumeData
+                        .filter(function(r) { return r && r.id && r.content; })
+                        .forEach(function(r) {
+                            var opt = document.createElement('option');
+                            opt.value = r.id;
+                            var label = (r.optimized ? '优化简历' : '自动生成') + ' · ' + (r.name || '我的简历');
+                            opt.textContent = label;
+                            resumeSelect.appendChild(opt);
+                        });
+                }
+            } catch (e) {
+                console.warn('加载本地简历列表失败：', e);
+            }
+
+            // 已有附件的 key（在 loadMyApplicationAndPrefill 回填时设置），提交时不再要求这些项必须上传
+            var existingAttachmentKeys = {};
+
+            // 提交报名表
+            document.getElementById('apply-form-submit').addEventListener('click', function() {
+                var name = (document.getElementById('apply-name') || {}).value || '';
+                var idNumber = (document.getElementById('apply-id-number') || {}).value || '';
+                var phone = (document.getElementById('apply-phone') || {}).value || '';
+                if (!name.trim()) { alert('请填写姓名'); return; }
+                if (!idNumber.trim()) { alert('请填写身份证号'); return; }
+                if (!phone.trim()) { alert('请填写联系电话'); return; }
+
+                var basicInfo = {
+                    name: name.trim(),
+                    gender: (document.getElementById('apply-gender') || {}).value || null,
+                    birthDate: (document.getElementById('apply-birth-date') || {}).value || null,
+                    ethnicity: (document.getElementById('apply-ethnicity') || {}).value || null,
+                    birthPlace: (function () {
+                        var v = (document.getElementById('apply-birth-place') || {}).value || '';
+                        return v.trim() ? v.trim() : null;
+                    })(),
+                    workStartDate: (document.getElementById('apply-work-start') || {}).value || null,
+                    partyJoinDate: (document.getElementById('apply-party-join') || {}).value || null,
+                    healthStatus: (document.getElementById('apply-health') || {}).value || null,
+                    workUnit: (document.getElementById('apply-work-unit') || {}).value || null,
+                    currentPosition: (document.getElementById('apply-current-position') || {}).value || null,
+                    applyUnit: (document.getElementById('apply-unit') || {}).value || (job.companyName || null),
+                    appliedJobName: (document.getElementById('apply-job-name') || {}).value || (job.name || job.title || null),
+                    positionCode: (document.getElementById('apply-position-code') || {}).value || (job.id || null),
+                    idNumber: idNumber.trim(),
+                    phone: phone.trim(),
+                    email: (document.getElementById('apply-email') || {}).value || null
+                };
+
+                var educationInfo = {
+                    fulltimeEducation: (document.getElementById('apply-fulltime-education') || {}).value || null,
+                    fulltimeMajor: (document.getElementById('apply-fulltime-major') || {}).value || null
+                };
+
+                var resumeTimeline = [];
+                var eduTextVal = (document.getElementById('apply-edu-exp-text') || {}).value || '';
+                eduTextVal.split(/\\r?\\n/).forEach(function(line) {
+                    var t = line.trim();
+                    if (!t) return;
+                    resumeTimeline.push({ from: null, to: null, content: t, type: 'edu' });
+                });
+                var workTextVal = (document.getElementById('apply-work-exp-text') || {}).value || '';
+                workTextVal.split(/\\r?\\n/).forEach(function(line) {
+                    var t = line.trim();
+                    if (!t) return;
+                    resumeTimeline.push({ from: null, to: null, content: t, type: 'work' });
+                });
+
+                var signatureImage = getSignatureDataUrl ? getSignatureDataUrl() : null;
+                var signature = {
+                    image: signatureImage,
+                    signDate: (document.getElementById('apply-sign-date') || {}).value || null
+                };
+
+                var form = {
+                    basicInfo: basicInfo,
+                    educationInfo: educationInfo,
+                    resumeTimeline: resumeTimeline,
+                    signature: signature
+                };
+
+                // 同步部分报名信息到个人中心的个人资料（姓名、性别、出生日期、所在城市/单位、学历）
+                (async function syncProfileFromApplyForm() {
+                    try {
+                        function mapGenderToBackend(g) {
+                            if (g === '男') return 'male';
+                            if (g === '女') return 'female';
+                            if (!g) return null;
+                            return 'other';
+                        }
+                        var payload = {
+                            realName: basicInfo.name || undefined,
+                            gender: mapGenderToBackend(basicInfo.gender),
+                            birthDate: basicInfo.birthDate || undefined,
+                            location: basicInfo.workUnit || basicInfo.birthPlace || undefined,
+                            education: educationInfo.fulltimeEducation || undefined
+                        };
+                        var body = {};
+                        Object.keys(payload).forEach(function(k) {
+                            if (payload[k] !== undefined && payload[k] !== null && payload[k] !== '') {
+                                body[k] = payload[k];
+                            }
+                        });
+                        if (Object.keys(body).length === 0) return;
+                        await apiRequest(API_BASE_URL + '/users/profile', {
+                            method: 'PUT',
+                            body: JSON.stringify(body)
+                        });
+                    } catch (e) {
+                        console.warn('同步个人资料失败:', e);
+                    }
+                })();
+
+                var attachments = {};
+                var requiredKeys = fields.filter(function(f) { return f.required; }).map(function(f) { return f.key; });
+                var allKeys = fields.map(function(f) { return f.key; });
+                var missing = [];
+                requiredKeys.forEach(function(k) {
+                    if (existingAttachmentKeys[k]) return;
+                    var input = modal.querySelector('.apply-attach-file[data-type="' + k + '"]');
+                    if (!input || !input.files || !input.files[0]) {
+                        missing.push(k === 'id_card_front' ? '身份证正面' : k === 'id_card_back' ? '身份证反面' : k === 'photo' ? '寸照' : k === 'education' ? '学历证明' : k);
+                    }
+                });
+                if (missing.length) {
+                    if (fields.length) {
+                        alert('请上传必填附件：' + missing.join('、'));
+                        return;
+                    }
+                }
+
+                var pending = 0;
+                var hasSizeError = false;
+                function finishIfDone() {
+                    if (pending > 0 || hasSizeError) return;
+                    var body = { form: form };
+                    if (Object.keys(attachments).length > 0) {
+                        body.attachments = attachments;
+                    }
+                    (async function() {
+                        try {
+                            var res = await apiRequest(API_BASE_URL + '/jobs/' + numId + '/apply', {
+                                method: 'POST',
+                                body: JSON.stringify(body)
+                            });
+                            if (res && res.success) {
+                                // 记录本地申请记录，供个人中心「申请记录」使用
+                                try {
+                                    var applications = JSON.parse(localStorage.getItem('jobApplications') || '[]');
+                                    applications.push({
+                                        jobId: job.id,
+                                        jobName: job.name || job.title,
+                                        companyName: job.companyName,
+                                        applyDate: basicInfo.applyDate || new Date().toISOString().split('T')[0],
+                                        status: '待处理'
+                                    });
+                                    localStorage.setItem('jobApplications', JSON.stringify(applications));
+                                } catch (e) {}
+                                alert('申请已提交！您填写的报名表和上传的附件已同步到企业端候选人管理。');
+                                closeModal();
+                                return;
+                            }
+                            alert(res && res.message ? res.message : '申请失败');
+                        } catch (e) {
+                            var msg = (e && e.message) ? String(e.message) : '申请失败';
+                            if (msg.indexOf('已申请') !== -1) alert('您已申请过该岗位');
+                            else if (msg.indexOf('未登录') !== -1) alert('请先登录后再申请');
+                            else alert('申请失败：' + msg);
+                        }
+                    })();
+                }
+
+                // 岗位附件（照片/证件等）
+                if (allKeys.length > 0) {
+                    allKeys.forEach(function(k) {
+                        var input = modal.querySelector('.apply-attach-file[data-type="' + k + '"]');
+                        if (input && input.files && input.files[0]) {
+                            var file = input.files[0];
+                            if (file.size > APPLY_IMAGE_MAX_SIZE) {
+                                alert('图片大小不能超过 2MB，请压缩后重试：' + file.name);
+                                hasSizeError = true;
+                                return;
+                            }
+                            pending++;
+                            fileToBase64(file).then(function(base64) {
+                                attachments[k] = base64;
+                                pending--;
+                                if (pending === 0) {
+                                    finishIfDone();
+                                }
+                            }).catch(function() {
+                                pending--;
+                                if (pending === 0) {
+                                    finishIfDone();
+                                }
+                            });
+                        }
+                    });
+                }
+
+                // 追加简历附件（从个人中心选择的一份生成/优化简历，以 HTML 文件形式提交）
+                (function attachSelectedResume() {
+                    try {
+                        var select = document.getElementById('resume-attachment-select');
+                        if (!select) return;
+                        var selectedId = select.value;
+                        if (!selectedId) return;
+                        var list = [];
+                        try {
+                            list = JSON.parse(localStorage.getItem('userResumeData') || '[]');
+                        } catch (e) {
+                            list = [];
+                        }
+                        var resume = list.find(function(r) { return r && r.id === selectedId && r.content; });
+                        if (!resume) return;
+                        var html = String(resume.content || '');
+                        var blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+                        pending++;
+                        fileToBase64(blob).then(function(base64) {
+                            // 将 HTML 简历作为 resume_html 附件提交，后端会保存为文件供企业端下载
+                            attachments.resume_html = base64;
+                            pending--;
+                            if (pending === 0) {
+                                finishIfDone();
+                            }
+                        }).catch(function() {
+                            pending--;
+                            if (pending === 0) {
+                                finishIfDone();
+                            }
+                        });
+                    } catch (e) {
+                        console.warn('附加简历附件失败：', e);
+                    }
+                })();
+
+                if (pending === 0 && !hasSizeError) {
+                    finishIfDone();
+                }
+            });
+        }
+
+        function showApplyWithAttachmentsModal(job, numId, submitApply) {
+            var req = job.requireAttachments || [];
+            var fields = applyAttachmentFields(req);
+            var parts = [
+                '<div id="apply-attachments-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] p-4">',
+                '<div class="bg-white rounded-lg shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">',
+                '<div class="p-6">',
+                '<h3 class="text-lg font-bold text-gray-900 mb-2">申请岗位：' + (job.name || '').replace(/</g,'&lt;') + '</h3>',
+                '<p class="text-sm text-gray-600 mb-2">上传资料将同步到候选人附件，供审核与考场分配使用。单张图片不超过 2MB。</p>',
+                '<div class="space-y-4">'
+            ];
+            fields.forEach(function(f) {
+                parts.push('<div class="apply-field-wrap" data-type="' + f.key + '">');
+                parts.push('<label class="block text-sm font-medium text-gray-700 mb-1">' + f.label + (f.required ? ' *' : '') + '</label>');
+                parts.push('<input type="file" accept="image/*" class="apply-attach-file block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-primary file:text-white" data-type="' + f.key + '">');
+                parts.push('<div class="apply-preview mt-2 min-h-[60px] flex items-center gap-2 flex-wrap" data-preview="' + f.key + '"></div>');
+                parts.push('</div>');
+            });
+            parts.push('</div>');
+            parts.push('<div class="flex justify-end gap-2 mt-6">');
+            parts.push('<button type="button" onclick="document.getElementById(\'apply-attachments-modal\')?.remove()" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">取消</button>');
+            parts.push('<button type="button" id="apply-attachments-submit" class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-blue-700">提交申请</button>');
+            parts.push('</div></div></div>');
+            var wrap = document.createElement('div');
+            wrap.innerHTML = parts.join('');
+            document.body.appendChild(wrap.firstElementChild);
+            var requiredKeys = fields.filter(function(f) { return f.required; }).map(function(f) { return f.key; });
+            var allKeys = fields.map(function(f) { return f.key; });
+            var modal = document.getElementById('apply-attachments-modal');
+            modal.querySelectorAll('.apply-attach-file').forEach(function(input) {
+                input.addEventListener('change', function() {
+                    var type = input.getAttribute('data-type');
+                    var previewEl = modal.querySelector('.apply-preview[data-preview="' + type + '"]');
+                    if (!previewEl) return;
+                    previewEl.innerHTML = '';
+                    var file = input.files && input.files[0];
+                    if (!file) return;
+                    if (file.size > APPLY_IMAGE_MAX_SIZE) {
+                        alert('图片「' + file.name + '」超过 2MB，请压缩后重新上传。');
+                        input.value = '';
+                        return;
+                    }
+                    if (!file.type.startsWith('image/')) {
+                        alert('请上传图片文件（jpg、png 等）');
+                        input.value = '';
+                        return;
+                    }
+                    var url = URL.createObjectURL(file);
+                    var img = document.createElement('img');
+                    img.src = url;
+                    img.alt = type;
+                    img.className = 'w-20 h-20 object-cover rounded border border-gray-300 cursor-pointer hover:opacity-90';
+                    img.title = '点击可预览';
+                    img.onclick = function() {
+                        var big = window.open('', '_blank');
+                        if (big) big.document.write('<html><body style="margin:0;display:flex;justify-content:center;align-items:center;min-height:100vh"><img src="' + url + '" style="max-width:100%;max-height:100vh"/></body></html>');
+                    };
+                    previewEl.appendChild(img);
+                });
+            });
+            document.getElementById('apply-attachments-submit').addEventListener('click', function() {
+                var missing = [];
+                requiredKeys.forEach(function(k) {
+                    var input = modal.querySelector('.apply-attach-file[data-type="' + k + '"]');
+                    if (!input || !input.files || !input.files[0]) missing.push(k === 'id_card_front' ? '身份证正面' : k === 'id_card_back' ? '身份证反面' : k === 'photo' ? '寸照' : k === 'education' ? '学历证明' : k);
+                });
+                if (missing.length) {
+                    alert('请上传必填资料：' + missing.join('、'));
+                    return;
+                }
+                var attachments = {};
+                var pending = 0;
+                allKeys.forEach(function(k) {
+                    var input = modal.querySelector('.apply-attach-file[data-type="' + k + '"]');
+                    if (input && input.files && input.files[0]) {
+                        if (input.files[0].size > APPLY_IMAGE_MAX_SIZE) {
+                            alert('图片大小不能超过 2MB，请压缩后重试。');
+                            return;
+                        }
+                        pending++;
+                        fileToBase64(input.files[0]).then(function(base64) {
+                            attachments[k] = base64;
+                            pending--;
+                            if (pending === 0) {
+                                modal.remove();
+                                submitApply(attachments);
+                            }
+                        }).catch(function() {
+                            pending--;
+                            if (pending === 0) { modal.remove(); submitApply(attachments); }
+                        });
+                    }
+                });
+                if (pending === 0) {
+                    modal.remove();
+                    submitApply(attachments);
+                }
+            });
+        }
+        async function applyJob(jobId) {
+            var job = allJobsData.find(function(j) { return String(j.id) === String(jobId); });
+            var token = getAuthToken();
+            if (!token) { alert('请先登录'); window.location.href = 'login.html'; return; }
+            if (!job) { alert('岗位不存在'); return; }
+            var numId = parseInt(jobId, 10);
+            if (isNaN(numId)) {
+                alert('岗位不存在');
+                return;
+            }
+            // 打开报名表 + 附件 + 签字一体化表单
+            openApplyFormModal(job, numId);
+        }
+        
+        // 收藏/取消收藏
+        function toggleFavorite(jobId) {
+            const favorites = JSON.parse(localStorage.getItem('jobFavorites') || '[]');
+            const index = favorites.indexOf(jobId);
+            
+            if (index > -1) {
+                favorites.splice(index, 1);
+                alert('已取消收藏');
+            } else {
+                favorites.push(jobId);
+                alert('已收藏');
+            }
+            
+            localStorage.setItem('jobFavorites', JSON.stringify(favorites));
+        }
+        
+        // 初始化：仅从后台 GET /jobs 拉取岗位，与企业端数据同步
+        async function init() {
+            await loadJobsFromAPI();
+            
+            // 筛选按钮
+            const filterBtn = document.getElementById('filter-btn');
+            if (filterBtn) {
+                filterBtn.addEventListener('click', function() {
+                    updateFilters();
+                    applyFilters();
+                });
+            }
+            
+            // 搜索输入框
+            const searchInput = document.getElementById('job-search-input');
+            if (searchInput) {
+                let searchTimeout;
+                searchInput.addEventListener('input', function() {
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(() => {
+                        updateFilters();
+                        applyFilters();
+                    }, 500);
+                });
+            }
+            
+            // 筛选条件变化
+            const jobTypeSelect = document.getElementById('job-type');
+            const locationSelect = document.getElementById('location');
+            const salarySelect = document.getElementById('salary');
+            const educationSelect = document.getElementById('education');
+            const experienceSelect = document.getElementById('experience');
+            const companySizeSelect = document.getElementById('company-size');
+            const companyTypeSelect = document.getElementById('company-type');
+            const industrySelect = document.getElementById('industry');
+            const fullTimeCheck = document.getElementById('full-time');
+            const partTimeCheck = document.getElementById('part-time');
+            const internshipCheck = document.getElementById('internship');
+            
+            // 为所有筛选条件添加change事件监听
+            [jobTypeSelect, locationSelect, salarySelect, educationSelect, experienceSelect, 
+             companySizeSelect, companyTypeSelect, industrySelect].forEach(select => {
+                if (select) {
+                    select.addEventListener('change', function() {
+                        updateFilters();
+                        applyFilters();
+                    });
+                }
+            });
+            
+            if (fullTimeCheck) {
+                fullTimeCheck.addEventListener('change', function() {
+                    updateFilters();
+                    applyFilters();
+                });
+            }
+            
+            if (partTimeCheck) {
+                partTimeCheck.addEventListener('change', function() {
+                    updateFilters();
+                    applyFilters();
+                });
+            }
+            
+            if (internshipCheck) {
+                internshipCheck.addEventListener('change', function() {
+                    updateFilters();
+                    applyFilters();
+                });
+            }
+            
+            // 不再从本地缓存同步岗位数据，一切以后台岗位 API 为准
+        }
+        
+        // 更新筛选条件
+        function updateFilters() {
+            const jobTypeSelect = document.getElementById('job-type');
+            const locationSelect = document.getElementById('location');
+            const salarySelect = document.getElementById('salary');
+            const educationSelect = document.getElementById('education');
+            const experienceSelect = document.getElementById('experience');
+            const companySizeSelect = document.getElementById('company-size');
+            const companyTypeSelect = document.getElementById('company-type');
+            const industrySelect = document.getElementById('industry');
+            const searchInput = document.getElementById('job-search-input');
+            const fullTimeCheck = document.getElementById('full-time');
+            const partTimeCheck = document.getElementById('part-time');
+            const internshipCheck = document.getElementById('internship');
+            
+            filters.jobType = jobTypeSelect ? jobTypeSelect.value : '所有类型';
+            filters.location = locationSelect ? locationSelect.value : '';
+            filters.salary = salarySelect ? salarySelect.value : '所有薪资';
+            filters.education = educationSelect ? educationSelect.value : '不限';
+            filters.experience = experienceSelect ? experienceSelect.value : '不限';
+            filters.companySize = companySizeSelect ? companySizeSelect.value : '不限';
+            filters.companyType = companyTypeSelect ? companyTypeSelect.value : '不限';
+            filters.industry = industrySelect ? industrySelect.value : '不限';
+            filters.keyword = searchInput ? searchInput.value.trim() : '';
+            
+            filters.workType = [];
+            if (fullTimeCheck && fullTimeCheck.checked) filters.workType.push('全职');
+            if (partTimeCheck && partTimeCheck.checked) filters.workType.push('兼职');
+            if (internshipCheck && internshipCheck.checked) filters.workType.push('实习');
+        }
+        
+        // 移动端菜单切换
+        document.getElementById('menu-toggle').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        // 从管理端基本设置加载底部内容
+        function loadFooterContent() {
+            try {
+                const contactInfo = JSON.parse(localStorage.getItem('contactInfo') || '{}');
+                const siteName = localStorage.getItem('siteName') || '圣举人才网';
+                
+                if (contactInfo.phone) {
+                    const phoneEl = document.getElementById('footer-phone');
+                    if (phoneEl) phoneEl.textContent = contactInfo.phone;
+                }
+                
+                if (contactInfo.email) {
+                    const emailEl = document.getElementById('footer-email');
+                    if (emailEl) emailEl.textContent = contactInfo.email;
+                }
+                
+                if (contactInfo.address) {
+                    const addressEl = document.getElementById('footer-address');
+                    if (addressEl) addressEl.textContent = contactInfo.address;
+                }
+                
+                const copyrightEl = document.getElementById('footer-copyright');
+                if (copyrightEl) {
+                    const year = new Date().getFullYear();
+                    copyrightEl.textContent = `© ${year} ${siteName} 版权所有`;
+                }
+            } catch (e) {
+                console.error('加载底部内容失败:', e);
+            }
+        }
+        
+        // 页面加载时初始化
+        function afterInit() {
+            loadFooterContent();
+            var params = new URLSearchParams(window.location.search);
+            var openApply = params.get('openApply');
+            if (openApply && getAuthToken()) {
+                var job = allJobsData.find(function(j) { return String(j.id) === String(openApply); });
+                if (job) {
+                    setTimeout(function() { applyJob(job.id); }, 400);
+                }
+                try { window.history.replaceState({}, '', window.location.pathname); } catch (e) {}
+            }
+        }
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                init().then(afterInit).catch(function() { loadFooterContent(); });
+            });
+        } else {
+            init().then(afterInit).catch(function() { loadFooterContent(); });
+        }
+        
+        // 监听设置更新事件
+        window.addEventListener('contactInfoUpdated', function(e) {
+            loadFooterContent();
+        });
+        
+        // 暴露函数到全局作用域
+        window.changePage = changePage;
+        window.applyJob = applyJob;
+        window.showJobDetail = showJobDetail;
+        window.toggleFavorite = toggleFavorite;
+        window.loadJobsFromAPI = loadJobsFromAPI;
+    </script>
+</body>
+</html>

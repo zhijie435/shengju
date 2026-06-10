@@ -1,0 +1,2195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>人才池 - 圣举人才网</title>
+    <script>(function(){function msg0(){return (arguments[0]!=null&&typeof arguments[0]==='string')?arguments[0]:'';}function suppress(){var m=msg0.apply(null,arguments);return m.indexOf('cdn.tailwindcss.com')!==-1||m.indexOf('Tracking Prevention')!==-1||m.indexOf('blocked access to storage')!==-1||(m.indexOf('cdn.jsdelivr.net')!==-1&&m.indexOf('storage')!==-1);}var w=console.warn,l=console.log,e=console.error;console.warn=function(){if(suppress.apply(null,arguments))return;return w.apply(console,arguments);};console.log=function(){if(suppress.apply(null,arguments))return;return l.apply(console,arguments);};console.error=function(){if(suppress.apply(null,arguments))return;return e.apply(console,arguments);};})();</script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../js/api-config.js"></script>
+    <script src="../js/auth-helper.js"></script>
+    <script src="../js/enterprise-navbar.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4F46E5',
+                        secondary: '#6B7280',
+                        gold: '#FFD700',
+                        silver: '#C0C0C0',
+                        bronze: '#CD7F32'
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .shadow-card {
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            }
+            .btn-primary {
+                background-color: #1E40AF; color: white; padding: 0.5rem 1rem; border-radius: 0.25rem; transition: background-color 0.15s;
+            }
+            .btn-primary:hover { background-color: #4338ca; }
+            .btn-secondary {
+                border: 1px solid #d1d5db; color: #374151; padding: 0.5rem 1rem; border-radius: 0.25rem; transition: background-color 0.15s;
+            }
+            .btn-secondary:hover { background-color: #f9fafb; }
+            .badge-gold {
+                background-color: rgba(234, 179, 8, 0.2); color: #a16207; padding: 0.25rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500;
+            }
+            .badge-silver {
+                background-color: rgba(156, 163, 175, 0.2); color: #374151; padding: 0.25rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500;
+            }
+            .badge-bronze {
+                background-color: rgba(245, 158, 11, 0.2); color: #b45309; padding: 0.25rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500;
+            }
+        }
+    </style>
+    <script>
+        // 加载系统设置
+        function loadSystemSettings() {
+            const systemSettings = JSON.parse(localStorage.getItem('systemSettings') || '{}');
+            const siteName = localStorage.getItem('siteName') || systemSettings.siteName || '圣举人才网';
+            const siteLogo = localStorage.getItem('siteLogo') || systemSettings.siteLogo || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%231E40AF' rx='4'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-size='24' font-weight='bold' fill='white'%3E圣%3C/text%3E%3C/svg%3E";
+            
+            // 更新Logo
+            const logoImg = document.querySelector('header img[alt*="圣举"]');
+            if (logoImg) {
+                logoImg.src = siteLogo;
+            }
+            
+            // 更新网站名称
+            const siteNameEl = document.querySelector('header h1');
+            if (siteNameEl) {
+                siteNameEl.textContent = siteName;
+            }
+            
+            // 更新页面标题
+            document.title = siteName + ' - 人才池';
+        }
+        
+        // 监听系统设置更新
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'siteName' || e.key === 'siteLogo' || e.key === 'contactInfo' || e.key === 'sj_contact_config') {
+                loadSystemSettings();
+            }
+        });
+        
+        window.addEventListener('siteNameUpdated', function(e) {
+            loadSystemSettings();
+        });
+        
+        window.addEventListener('logoUpdated', function(e) {
+            loadSystemSettings();
+        });
+        
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSystemSettings();
+        });
+
+        // 退出登录弹窗（与 custom-solutions 一致）
+        function showLogoutModal() { document.getElementById('logout-modal').classList.remove('hidden'); }
+        function closeLogoutModal() { document.getElementById('logout-modal').classList.add('hidden'); }
+        function confirmLogout() {
+            if (typeof AuthHelper !== 'undefined') AuthHelper.clear('enterprise');
+            else { localStorage.removeItem('authToken'); sessionStorage.removeItem('authToken'); localStorage.removeItem('userId'); localStorage.removeItem('userType'); localStorage.removeItem('username'); localStorage.removeItem('enterpriseId'); sessionStorage.removeItem('enterpriseId'); sessionStorage.removeItem('currentCompanyId'); }
+            closeLogoutModal();
+            window.location.href = 'login.html';
+        }
+    </script>
+</head>
+<body class="bg-gray-50 font-inter text-gray-900">
+    <!-- 顶部导航栏 -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+            <!-- Logo -->
+            <div class="flex items-center space-x-2">
+                <a href="../index.html" class="flex items-center space-x-2">
+                    <img data-site-logo src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%231E40AF' rx='4'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-size='24' font-weight='bold' fill='white'%3E圣%3C/text%3E%3C/svg%3E" 
+                         alt="圣举人才网" class="h-10 w-10">
+                    <h1 class="text-2xl font-bold text-primary">圣举人才网</h1>
+                </a>
+                <span class="text-gray-400">|</span>
+                <span class="text-gray-600 font-medium">企业招聘中心</span>
+            </div>
+            
+            <!-- 导航链接 -->
+            <nav class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="text-gray-700 hover:text-primary font-medium">首页</a>
+                    <a href="tests.html" class="text-gray-700 hover:text-primary font-medium">测评管理</a>
+                    <a href="talent.html" class="text-primary font-medium border-b-2 border-primary">人才池</a>
+                    <a href="company-center.html" class="text-gray-700 hover:text-primary font-medium">企业中心</a>
+                    <a href="custom-solutions.html" class="text-gray-700 hover:text-primary font-medium">定制服务方案</a>
+                </nav>
+            
+            <!-- 用户菜单：右上侧仅退出按钮（与 custom-solutions 一致） -->
+            <div class="flex items-center space-x-4">
+                <!-- 移动端菜单按钮 -->
+                <button class="md:hidden text-gray-700 focus:outline-none" id="menu-toggle">
+                    <i class="fa fa-bars text-xl"></i>
+                </button>
+                <!-- 退出按钮（弹窗式） -->
+                <button type="button" onclick="showLogoutModal()" class="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition">
+                    <i class="fa fa-sign-out"></i> 退出
+                </button>
+            </div>
+        </div>
+        
+        <!-- 移动端菜单 -->
+        <div class="md:hidden hidden bg-white border-t border-gray-200" id="mobile-menu">
+            <div class="container mx-auto px-4 py-2">
+                <a href="index.html" class="block py-2 text-gray-700 hover:text-primary pl-2">首页</a>
+                <a href="tests.html" class="block py-2 text-gray-700 hover:text-primary pl-2">测评管理</a>
+                <a href="talent.html" class="block py-2 text-primary font-medium border-l-4 border-primary pl-2">人才池</a>
+                <a href="company-center.html" class="block py-2 text-gray-700 hover:text-primary pl-2">企业中心</a>
+                <a href="custom-solutions.html" class="block py-2 text-gray-700 hover:text-primary pl-2">定制服务方案</a>
+                <button type="button" onclick="showLogoutModal()" class="block w-full text-left py-2 text-primary font-medium pl-2"><i class="fa fa-sign-out mr-2"></i>退出</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 退出确认弹窗 -->
+    <div id="logout-modal" class="fixed inset-0 z-[60] hidden">
+        <div class="fixed inset-0 bg-black bg-opacity-50" onclick="closeLogoutModal()"></div>
+        <div class="fixed inset-0 flex items-center justify-center p-4">
+            <div class="bg-white rounded-xl shadow-xl max-w-sm w-full p-6">
+                <p class="text-center text-gray-800 mb-6">确定要退出登录吗？</p>
+                <div class="flex gap-3">
+                    <button type="button" onclick="closeLogoutModal()" class="flex-1 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">取消</button>
+                    <button type="button" onclick="confirmLogout()" class="flex-1 py-2 bg-primary text-white rounded-lg hover:bg-primary/90">确定退出</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主内容区 -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div class="mb-6">
+            <h1 class="text-2xl font-semibold">人才池</h1>
+            <p class="text-gray-500 mt-1">管理候选人、发现优质人才、发布项目需求</p>
+        </div>
+
+
+        <!-- 功能模块选项卡 -->
+        <div class="mb-6">
+            <div class="border-b border-gray-200">
+                <nav class="flex -mb-px space-x-8">
+                    <button class="tab-btn px-1 py-4 text-sm font-medium border-b-2 border-primary text-primary" data-tab="talent-pool">人才池</button>
+                    <button class="tab-btn px-1 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="my-projects">我的项目</button>
+                    <button class="tab-btn px-1 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="cooperation">合作管理</button>
+                </nav>
+            </div>
+        </div>
+
+        <!-- 人才池 -->
+        <div id="talent-pool" class="tab-content block">
+            <!-- 筛选条件 -->
+            <div class="bg-white p-6 rounded-lg shadow-card mb-6">
+                <h2 class="text-lg font-semibold mb-4">筛选条件</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">专业分类</label>
+                        <select id="talent-filter-profession" class="w-full rounded border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50">
+                            <option value="">全部专业</option>
+                            <option value="it">IT技术</option>
+                            <option value="design">设计创意</option>
+                            <option value="marketing">市场营销</option>
+                            <option value="finance">财务金融</option>
+                            <option value="hr">人力资源</option>
+                            <option value="legal">法律</option>
+                            <option value="product">产品</option>
+                            <option value="operation">运营</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">人才等级</label>
+                        <select id="talent-filter-level" class="w-full rounded border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50">
+                            <option value="">全部等级</option>
+                            <option value="gold">金牌人才</option>
+                            <option value="silver">银牌人才</option>
+                            <option value="bronze">潜力人才</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">所在城市</label>
+                        <select id="talent-filter-city" class="w-full rounded border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50">
+                            <option value="">全部城市</option>
+                            <option value="北京">北京</option>
+                            <option value="上海">上海</option>
+                            <option value="广州">广州</option>
+                            <option value="深圳">深圳</option>
+                            <option value="杭州">杭州</option>
+                            <option value="南京">南京</option>
+                            <option value="成都">成都</option>
+                            <option value="武汉">武汉</option>
+                            <option value="西安">西安</option>
+                            <option value="其他">其他</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">最低测评分数</label>
+                        <select id="talent-filter-score" class="w-full rounded border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50">
+                            <option value="">不限制</option>
+                            <option value="90">90分以上</option>
+                            <option value="80">80分以上</option>
+                            <option value="70">70分以上</option>
+                            <option value="60">60分以上</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-4 flex justify-end">
+                    <button id="talent-filter-btn" class="btn-primary mr-2">
+                        <i class="fa fa-filter mr-1"></i>筛选
+                    </button>
+                    <button id="talent-reset-btn" class="btn-secondary">
+                        重置
+                    </button>
+                </div>
+            </div>
+
+            <!-- 人才列表 -->
+            <div class="bg-white p-6 rounded-lg shadow-card">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-lg font-semibold">人才列表</h2>
+                    <div class="text-sm text-gray-500">共找到 <span class="text-primary font-medium" id="talent-total-count">0</span> 位人才</div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6" id="talent-list-container">
+                    <!-- 人才卡片将通过JavaScript动态生成 -->
+                </div>
+                <div class="mt-6 flex justify-between items-center">
+                    <div class="text-sm text-gray-500" id="talent-pool-pagination-info">显示 0-0 条，共 0 条</div>
+                    <div class="flex space-x-2" id="talent-pool-pagination">
+                        <!-- 翻页按钮将通过JavaScript动态生成 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 我的项目 -->
+        <div id="my-projects" class="tab-content hidden">
+            <div class="bg-white p-6 rounded-lg shadow-card mb-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-lg font-semibold">发布的项目</h2>
+                    <button id="publish-project-btn" class="btn-primary">
+                        <i class="fa fa-plus mr-2"></i>发布项目
+                    </button>
+                </div>
+                <div class="mb-4 flex flex-col sm:flex-row gap-4">
+                    <div class="relative flex-1">
+                        <input type="text" id="my-projects-search" placeholder="搜索项目名称" class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
+                        <i class="fa fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    </div>
+                    <select id="my-projects-status-filter" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
+                        <option value="">全部状态</option>
+                        <option value="recruiting">招募中</option>
+                        <option value="in-progress">进行中</option>
+                        <option value="paused">已暂停</option>
+                        <option value="completed">已完成</option>
+                        <option value="terminated">已终止</option>
+                    </select>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">项目名称</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">专业领域</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">预算范围</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">发布时间</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">申请人数</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">状态</th>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="my-projects-tbody" class="bg-white divide-y divide-gray-200">
+                            <!-- 项目列表将通过JavaScript动态生成 -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-6 flex justify-between items-center">
+                    <div class="text-sm text-gray-500" id="my-projects-pagination-info">显示 0-0 条，共 0 条</div>
+                    <div class="flex space-x-2" id="my-projects-pagination">
+                        <!-- 翻页按钮将通过JavaScript动态生成 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 合作管理 -->
+        <div id="cooperation" class="tab-content hidden">
+            <div class="bg-white p-6 rounded-lg shadow-card mb-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-lg font-semibold">合作项目</h2>
+                    <div class="flex space-x-4">
+                        <div class="relative">
+                            <input type="text" id="cooperation-search" placeholder="搜索项目名称" class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
+                            <i class="fa fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                        <select id="cooperation-status-filter" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
+                            <option value="">全部状态</option>
+                            <option value="pending">待确认</option>
+                            <option value="in-progress">进行中</option>
+                            <option value="review">待验收</option>
+                            <option value="completed">已完成</option>
+                            <option value="terminated">已终止</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">项目名称</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">合作人才</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">开始时间</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">预计完成</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">项目进度</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">状态</th>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cooperation-tbody" class="bg-white divide-y divide-gray-200">
+                            <!-- 合作项目列表将通过JavaScript动态生成 -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-6 flex justify-between items-center">
+                    <div class="text-sm text-gray-500" id="cooperation-pagination-info">显示 0-0 条，共 0 条</div>
+                    <div class="flex space-x-2" id="cooperation-pagination">
+                        <!-- 翻页按钮将通过JavaScript动态生成 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- 人才详情模态框 -->
+    <div id="talent-detail-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+        <div class="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center p-6 border-b">
+                <h3 class="text-lg font-semibold">人才详情</h3>
+                <button id="close-talent-modal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fa fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <!-- 人才详情内容 -->
+                <div class="flex flex-col md:flex-row gap-6">
+                    <div class="md:w-1/3">
+                        <img id="modal-talent-image" src="https://ui-avatars.com/api/?name=张三&background=4F46E5&color=fff" alt="人才头像" class="w-32 h-32 rounded-full mx-auto">
+                        <div class="text-center mt-4">
+                            <h4 id="modal-talent-name" class="text-xl font-semibold">张三</h4>
+                            <p id="modal-talent-job" class="text-gray-500 mt-1">前端开发工程师</p>
+                            <div class="mt-2 flex justify-center items-center">
+                                <span id="modal-talent-score" class="text-primary font-medium text-lg">92</span>
+                                <span class="text-gray-500 text-sm ml-1">/ 100分</span>
+                            </div>
+                            <span id="modal-talent-badge" class="badge-gold mt-2 inline-block">金牌人才</span>
+                        </div>
+                        <div class="mt-6">
+                            <h5 class="font-medium mb-2">基础信息</h5>
+                            <div class="space-y-2">
+                                <div class="flex items-center">
+                                    <i class="fa fa-graduation-cap text-gray-400 w-8"></i>
+                                    <span class="text-gray-700">本科</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fa fa-briefcase text-gray-400 w-8"></i>
+                                    <span class="text-gray-700">5年工作经验</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fa fa-map-marker text-gray-400 w-8"></i>
+                                    <span class="text-gray-700">北京</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="md:w-2/3">
+                        <h5 class="font-medium mb-3">专业技能</h5>
+                        <div id="modal-talent-skills" class="flex flex-wrap gap-2 mb-6">
+                            <span class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm">React</span>
+                            <span class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm">Vue</span>
+                            <span class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm">TypeScript</span>
+                        </div>
+                        
+                        <h5 class="font-medium mb-3">测评结果</h5>
+                        <div class="space-y-4 mb-6">
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm">专业能力</span>
+                                    <span class="text-sm">95分</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                    <div class="bg-primary h-2.5 rounded-full" style="width: 95%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm">学习能力</span>
+                                    <span class="text-sm">90分</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                    <div class="bg-primary h-2.5 rounded-full" style="width: 90%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm">沟通协作</span>
+                                    <span class="text-sm">88分</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                    <div class="bg-primary h-2.5 rounded-full" style="width: 88%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <h5 class="font-medium mb-3">项目经验</h5>
+                        <div class="space-y-4 mb-6">
+                            <div>
+                                <h6 class="font-medium">企业官网重构项目</h6>
+                                <p class="text-sm text-gray-600 mt-1">使用React + TypeScript技术栈，负责前端架构设计和核心模块开发，提升了网站性能30%。</p>
+                            </div>
+                            <div>
+                                <h6 class="font-medium">电商平台开发</h6>
+                                <p class="text-sm text-gray-600 mt-1">参与大型电商平台的前端开发，负责商品详情页和购物车功能，优化了用户体验。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-6 border-t flex justify-end">
+                <button id="close-talent-detail" class="btn-secondary mr-3">
+                    关闭
+                </button>
+                <button class="btn-primary">
+                    邀请合作
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 发布项目模态框 -->
+    <div id="publish-project-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+        <div class="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center p-6 border-b">
+                <h3 class="text-lg font-semibold">发布项目需求</h3>
+                <button id="close-project-modal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fa fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <form id="publish-project-form">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">项目名称 <span class="text-red-500">*</span></label>
+                        <input type="text" id="project-name" required class="w-full rounded border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 py-2 px-3" placeholder="请输入项目名称">
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">专业领域 <span class="text-red-500">*</span></label>
+                            <select id="project-profession" required class="w-full rounded border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 py-2 px-3">
+                                <option value="">请选择专业领域</option>
+                                <option value="it">IT技术</option>
+                                <option value="design">设计创意</option>
+                                <option value="marketing">市场营销</option>
+                                <option value="finance">财务金融</option>
+                                <option value="hr">人力资源</option>
+                                <option value="legal">法律</option>
+                                <option value="product">产品</option>
+                                <option value="operation">运营</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">预算范围 <span class="text-red-500">*</span></label>
+                            <select id="project-budget" required class="w-full rounded border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 py-2 px-3">
+                                <option value="">请选择预算范围</option>
+                                <option value="5k-10k">¥5,000 - ¥10,000</option>
+                                <option value="10k-30k">¥10,000 - ¥30,000</option>
+                                <option value="30k-50k">¥30,000 - ¥50,000</option>
+                                <option value="50k-100k">¥50,000 - ¥100,000</option>
+                                <option value="100k+">¥100,000以上</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">项目描述 <span class="text-red-500">*</span></label>
+                        <textarea id="project-description" rows="4" required class="w-full rounded border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 py-2 px-3" placeholder="请详细描述项目需求、技术要求、交付内容等"></textarea>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">项目周期</label>
+                            <input type="text" id="project-duration" class="w-full rounded border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 py-2 px-3" placeholder="如：3个月（选填）">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">期望人数</label>
+                            <input type="number" id="project-people" min="1" class="w-full rounded border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 py-2 px-3" placeholder="选填">
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">技能要求</label>
+                        <div id="project-skills-container" class="flex flex-wrap gap-2 mb-2">
+                            <!-- 技能标签将动态添加 -->
+                        </div>
+                        <div class="relative">
+                            <input type="text" id="project-skill-input" class="w-full rounded border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 py-1 px-3 text-sm" placeholder="输入技能后按回车添加">
+                        </div>
+                    </div>
+                    
+                    <!-- 候选人条件设置 -->
+                    <div class="mb-4 p-4 bg-gray-50 rounded-lg">
+                        <h4 class="text-sm font-semibold text-gray-700 mb-3">候选人条件设置</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">专业要求</label>
+                                <select id="project-require-profession" class="w-full rounded border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 py-2 px-3">
+                                    <option value="">不限制</option>
+                                    <option value="it">IT技术</option>
+                                    <option value="design">设计创意</option>
+                                    <option value="marketing">市场营销</option>
+                                    <option value="finance">财务金融</option>
+                                    <option value="hr">人力资源</option>
+                                    <option value="legal">法律</option>
+                                    <option value="product">产品</option>
+                                    <option value="operation">运营</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">人才等级要求</label>
+                                <select id="project-require-level" class="w-full rounded border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 py-2 px-3">
+                                    <option value="">不限制</option>
+                                    <option value="gold">金牌人才</option>
+                                    <option value="silver">银牌人才及以上</option>
+                                    <option value="bronze">潜力人才及以上</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">最低测评分数</label>
+                                <select id="project-require-score" class="w-full rounded border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 py-2 px-3">
+                                    <option value="">不限制</option>
+                                    <option value="90">90分以上</option>
+                                    <option value="80">80分以上</option>
+                                    <option value="70">70分以上</option>
+                                    <option value="60">60分以上</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">所在城市要求</label>
+                                <select id="project-require-city" class="w-full rounded border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 py-2 px-3">
+                                    <option value="">不限制</option>
+                                    <option value="北京">北京</option>
+                                    <option value="上海">上海</option>
+                                    <option value="广州">广州</option>
+                                    <option value="深圳">深圳</option>
+                                    <option value="杭州">杭州</option>
+                                    <option value="南京">南京</option>
+                                    <option value="成都">成都</option>
+                                    <option value="武汉">武汉</option>
+                                    <option value="西安">西安</option>
+                                    <option value="其他">其他</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 保证金环节暂不使用，先隐藏 -->
+                    <div id="project-deposit-block" class="mb-4 p-4 bg-blue-50 rounded-lg border border-blue-200 hidden">
+                        <div class="flex items-start">
+                            <i class="fa fa-info-circle text-blue-500 mt-1 mr-2"></i>
+                            <div class="flex-1">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">项目保证金</label>
+                                <p class="text-sm text-gray-600 mb-2">根据平台规则，项目保证金为项目预算的<strong class="text-primary">100%</strong>，项目完成后平台将自动转给候选人。</p>
+                                <div class="text-sm">
+                                    <span class="font-medium">预计保证金：</span>
+                                    <span id="project-deposit-amount" class="text-primary font-semibold">¥0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="p-6 border-t flex justify-end">
+                <button id="cancel-publish-project" type="button" class="btn-secondary mr-3">
+                    取消
+                </button>
+                <button id="submit-publish-project" type="submit" form="publish-project-form" class="btn-primary">
+                    发布项目
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 邀请合作模态框 -->
+    <div id="invite-cooperation-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+        <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full">
+            <div class="flex justify-between items-center p-6 border-b">
+                <h3 class="text-lg font-semibold">邀请合作</h3>
+                <button id="close-invite-modal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fa fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <div class="flex items-center mb-4">
+                    <img id="invite-talent-image" src="https://ui-avatars.com/api/?name=张三&background=4F46E5&color=fff" alt="张三" class="w-12 h-12 rounded-full">
+                    <div class="ml-3">
+                        <h4 id="invite-talent-name" class="font-semibold">张三</h4>
+                        <p id="invite-talent-job" class="text-gray-500 text-sm">前端开发工程师</p>
+                        <p id="invite-talent-profession" class="text-gray-500 text-xs mt-1"></p>
+                    </div>
+                </div>
+                <form id="invite-cooperation-form">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">选择项目</label>
+                        <select class="w-full rounded border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 py-2 px-3">
+                            <option value="">请选择项目</option>
+                            <option value="1">企业官网开发</option>
+                            <option value="2">小程序开发</option>
+                            <option value="3">新功能开发</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">合作方式</label>
+                        <select class="w-full rounded border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 py-2 px-3">
+                            <option value="remote">远程工作</option>
+                            <option value="onsite">现场办公</option>
+                            <option value="hybrid">混合模式</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">期望薪资</label>
+                        <input type="text" class="w-full rounded border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 py-2 px-3" placeholder="请输入期望薪资">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">邀请留言</label>
+                        <textarea rows="3" class="w-full rounded border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 py-2 px-3" placeholder="请输入邀请留言"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="p-6 border-t flex justify-end">
+                <button id="cancel-invite" class="btn-secondary mr-3">
+                    取消
+                </button>
+                <button class="btn-primary">
+                    发送邀请
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 沟通模态框 -->
+    <div id="communication-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+        <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] flex flex-col">
+            <div class="flex justify-between items-center p-6 border-b">
+                <div class="flex items-center">
+                    <img id="communication-talent-avatar" src="" alt="" class="w-10 h-10 rounded-full mr-3">
+                    <div>
+                        <h3 class="text-lg font-semibold">项目沟通</h3>
+                        <p class="text-sm text-gray-500">
+                            <span id="communication-project-name"></span> - <span id="communication-talent-name"></span>
+                        </p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button id="communication-mode-toggle" class="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50">
+                        <i class="fa fa-comments mr-1"></i>实时沟通
+                    </button>
+                    <button id="close-communication-modal" class="text-gray-500 hover:text-gray-700">
+                        <i class="fa fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            <div id="communication-messages" class="flex-1 overflow-y-auto p-6 bg-gray-50 space-y-4" style="max-height: 400px;">
+                <!-- 消息历史将动态加载 -->
+            </div>
+            <div class="p-4 border-t bg-white">
+                <div class="flex items-center space-x-2">
+                    <input type="text" id="communication-input" placeholder="输入消息..." class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
+                    <button id="send-message-btn" class="btn-primary px-6">
+                        <i class="fa fa-paper-plane mr-1"></i>发送
+                    </button>
+                </div>
+                <div id="communication-mode-hint" class="mt-2 text-xs text-gray-500">
+                    <i class="fa fa-info-circle mr-1"></i>实时沟通模式：消息将立即发送
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 移动端菜单切换
+        document.addEventListener('DOMContentLoaded', function() {
+            const API_BASE = window.API_BASE_URL || localStorage.getItem('apiBaseUrl') || 'http://127.0.0.1:3001/api/v1';
+            function getAuthToken() {
+                if (typeof AuthHelper !== 'undefined' && AuthHelper.getEnterpriseApiToken) return AuthHelper.getEnterpriseApiToken();
+                var a = (typeof AuthHelper !== 'undefined' && AuthHelper.get) ? AuthHelper.get('enterprise') : null;
+                return (a && a.token) || localStorage.getItem('authToken_enterprise') || sessionStorage.getItem('authToken_enterprise') || null;
+            }
+            // 选项卡切换
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tab = this.getAttribute('data-tab');
+                    
+                    // 更新按钮样式
+                    tabBtns.forEach(b => {
+                        b.classList.remove('border-primary', 'text-primary');
+                        b.classList.add('border-transparent', 'text-gray-500');
+                    });
+                    this.classList.remove('border-transparent', 'text-gray-500');
+                    this.classList.add('border-primary', 'text-primary');
+                    
+                    // 更新内容显示
+                    tabContents.forEach(content => {
+                        content.classList.add('hidden');
+                    });
+                    document.getElementById(tab).classList.remove('hidden');
+                });
+            });
+            
+            // 移动端菜单切换
+            const menuToggle = document.getElementById('menu-toggle');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            if (menuToggle && mobileMenu) {
+                menuToggle.addEventListener('click', function() {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            }
+            
+            // 人才详情模态框
+            const viewTalentBtns = document.querySelectorAll('.view-talent-btn');
+            const talentDetailModal = document.getElementById('talent-detail-modal');
+            const closeTalentModal = document.getElementById('close-talent-modal');
+            const closeTalentDetail = document.getElementById('close-talent-detail');
+            
+            viewTalentBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const talentId = this.id.split('-')[2];
+                    // 这里可以根据talentId加载不同的人才数据
+                    talentDetailModal.classList.remove('hidden');
+                });
+            });
+            
+            closeTalentModal.addEventListener('click', function() {
+                talentDetailModal.classList.add('hidden');
+            });
+            
+            closeTalentDetail.addEventListener('click', function() {
+                talentDetailModal.classList.add('hidden');
+            });
+            
+            // 发布项目模态框
+            const publishProjectBtn = document.getElementById('publish-project-btn');
+            const publishProjectModal = document.getElementById('publish-project-modal');
+            const closeProjectModal = document.getElementById('close-project-modal');
+            const cancelPublishProject = document.getElementById('cancel-publish-project');
+            const publishProjectForm = document.getElementById('publish-project-form');
+            const submitPublishProject = document.getElementById('submit-publish-project');
+            
+            // 项目技能管理
+            let projectSkills = [];
+            const projectSkillInput = document.getElementById('project-skill-input');
+            const projectSkillsContainer = document.getElementById('project-skills-container');
+            
+            if (projectSkillInput) {
+                projectSkillInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const skill = this.value.trim();
+                        if (skill && !projectSkills.includes(skill)) {
+                            projectSkills.push(skill);
+                            renderProjectSkills();
+                            this.value = '';
+                        }
+                    }
+                });
+            }
+            
+            function renderProjectSkills() {
+                if (!projectSkillsContainer) return;
+                projectSkillsContainer.innerHTML = projectSkills.map((skill, index) => `
+                    <span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm flex items-center">
+                        ${skill}
+                        <button type="button" onclick="removeProjectSkill(${index})" class="ml-2 text-primary hover:text-indigo-700">
+                            <i class="fa fa-times text-xs"></i>
+                        </button>
+                    </span>
+                `).join('');
+            }
+            
+            window.removeProjectSkill = function(index) {
+                projectSkills.splice(index, 1);
+                renderProjectSkills();
+            };
+            
+            // 计算保证金金额
+            function updateDepositAmount() {
+                const budgetSelect = document.getElementById('project-budget');
+                const depositEl = document.getElementById('project-deposit-amount');
+                if (!budgetSelect || !depositEl) return;
+                
+                const budgetMap = {
+                    '5k-10k': 10000,
+                    '10k-30k': 30000,
+                    '30k-50k': 50000,
+                    '50k-100k': 100000,
+                    '100k+': 150000
+                };
+                
+                const budget = budgetSelect.value;
+                const amount = budgetMap[budget] || 0;
+                depositEl.textContent = `¥${amount.toLocaleString()}`;
+            }
+            
+            const budgetSelect = document.getElementById('project-budget');
+            if (budgetSelect) {
+                budgetSelect.addEventListener('change', updateDepositAmount);
+            }
+            
+            if (publishProjectBtn && publishProjectModal) {
+              publishProjectBtn.addEventListener('click', function() {
+                // 重置表单
+                if (publishProjectForm) {
+                    publishProjectForm.reset();
+                    projectSkills = [];
+                    renderProjectSkills();
+                    updateDepositAmount();
+                }
+                publishProjectModal.classList.remove('hidden');
+              });
+            }
+            
+            if (closeProjectModal && publishProjectModal) {
+              closeProjectModal.addEventListener('click', function() {
+                publishProjectModal.classList.add('hidden');
+              });
+            }
+            
+            if (cancelPublishProject && publishProjectModal) {
+              cancelPublishProject.addEventListener('click', function() {
+                publishProjectModal.classList.add('hidden');
+              });
+            }
+            
+            // 提交项目发布（调用后端 API 写入数据库，并刷新「我的项目」列表）
+            function parseBudgetRange(budgetKey) {
+                var map = { '5k-10k': [5000, 10000], '10k-30k': [10000, 30000], '30k-50k': [30000, 50000], '50k-100k': [50000, 100000], '100k+': [100000, null] };
+                var arr = map[budgetKey];
+                return arr ? { budgetMin: arr[0], budgetMax: arr[1] } : { budgetMin: null, budgetMax: null };
+            }
+            if (submitPublishProject && publishProjectForm) {
+                publishProjectForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    var name = document.getElementById('project-name').value.trim();
+                    var profession = document.getElementById('project-profession').value;
+                    var budgetKey = document.getElementById('project-budget').value;
+                    var description = document.getElementById('project-description').value.trim();
+                    if (!name || !profession || !budgetKey || !description) {
+                        alert('请填写所有必填项（项目名称、专业方向、预算、项目描述）');
+                        return;
+                    }
+                    var budget = parseBudgetRange(budgetKey);
+                    var payload = {
+                        name: name,
+                        type: profession,
+                        requiredTalentType: profession,
+                        bizType: 'talent_pool',
+                        status: 'recruiting',
+                        publishDate: new Date().toISOString().slice(0, 10),
+                        budgetMin: budget.budgetMin,
+                        budgetMax: budget.budgetMax,
+                        description: description
+                    };
+                    var token = getAuthToken();
+                    if (!token) {
+                        alert('请先登录');
+                        return;
+                    }
+                    submitPublishProject.disabled = true;
+                    submitPublishProject.textContent = '发布中...';
+                    fetch(API_BASE + '/projects', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                        body: JSON.stringify(payload)
+                    }).then(function(r) {
+                        return r.text().then(function(text) {
+                            try { return { ok: r.ok, status: r.status, j: text ? JSON.parse(text) : {} }; } catch (_) { return { ok: r.ok, status: r.status, j: {} }; }
+                        });
+                    }).then(function(o) {
+                        submitPublishProject.disabled = false;
+                        submitPublishProject.textContent = '发布项目';
+                        if (o.ok && o.j.success) {
+                            publishProjectModal.classList.add('hidden');
+                            publishProjectForm.reset();
+                            projectSkills = [];
+                            renderProjectSkills();
+                            if (typeof initMyProjectsData === 'function') initMyProjectsData();
+                            alert('项目发布成功！已显示在「我的项目」中，求职端人才池可承接。');
+                        } else {
+                            alert((o.j && o.j.message) ? o.j.message : ('发布失败' + (o.status ? '（' + o.status + '）' : '')));
+                        }
+                    }).catch(function(err) {
+                        submitPublishProject.disabled = false;
+                        submitPublishProject.textContent = '发布项目';
+                        alert('发布失败：' + (err.message || '网络错误') + '。请检查后端是否启动、接口地址是否正确，或联系管理员。');
+                    });
+                });
+            }
+            
+            // 邀请合作模态框
+            const inviteTalentBtns = document.querySelectorAll('.invite-talent-btn');
+            const inviteCooperationModal = document.getElementById('invite-cooperation-modal');
+            const closeInviteModal = document.getElementById('close-invite-modal');
+            const cancelInvite = document.getElementById('cancel-invite');
+            
+            inviteTalentBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const talentId = this.id.split('-')[2];
+                    // 这里可以根据talentId加载不同的人才数据并填充模态框
+                    inviteCooperationModal.classList.remove('hidden');
+                });
+            });
+            
+            closeInviteModal.addEventListener('click', function() {
+                inviteCooperationModal.classList.add('hidden');
+            });
+            
+            cancelInvite.addEventListener('click', function() {
+                inviteCooperationModal.classList.add('hidden');
+            });
+            
+            // ========== 沟通模态框功能 ==========
+            let communicationMode = 'realtime'; // 'realtime' 或 'message'
+            let communicationMessages = {};
+            let currentCommunicationProjectId = null;
+            
+            const communicationModal = document.getElementById('communication-modal');
+            const closeCommunicationModal = document.getElementById('close-communication-modal');
+            const communicationModeToggle = document.getElementById('communication-mode-toggle');
+            const communicationInput = document.getElementById('communication-input');
+            const sendMessageBtn = document.getElementById('send-message-btn');
+            const communicationMessagesContainer = document.getElementById('communication-messages');
+            const communicationModeHint = document.getElementById('communication-mode-hint');
+            
+            // 初始化沟通消息历史（模拟数据）
+            function initCommunicationMessages(projectId) {
+                if (!communicationMessages[projectId]) {
+                    communicationMessages[projectId] = [
+                        { sender: 'talent', text: '您好，我已经开始项目的前期准备工作。', time: '2024-01-15 10:00', type: 'realtime' },
+                        { sender: 'enterprise', text: '好的，请按照项目计划推进。', time: '2024-01-15 10:05', type: 'realtime' },
+                        { sender: 'talent', text: '收到，我会定期更新进度。', time: '2024-01-15 10:06', type: 'realtime' }
+                    ];
+                }
+            }
+            
+            // 渲染消息列表
+            function renderCommunicationMessages(projectId) {
+                if (!communicationMessagesContainer) return;
+                
+                const messages = communicationMessages[projectId] || [];
+                communicationMessagesContainer.innerHTML = messages.map(msg => {
+                    const isEnterprise = msg.sender === 'enterprise';
+                    const timeLabel = communicationMode === 'realtime' ? msg.time : '待回复';
+                    
+                    return `
+                        <div class="flex ${isEnterprise ? 'justify-end' : 'justify-start'}">
+                            <div class="max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${isEnterprise ? 'bg-primary text-white' : 'bg-white border border-gray-200'}">
+                                <p class="text-sm">${msg.text}</p>
+                                <p class="text-xs mt-1 ${isEnterprise ? 'text-blue-100' : 'text-gray-500'}">${timeLabel}</p>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+                // 滚动到底部
+                communicationMessagesContainer.scrollTop = communicationMessagesContainer.scrollHeight;
+            }
+            
+            // 切换沟通模式
+            if (communicationModeToggle) {
+                communicationModeToggle.addEventListener('click', function() {
+                    communicationMode = communicationMode === 'realtime' ? 'message' : 'realtime';
+                    
+                    if (communicationMode === 'realtime') {
+                        this.innerHTML = '<i class="fa fa-comments mr-1"></i>实时沟通';
+                        if (communicationModeHint) {
+                            communicationModeHint.innerHTML = '<i class="fa fa-info-circle mr-1"></i>实时沟通模式：消息将立即发送';
+                        }
+                    } else {
+                        this.innerHTML = '<i class="fa fa-envelope mr-1"></i>留言模式';
+                        if (communicationModeHint) {
+                            communicationModeHint.innerHTML = '<i class="fa fa-info-circle mr-1"></i>留言模式：发送后等待对方回复';
+                        }
+                    }
+                });
+            }
+            
+            // 发送消息
+            if (sendMessageBtn && communicationInput) {
+                sendMessageBtn.addEventListener('click', function() {
+                    const messageText = communicationInput.value.trim();
+                    if (!messageText || !currentCommunicationProjectId) return;
+                    
+                    const now = new Date();
+                    const timeStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+                    
+                    const newMessage = {
+                        sender: 'enterprise',
+                        text: messageText,
+                        time: timeStr,
+                        type: communicationMode
+                    };
+                    
+                    if (!communicationMessages[currentCommunicationProjectId]) {
+                        communicationMessages[currentCommunicationProjectId] = [];
+                    }
+                    communicationMessages[currentCommunicationProjectId].push(newMessage);
+                    
+                    communicationInput.value = '';
+                    renderCommunicationMessages(currentCommunicationProjectId);
+                    
+                    // 如果是留言模式，显示提示
+                    if (communicationMode === 'message') {
+                        setTimeout(() => {
+                            const replyMessage = {
+                                sender: 'talent',
+                                text: '收到您的留言，我会尽快回复。',
+                                time: '待回复',
+                                type: 'message'
+                            };
+                            communicationMessages[currentCommunicationProjectId].push(replyMessage);
+                            renderCommunicationMessages(currentCommunicationProjectId);
+                        }, 2000);
+                    }
+                });
+                
+                // 支持回车发送
+                communicationInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        sendMessageBtn.click();
+                    }
+                });
+            }
+            
+            // 更新openCommunication函数
+            const originalOpenCommunication = window.openCommunication;
+            window.openCommunication = function(projectId) {
+                currentCommunicationProjectId = projectId;
+                initCommunicationMessages(projectId);
+                renderCommunicationMessages(projectId);
+                
+                // 调用原始函数
+                if (originalOpenCommunication) {
+                    originalOpenCommunication(projectId);
+                }
+            };
+            
+            if (closeCommunicationModal) {
+                closeCommunicationModal.addEventListener('click', function() {
+                    communicationModal.classList.add('hidden');
+                });
+            }
+            
+            // 点击模态框外部关闭模态框
+            window.addEventListener('click', function(event) {
+                if (event.target === talentDetailModal) {
+                    talentDetailModal.classList.add('hidden');
+                }
+                if (event.target === publishProjectModal) {
+                    publishProjectModal.classList.add('hidden');
+                }
+                if (event.target === inviteCooperationModal) {
+                    inviteCooperationModal.classList.add('hidden');
+                }
+                if (event.target === communicationModal) {
+                    communicationModal.classList.add('hidden');
+                }
+            });
+            
+            // ========== 人才池模块完整功能 ==========
+            let talentPoolData = [];
+            let filteredTalentPoolData = [];
+            let talentPoolCurrentPage = 1;
+            const talentPoolItemsPerPage = 9;
+            
+            function levelToDisplay(level) {
+                if (level === 'gold') return { levelName: '金牌人才', levelBadge: 'badge-gold' };
+                if (level === 'silver') return { levelName: '银牌人才', levelBadge: 'badge-silver' };
+                return { levelName: '潜力人才', levelBadge: 'badge-bronze' };
+            }
+            // 模拟人才池数据（当 API 无数据时使用）
+            function getMockTalentPoolData() {
+                var mockList = [
+                    { id: 'T1001', name: '张三', profession: 'it', professionName: '计算机科学与技术', level: 'gold', levelName: '金牌人才', levelBadge: 'badge-gold', score: 92, city: '北京', skills: ['Java', 'Spring', 'MySQL'], experience: 5, avatar: 'https://ui-avatars.com/api/?name=张三&background=4F46E5&color=fff&size=128' },
+                    { id: 'T1002', name: '李四', profession: 'it', professionName: '软件工程', level: 'silver', levelName: '银牌人才', levelBadge: 'badge-silver', score: 85, city: '上海', skills: ['前端开发', 'Vue', 'React'], experience: 3, avatar: 'https://ui-avatars.com/api/?name=李四&background=4F46E5&color=fff&size=128' },
+                    { id: 'T1003', name: '王五', profession: 'it', professionName: '数据科学', level: 'potential', levelName: '潜力人才', levelBadge: 'badge-bronze', score: 72, city: '杭州', skills: ['Python', '数据分析'], experience: 2, avatar: 'https://ui-avatars.com/api/?name=王五&background=4F46E5&color=fff&size=128' },
+                    { id: 'T1004', name: '赵六', profession: 'it', professionName: '产品设计', level: 'silver', levelName: '银牌人才', levelBadge: 'badge-silver', score: 88, city: '深圳', skills: ['产品经理', 'Axure', '用户研究'], experience: 4, avatar: 'https://ui-avatars.com/api/?name=赵六&background=4F46E5&color=fff&size=128' },
+                    { id: 'T1005', name: '钱七', profession: 'it', professionName: 'UI设计', level: 'potential', levelName: '潜力人才', levelBadge: 'badge-bronze', score: 75, city: '广州', skills: ['Figma', 'Sketch', '视觉设计'], experience: 1, avatar: 'https://ui-avatars.com/api/?name=钱七&background=4F46E5&color=fff&size=128' }
+                ];
+                return mockList;
+            }
+            // 从 API 加载人才池或生成模拟数据
+            async function initTalentPoolData() {
+                const token = getAuthToken();
+                if (token) {
+                    try {
+                        const r = await fetch(API_BASE + '/talent-pool/list', { headers: { 'Authorization': 'Bearer ' + token } });
+                        if (r.ok) {
+                            const j = await r.json();
+                            if (j.success && Array.isArray(j.data) && j.data.length > 0) {
+                                talentPoolData = j.data.map(function(u, i) {
+                                    var d = levelToDisplay(u.level || 'potential');
+                                    var skills = Array.isArray(u.skills) ? u.skills : (u.skills ? [u.skills] : []);
+                                    if (u.major) skills.unshift(u.major);
+                                    return {
+                                        id: u.userId || u.id || ('T' + (1000 + i)),
+                                        name: u.name || u.username,
+                                        profession: 'it',
+                                        professionName: u.major || u.education || '专业人才',
+                                        level: u.level || 'potential',
+                                        levelName: d.levelName,
+                                        levelBadge: d.levelBadge,
+                                        score: u.level === 'gold' ? 92 : u.level === 'silver' ? 85 : 72,
+                                        city: '其他',
+                                        skills: skills.length ? skills : ['专业技能'],
+                                        experience: u.workYears || 1,
+                                        avatar: 'https://ui-avatars.com/api/?name=' + encodeURIComponent(u.name || u.username) + '&background=4F46E5&color=fff&size=128'
+                                    };
+                                });
+                                filteredTalentPoolData = talentPoolData.slice();
+                                renderTalentList();
+                                console.log('人才池数据从API加载完成，共', talentPoolData.length, '条');
+                                return;
+                            }
+                        }
+                    } catch (e) { console.warn('Load talent-pool list failed', e); }
+                }
+                // API 无数据或失败时使用模拟数据，确保有可展示内容
+                talentPoolData = getMockTalentPoolData();
+                filteredTalentPoolData = talentPoolData.slice();
+                console.log('人才池使用模拟数据，共', talentPoolData.length, '条');
+                renderTalentList();
+            }
+            
+            // 渲染人才列表
+            function renderTalentList() {
+                const container = document.getElementById('talent-list-container');
+                if (!container) return;
+                
+                const startIndex = (talentPoolCurrentPage - 1) * talentPoolItemsPerPage;
+                const endIndex = startIndex + talentPoolItemsPerPage;
+                const pageData = filteredTalentPoolData.slice(startIndex, endIndex);
+                
+                if (pageData.length === 0) {
+                    container.innerHTML = '<div class="col-span-full text-center py-12 text-gray-500">暂无符合条件的人才</div>';
+                    updateTalentPoolPagination();
+                    return;
+                }
+                
+                container.innerHTML = pageData.map(talent => {
+                    const skillsHTML = talent.skills.map(skill => 
+                        `<span class="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs">${skill}</span>`
+                    ).join('');
+                    
+                    return `
+                        <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition">
+                            <div class="p-5">
+                                <div class="flex items-start">
+                                    <img src="${talent.avatar}" alt="${talent.name}" class="w-16 h-16 rounded-full">
+                                    <div class="ml-4 flex-1">
+                                        <div class="flex justify-between">
+                                            <h3 class="text-lg font-semibold">${talent.name}</h3>
+                                            <span class="${talent.levelBadge}">${talent.levelName}</span>
+                                        </div>
+                                        <p class="text-gray-500 text-sm mt-1">${talent.professionName}</p>
+                                        <div class="flex items-center mt-2">
+                                            <span class="text-primary font-medium text-lg">${talent.score}</span>
+                                            <span class="text-gray-500 text-sm ml-1">/ 100分</span>
+                                        </div>
+                                        <div class="text-xs text-gray-500 mt-1">
+                                            <i class="fa fa-map-marker mr-1"></i>${talent.city}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-4">
+                                    <div class="flex flex-wrap gap-2">
+                                        ${skillsHTML}
+                                        <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs">${talent.experience}年经验</span>
+                                    </div>
+                                </div>
+                                <div class="mt-4 flex justify-end">
+                                    <button onclick="viewTalentDetail('${talent.id}')" class="view-talent-btn btn-secondary mr-2">
+                                        查看详情
+                                    </button>
+                                    <button onclick="removeFromTalentPool('${talent.id}')" class="invite-talent-btn btn-secondary mr-2">
+                                        移出人才池
+                                    </button>
+                                    <button onclick="inviteTalent('${talent.id}')" class="invite-talent-btn btn-primary">
+                                        邀请合作
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+                updateTalentPoolPagination();
+            }
+            
+            // 更新人才池分页
+            function updateTalentPoolPagination() {
+                const paginationInfo = document.getElementById('talent-pool-pagination-info');
+                const paginationContainer = document.getElementById('talent-pool-pagination');
+                const totalCountEl = document.getElementById('talent-total-count');
+                
+                if (!paginationInfo || !paginationContainer) return;
+                
+                const totalItems = filteredTalentPoolData.length;
+                const totalPages = Math.ceil(totalItems / talentPoolItemsPerPage);
+                const startIndex = (talentPoolCurrentPage - 1) * talentPoolItemsPerPage + 1;
+                const endIndex = Math.min(talentPoolCurrentPage * talentPoolItemsPerPage, totalItems);
+                
+                if (totalCountEl) {
+                    totalCountEl.textContent = totalItems;
+                }
+                
+                paginationInfo.textContent = `显示 ${startIndex}-${endIndex} 条，共 ${totalItems} 条`;
+                
+                let paginationHTML = '';
+                paginationHTML += `
+                    <button onclick="changeTalentPoolPage(${talentPoolCurrentPage - 1})" 
+                            class="px-3 py-1 rounded border border-gray-300 text-gray-500 hover:bg-gray-50 ${talentPoolCurrentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}"
+                            ${talentPoolCurrentPage === 1 ? 'disabled' : ''}>
+                        <i class="fa fa-angle-left"></i>
+                    </button>
+                `;
+                
+                const maxVisiblePages = 5;
+                let startPage = Math.max(1, talentPoolCurrentPage - Math.floor(maxVisiblePages / 2));
+                let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+                
+                if (endPage - startPage < maxVisiblePages - 1) {
+                    startPage = Math.max(1, endPage - maxVisiblePages + 1);
+                }
+                
+                if (startPage > 1) {
+                    paginationHTML += `<button onclick="changeTalentPoolPage(1)" class="px-3 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-50">1</button>`;
+                    if (startPage > 2) {
+                        paginationHTML += `<span class="px-2 text-gray-500">...</span>`;
+                    }
+                }
+                
+                for (let i = startPage; i <= endPage; i++) {
+                    paginationHTML += `
+                        <button onclick="changeTalentPoolPage(${i})" 
+                                class="px-3 py-1 rounded border ${i === talentPoolCurrentPage ? 'border-primary bg-primary text-white' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}">
+                            ${i}
+                        </button>
+                    `;
+                }
+                
+                if (endPage < totalPages) {
+                    if (endPage < totalPages - 1) {
+                        paginationHTML += `<span class="px-2 text-gray-500">...</span>`;
+                    }
+                    paginationHTML += `<button onclick="changeTalentPoolPage(${totalPages})" class="px-3 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-50">${totalPages}</button>`;
+                }
+                
+                paginationHTML += `
+                    <button onclick="changeTalentPoolPage(${talentPoolCurrentPage + 1})" 
+                            class="px-3 py-1 rounded border border-gray-300 text-gray-500 hover:bg-gray-50 ${talentPoolCurrentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''}"
+                            ${talentPoolCurrentPage === totalPages ? 'disabled' : ''}>
+                        <i class="fa fa-angle-right"></i>
+                    </button>
+                `;
+                
+                paginationContainer.innerHTML = paginationHTML;
+            }
+
+            // 企业端：将人才从人才池中移除
+            window.removeFromTalentPool = async function(userId) {
+                if (!userId) return;
+                if (!confirm('确定要将该人才从人才池中移除吗？\n移除后，仍可通过历史记录找到该人才，但不会再出现在人才池列表中。')) {
+                    return;
+                }
+                const token = getAuthToken();
+                if (!token) {
+                    alert('请先登录企业账号');
+                    return;
+                }
+                try {
+                    const r = await fetch(API_BASE + '/talent-pool/' + encodeURIComponent(userId), {
+                        method: 'DELETE',
+                        headers: { 'Authorization': 'Bearer ' + token }
+                    });
+                    const text = await r.text();
+                    let j = null;
+                    try { j = text ? JSON.parse(text) : null; } catch (_) {}
+                    if (r.ok && j && j.success) {
+                        if (window.showToast) {
+                            window.showToast('已移出人才池', 'success');
+                        } else {
+                            alert('已将该人才移出人才池');
+                        }
+                        // 从前端列表中移除
+                        talentPoolData = (talentPoolData || []).filter(t => String(t.id) !== String(userId));
+                        filteredTalentPoolData = (filteredTalentPoolData || []).filter(t => String(t.id) !== String(userId));
+                        renderTalentList();
+                        updateTalentPoolPagination();
+                    } else {
+                        alert((j && j.message) ? j.message : '移出人才池失败，请稍后重试');
+                    }
+                } catch (e) {
+                    alert('移出人才池失败：' + (e.message || '网络错误'));
+                }
+            };
+            
+            // 切换人才池页码
+            window.changeTalentPoolPage = function(page) {
+                if (page < 1) return;
+                const totalPages = Math.ceil(filteredTalentPoolData.length / talentPoolItemsPerPage);
+                if (page > totalPages) return;
+                talentPoolCurrentPage = page;
+                renderTalentList();
+            };
+            
+            // 应用筛选条件
+            function applyTalentPoolFilters() {
+                const profession = document.getElementById('talent-filter-profession')?.value || '';
+                const level = document.getElementById('talent-filter-level')?.value || '';
+                const city = document.getElementById('talent-filter-city')?.value || '';
+                const minScore = document.getElementById('talent-filter-score')?.value || '';
+                
+                filteredTalentPoolData = talentPoolData.filter(talent => {
+                    if (profession && talent.profession !== profession) return false;
+                    if (level && talent.level !== level) return false;
+                    if (city && talent.city !== city) return false;
+                    if (minScore && talent.score < parseInt(minScore)) return false;
+                    return true;
+                });
+                
+                talentPoolCurrentPage = 1;
+                renderTalentList();
+            }
+            
+            // 重置筛选条件
+            function resetTalentPoolFilters() {
+                document.getElementById('talent-filter-profession').value = '';
+                document.getElementById('talent-filter-level').value = '';
+                document.getElementById('talent-filter-city').value = '';
+                document.getElementById('talent-filter-score').value = '';
+                
+                filteredTalentPoolData = [...talentPoolData];
+                talentPoolCurrentPage = 1;
+                renderTalentList();
+            }
+            
+            // 查看人才详情
+            window.viewTalentDetail = function(talentId) {
+                const talent = talentPoolData.find(t => t.id === talentId);
+                if (!talent) return;
+                
+                const modal = document.getElementById('talent-detail-modal');
+                if (!modal) return;
+                
+                // 填充人才详情
+                document.getElementById('modal-talent-image').src = talent.avatar;
+                document.getElementById('modal-talent-image').alt = talent.name;
+                document.getElementById('modal-talent-name').textContent = talent.name;
+                document.getElementById('modal-talent-job').textContent = talent.professionName;
+                document.getElementById('modal-talent-score').textContent = talent.score;
+                
+                // 更新等级徽章
+                const badgeEl = document.getElementById('modal-talent-badge');
+                if (badgeEl) {
+                    badgeEl.className = talent.levelBadge + ' mt-2 inline-block';
+                    badgeEl.textContent = talent.levelName;
+                }
+                
+                // 更新基础信息
+                const baseInfoEl = document.querySelector('#talent-detail-modal .space-y-2');
+                if (baseInfoEl) {
+                    baseInfoEl.innerHTML = `
+                        <div class="flex items-center">
+                            <i class="fa fa-briefcase text-gray-400 w-8"></i>
+                            <span class="text-gray-700">${talent.experience}年工作经验</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fa fa-map-marker text-gray-400 w-8"></i>
+                            <span class="text-gray-700">${talent.city}</span>
+                        </div>
+                    `;
+                }
+                
+                // 更新技能
+                const skillsEl = document.getElementById('modal-talent-skills');
+                if (skillsEl) {
+                    skillsEl.innerHTML = talent.skills.map(skill => 
+                        `<span class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm">${skill}</span>`
+                    ).join('');
+                }
+                
+                // 更新测评结果（根据总分生成分项）
+                const professionalScore = Math.min(100, talent.score + Math.floor(Math.random() * 5) - 2);
+                const learningScore = Math.min(100, talent.score + Math.floor(Math.random() * 5) - 2);
+                const communicationScore = Math.min(100, talent.score + Math.floor(Math.random() * 5) - 2);
+                
+                const assessmentEl = document.querySelector('#talent-detail-modal .space-y-4.mb-6');
+                if (assessmentEl) {
+                    assessmentEl.innerHTML = `
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="text-sm">专业能力</span>
+                                <span class="text-sm">${professionalScore}分</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                <div class="bg-primary h-2.5 rounded-full" style="width: ${professionalScore}%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="text-sm">学习能力</span>
+                                <span class="text-sm">${learningScore}分</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                <div class="bg-primary h-2.5 rounded-full" style="width: ${learningScore}%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="text-sm">沟通协作</span>
+                                <span class="text-sm">${communicationScore}分</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                <div class="bg-primary h-2.5 rounded-full" style="width: ${communicationScore}%"></div>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // 更新邀请合作按钮
+                const inviteBtn = document.querySelector('#talent-detail-modal .btn-primary');
+                if (inviteBtn) {
+                    inviteBtn.onclick = () => {
+                        modal.classList.add('hidden');
+                        inviteTalent(talentId);
+                    };
+                }
+                
+                modal.classList.remove('hidden');
+            };
+            
+            // 邀请人才合作
+            window.inviteTalent = function(talentId) {
+                const talent = talentPoolData.find(t => t.id === talentId);
+                if (!talent) return;
+                
+                // 填充邀请合作模态框
+                const modal = document.getElementById('invite-cooperation-modal');
+                if (modal) {
+                    document.getElementById('invite-talent-image').src = talent.avatar;
+                    document.getElementById('invite-talent-name').textContent = talent.name;
+                    const jobEl = document.getElementById('invite-talent-job');
+                    if (jobEl) {
+                        jobEl.textContent = talent.professionName;
+                    }
+                    modal.classList.remove('hidden');
+                }
+            };
+            
+            // 绑定筛选事件
+            const talentFilterBtn = document.getElementById('talent-filter-btn');
+            const talentResetBtn = document.getElementById('talent-reset-btn');
+            
+            if (talentFilterBtn) {
+                talentFilterBtn.addEventListener('click', applyTalentPoolFilters);
+            }
+            
+            if (talentResetBtn) {
+                talentResetBtn.addEventListener('click', resetTalentPoolFilters);
+            }
+            
+            // 筛选条件变化时自动应用（可选）
+            ['talent-filter-profession', 'talent-filter-level', 'talent-filter-city', 'talent-filter-score'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('change', applyTalentPoolFilters);
+                }
+            });
+            
+            // 初始化人才池模块（API 加载后内部会调用 renderTalentList）
+            initTalentPoolData();
+
+            // ========== 候选人管理入口（跳转到候选人列表/详情页，复用 sj_candidates 数据） ==========
+            // 说明：当前人才池模块主要展示平台级人才，企业岗位下的应聘候选人可在测评管理/候选人管理中查看。
+            // 若后续需要在本页增加“本企业岗位候选人”卡片，可直接调用 /api/v1/candidates 列表接口，
+            // 并在点击某个候选人时跳转到单独的候选人详情页面，通过 GET /api/v1/candidates/:id 加载详情数据。
+            
+            // ========== 我的项目模块完整功能 ==========
+            let myProjectsData = [];
+            let filteredMyProjectsData = [];
+            let myProjectsCurrentPage = 1;
+            const myProjectsItemsPerPage = 10;
+            
+            const statusNamesProjects = { 'recruiting': '招募中', 'in-progress': '进行中', 'paused': '已暂停', 'completed': '已完成', 'terminated': '已终止' };
+            const statusClassesProjects = { 'recruiting': 'bg-green-100 text-green-800', 'in-progress': 'bg-yellow-100 text-yellow-800', 'paused': 'bg-gray-100 text-gray-800', 'completed': 'bg-blue-100 text-blue-800', 'terminated': 'bg-red-100 text-red-800' };
+            async function initMyProjectsData() {
+                const token = getAuthToken();
+                if (token) {
+                    try {
+                        // 人才池页面的「我的项目」只看“与人才池候选人有关”的项目
+                        const r = await fetch(API_BASE + '/talent-pool/projects', { headers: { 'Authorization': 'Bearer ' + token } });
+                        if (r.ok) {
+                            const j = await r.json();
+                            if (j.success && Array.isArray(j.data)) {
+                                myProjectsData = j.data.map(function(p) {
+                                    var budgetRange = (p.budgetMin || p.budgetMax)
+                                        ? '¥' + (p.budgetMin || 0).toLocaleString() + ' - ¥' + (p.budgetMax || 0).toLocaleString()
+                                        : '面议';
+                                    return {
+                                        id: p.id,
+                                        name: p.name,
+                                        profession: p.requiredTalentType || 'it',
+                                        professionName: p.type || '项目',
+                                        budget: '',
+                                        budgetRange: budgetRange,
+                                        publishDate: (p.publishDate || '').toString().slice(0, 10),
+                                        applicants: p.talentApplicants || p.applicants || 0,
+                                        status: p.status || 'recruiting',
+                                        statusName: statusNamesProjects[p.status] || '招募中',
+                                        statusClass: statusClassesProjects[p.status] || 'bg-green-100 text-green-800'
+                                    };
+                                });
+                                filteredMyProjectsData = myProjectsData.slice();
+                                renderMyProjectsList();
+                                console.log('人才池「我的项目」从API加载完成，共', myProjectsData.length, '条');
+                                return;
+                            }
+                        }
+                    } catch (e) { console.warn('Load talent-pool projects failed', e); }
+                }
+                myProjectsData = [];
+                filteredMyProjectsData = [];
+                renderMyProjectsList();
+            }
+            
+            // 渲染我的项目列表
+            function renderMyProjectsList() {
+                const tbody = document.getElementById('my-projects-tbody');
+                if (!tbody) return;
+                
+                const startIndex = (myProjectsCurrentPage - 1) * myProjectsItemsPerPage;
+                const endIndex = startIndex + myProjectsItemsPerPage;
+                const pageData = filteredMyProjectsData.slice(startIndex, endIndex);
+                
+                if (pageData.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" class="px-6 py-4 text-center text-gray-500">暂无项目</td></tr>';
+                    updateMyProjectsPagination();
+                    return;
+                }
+                
+                tbody.innerHTML = pageData.map(project => {
+                    let actionButtons = '';
+                    if (project.status === 'recruiting') {
+                        actionButtons = `
+                            <button onclick="viewProjectDetail('${project.id}')" class="text-primary hover:text-indigo-700 mr-3">查看详情</button>
+                            <button onclick="editProject('${project.id}')" class="text-gray-600 hover:text-gray-900 mr-3">编辑</button>
+                            <button onclick="pauseProject('${project.id}')" class="text-gray-600 hover:text-gray-900">暂停招募</button>
+                        `;
+                    } else if (project.status === 'in-progress') {
+                        actionButtons = `
+                            <button onclick="viewProjectDetail('${project.id}')" class="text-primary hover:text-indigo-700 mr-3">查看详情</button>
+                            <button onclick="terminateProject('${project.id}')" class="text-gray-600 hover:text-gray-900">终止项目</button>
+                        `;
+                    } else if (project.status === 'paused') {
+                        actionButtons = `
+                            <button onclick="viewProjectDetail('${project.id}')" class="text-primary hover:text-indigo-700 mr-3">查看详情</button>
+                            <button onclick="resumeProject('${project.id}')" class="text-green-600 hover:text-green-800">恢复招募</button>
+                        `;
+                    } else {
+                        actionButtons = `
+                            <button onclick="viewProjectDetail('${project.id}')" class="text-primary hover:text-indigo-700">查看详情</button>
+                        `;
+                    }
+                    
+                    return `
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-medium text-gray-900">${project.name}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-500">${project.professionName}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900">${project.budgetRange}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-500">${project.publishDate}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900">${project.applicants}人</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${project.statusClass}">${project.statusName}</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                ${actionButtons}
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+                
+                updateMyProjectsPagination();
+            }
+            
+            // 更新我的项目分页
+            function updateMyProjectsPagination() {
+                const paginationInfo = document.getElementById('my-projects-pagination-info');
+                const paginationContainer = document.getElementById('my-projects-pagination');
+                
+                if (!paginationInfo || !paginationContainer) return;
+                
+                const totalItems = filteredMyProjectsData.length;
+                const totalPages = Math.ceil(totalItems / myProjectsItemsPerPage);
+                const startIndex = (myProjectsCurrentPage - 1) * myProjectsItemsPerPage + 1;
+                const endIndex = Math.min(myProjectsCurrentPage * myProjectsItemsPerPage, totalItems);
+                
+                paginationInfo.textContent = `显示 ${startIndex}-${endIndex} 条，共 ${totalItems} 条`;
+                
+                let paginationHTML = '';
+                paginationHTML += `
+                    <button onclick="changeMyProjectsPage(${myProjectsCurrentPage - 1})" 
+                            class="px-3 py-1 rounded border border-gray-300 text-gray-500 hover:bg-gray-50 ${myProjectsCurrentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}"
+                            ${myProjectsCurrentPage === 1 ? 'disabled' : ''}>
+                        <i class="fa fa-angle-left"></i>
+                    </button>
+                `;
+                
+                const maxVisiblePages = 5;
+                let startPage = Math.max(1, myProjectsCurrentPage - Math.floor(maxVisiblePages / 2));
+                let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+                
+                if (endPage - startPage < maxVisiblePages - 1) {
+                    startPage = Math.max(1, endPage - maxVisiblePages + 1);
+                }
+                
+                for (let i = startPage; i <= endPage; i++) {
+                    paginationHTML += `
+                        <button onclick="changeMyProjectsPage(${i})" 
+                                class="px-3 py-1 rounded border ${i === myProjectsCurrentPage ? 'border-primary bg-primary text-white' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}">
+                            ${i}
+                        </button>
+                    `;
+                }
+                
+                paginationHTML += `
+                    <button onclick="changeMyProjectsPage(${myProjectsCurrentPage + 1})" 
+                            class="px-3 py-1 rounded border border-gray-300 text-gray-500 hover:bg-gray-50 ${myProjectsCurrentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''}"
+                            ${myProjectsCurrentPage === totalPages ? 'disabled' : ''}>
+                        <i class="fa fa-angle-right"></i>
+                    </button>
+                `;
+                
+                paginationContainer.innerHTML = paginationHTML;
+            }
+            
+            // 切换我的项目页码
+            window.changeMyProjectsPage = function(page) {
+                if (page < 1) return;
+                const totalPages = Math.ceil(filteredMyProjectsData.length / myProjectsItemsPerPage);
+                if (page > totalPages) return;
+                myProjectsCurrentPage = page;
+                renderMyProjectsList();
+            };
+            
+            // 应用我的项目筛选
+            function applyMyProjectsFilters() {
+                const searchInput = document.getElementById('my-projects-search');
+                const statusFilter = document.getElementById('my-projects-status-filter');
+                
+                const keyword = searchInput ? searchInput.value.trim().toLowerCase() : '';
+                const status = statusFilter ? statusFilter.value : '';
+                
+                filteredMyProjectsData = myProjectsData.filter(project => {
+                    if (keyword && !project.name.toLowerCase().includes(keyword)) return false;
+                    if (status && project.status !== status) return false;
+                    return true;
+                });
+                
+                myProjectsCurrentPage = 1;
+                renderMyProjectsList();
+            }
+            
+            // 项目操作函数
+            window.viewProjectDetail = function(projectId) {
+                const project = myProjectsData.find(p => p.id === projectId);
+                if (!project) return;
+                
+                // 创建项目详情模态框（如果不存在）
+                let detailModal = document.getElementById('project-detail-modal');
+                if (!detailModal) {
+                    detailModal = document.createElement('div');
+                    detailModal.id = 'project-detail-modal';
+                    detailModal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center';
+                    detailModal.innerHTML = `
+                        <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                            <div class="flex justify-between items-center p-6 border-b">
+                                <h3 class="text-lg font-semibold">项目详情</h3>
+                                <button id="close-project-detail-modal" class="text-gray-500 hover:text-gray-700">
+                                    <i class="fa fa-times text-xl"></i>
+                                </button>
+                            </div>
+                            <div class="p-6">
+                                <div id="project-detail-content">
+                                    <!-- 项目详情内容 -->
+                                </div>
+                                <div id="force-accept-section" class="mt-6">
+                                    <h4 class="text-md font-semibold mb-4">强接申请列表</h4>
+                                    <div id="force-accept-list" class="space-y-3">
+                                        <!-- 强接申请列表 -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    document.body.appendChild(detailModal);
+                    
+                    document.getElementById('close-project-detail-modal').addEventListener('click', function() {
+                        detailModal.classList.add('hidden');
+                    });
+                }
+                
+                // 生成强接申请模拟数据
+                const forceAcceptApplications = [];
+                if (project.status === 'recruiting') {
+                    for (let i = 0; i < Math.min(3, Math.floor(Math.random() * 5) + 1); i++) {
+                        const talent = talentPoolData[Math.floor(Math.random() * talentPoolData.length)];
+                        forceAcceptApplications.push({
+                            id: 'FA' + String(1000 + i).padStart(4, '0'),
+                            talentId: talent.id,
+                            talentName: talent.name,
+                            talentAvatar: talent.avatar,
+                            profession: talent.professionName,
+                            score: talent.score,
+                            level: talent.levelName,
+                            applyTime: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+                        });
+                    }
+                }
+                
+                // 填充项目详情
+                document.getElementById('project-detail-content').innerHTML = `
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-semibold text-lg">${project.name}</h4>
+                            <p class="text-gray-500 mt-1">${project.professionName} | ${project.budgetRange}</p>
+                        </div>
+                        <div>
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${project.statusClass}">${project.statusName}</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <span class="text-sm text-gray-500">发布时间：</span>
+                                <span class="text-sm">${project.publishDate}</span>
+                            </div>
+                            <div>
+                                <span class="text-sm text-gray-500">申请人数：</span>
+                                <span class="text-sm">${project.applicants}人</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // 填充强接申请列表
+                const forceAcceptList = document.getElementById('force-accept-list');
+                if (forceAcceptApplications.length === 0) {
+                    forceAcceptList.innerHTML = '<p class="text-gray-500 text-sm">暂无强接申请</p>';
+                } else {
+                    forceAcceptList.innerHTML = forceAcceptApplications.map(app => `
+                        <div class="border border-gray-200 rounded-lg p-4">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <img src="${app.talentAvatar}" alt="${app.talentName}" class="w-12 h-12 rounded-full mr-3">
+                                    <div>
+                                        <div class="font-medium">${app.talentName}</div>
+                                        <div class="text-sm text-gray-500">${app.profession} | ${app.level} | 测评分数：${app.score}分</div>
+                                        <div class="text-xs text-gray-400 mt-1">申请时间：${app.applyTime}</div>
+                                    </div>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <button onclick="confirmForceAccept('${project.id}', '${app.id}')" class="btn-primary text-sm px-4 py-2">
+                                        确认
+                                    </button>
+                                    <button onclick="rejectForceAccept('${project.id}', '${app.id}')" class="btn-secondary text-sm px-4 py-2">
+                                        拒绝
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+                
+                detailModal.classList.remove('hidden');
+            };
+            
+            // 确认强接申请
+            window.confirmForceAccept = function(projectId, applicationId) {
+                if (confirm('确认接受该候选人的强接申请吗？确认后将开始合作。')) {
+                    const project = myProjectsData.find(p => p.id === projectId);
+                    if (project) {
+                        project.status = 'in-progress';
+                        project.statusName = '进行中';
+                        project.statusClass = 'bg-yellow-100 text-yellow-800';
+                        renderMyProjectsList();
+                        document.getElementById('project-detail-modal').classList.add('hidden');
+                        alert('已确认强接申请，项目已开始！');
+                    }
+                }
+            };
+            
+            // 拒绝强接申请
+            window.rejectForceAccept = function(projectId, applicationId) {
+                if (confirm('确定要拒绝该强接申请吗？')) {
+                    alert('已拒绝该强接申请');
+                    // 刷新强接申请列表
+                    window.viewProjectDetail(projectId);
+                }
+            };
+            
+            window.editProject = function(projectId) {
+                const project = myProjectsData.find(p => p.id === projectId);
+                if (project && project.status === 'recruiting') {
+                    alert(`编辑项目：${project.name}`);
+                } else {
+                    alert('只有招募中的项目可以编辑');
+                }
+            };
+            
+            window.pauseProject = function(projectId) {
+                if (confirm('确定要暂停招募该项目吗？')) {
+                    const project = myProjectsData.find(p => p.id === projectId);
+                    if (project) {
+                        project.status = 'paused';
+                        project.statusName = '已暂停';
+                        project.statusClass = 'bg-gray-100 text-gray-800';
+                        applyMyProjectsFilters();
+                        alert('项目已暂停招募');
+                    }
+                }
+            };
+            
+            window.resumeProject = function(projectId) {
+                const project = myProjectsData.find(p => p.id === projectId);
+                if (project) {
+                    project.status = 'recruiting';
+                    project.statusName = '招募中';
+                    project.statusClass = 'bg-green-100 text-green-800';
+                    applyMyProjectsFilters();
+                    alert('项目已恢复招募');
+                }
+            };
+            
+            window.terminateProject = function(projectId) {
+                if (confirm('确定要终止该项目吗？终止后保证金将根据完成度处理。')) {
+                    const project = myProjectsData.find(p => p.id === projectId);
+                    if (project) {
+                        project.status = 'terminated';
+                        project.statusName = '已终止';
+                        project.statusClass = 'bg-red-100 text-red-800';
+                        applyMyProjectsFilters();
+                        alert('项目已终止，保证金处理中...');
+                    }
+                }
+            };
+            
+            // 绑定我的项目筛选事件
+            const myProjectsSearch = document.getElementById('my-projects-search');
+            const myProjectsStatusFilter = document.getElementById('my-projects-status-filter');
+            
+            if (myProjectsSearch) {
+                let searchTimeout;
+                myProjectsSearch.addEventListener('input', function() {
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(() => {
+                        applyMyProjectsFilters();
+                    }, 300);
+                });
+            }
+            
+            if (myProjectsStatusFilter) {
+                myProjectsStatusFilter.addEventListener('change', applyMyProjectsFilters);
+            }
+            
+            // 初始化我的项目模块
+            initMyProjectsData();
+            
+            // ========== 合作项目模块完整功能 ==========
+            let cooperationData = [];
+            let filteredCooperationData = [];
+            let cooperationCurrentPage = 1;
+            const cooperationItemsPerPage = 10;
+            
+            const cooperationStatusNames = { 'pending': '待确认', 'in-progress': '进行中', 'review': '待验收', 'completed': '已完成', 'terminated': '已终止' };
+            const cooperationStatusClasses = { 'pending': 'bg-blue-100 text-blue-800', 'in-progress': 'bg-yellow-100 text-yellow-800', 'review': 'bg-purple-100 text-purple-800', 'completed': 'bg-green-100 text-green-800', 'terminated': 'bg-red-100 text-red-800' };
+            async function initCooperationData() {
+                const token = getAuthToken();
+                if (token) {
+                    try {
+                        const r = await fetch(API_BASE + '/cooperations', { headers: { 'Authorization': 'Bearer ' + token } });
+                        if (r.ok) {
+                            const j = await r.json();
+                            if (j.success && Array.isArray(j.data)) {
+                                // 只保留“来源于人才池候选人”的合作记录（后端通过 isFromTalentPool 标记）
+                                const fromTalentPool = j.data.filter(function(c) {
+                                    return c && c.isFromTalentPool;
+                                });
+                                cooperationData = fromTalentPool.map(function(c) {
+                                    var status = c.status || 'pending';
+                                    var progress = status === 'completed' ? 100 : status === 'review' ? 90 : status === 'in-progress' ? 50 : 0;
+                                    return {
+                                        id: c.id,
+                                        projectName: c.projectName,
+                                        talentName: c.talentName,
+                                        talentAvatar: 'https://ui-avatars.com/api/?name=' + encodeURIComponent(c.talentName || '') + '&background=4F46E5&color=fff',
+                                        startDate: c.startDate || '',
+                                        endDate: c.endDate || '',
+                                        progress: progress,
+                                        status: status,
+                                        statusName: cooperationStatusNames[status] || '待确认',
+                                        statusClass: cooperationStatusClasses[status] || 'bg-blue-100 text-blue-800'
+                                    };
+                                });
+                                filteredCooperationData = cooperationData.slice();
+                                renderCooperationList();
+                                console.log('合作项目从API加载完成，共', cooperationData.length, '条');
+                                return;
+                            }
+                        }
+                    } catch (e) { console.warn('Load cooperations failed', e); }
+                }
+                cooperationData = [];
+                filteredCooperationData = [];
+                renderCooperationList();
+            }
+            
+            // 渲染合作项目列表
+            function renderCooperationList() {
+                const tbody = document.getElementById('cooperation-tbody');
+                if (!tbody) return;
+                
+                const startIndex = (cooperationCurrentPage - 1) * cooperationItemsPerPage;
+                const endIndex = startIndex + cooperationItemsPerPage;
+                const pageData = filteredCooperationData.slice(startIndex, endIndex);
+                
+                if (pageData.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" class="px-6 py-4 text-center text-gray-500">暂无合作项目</td></tr>';
+                    updateCooperationPagination();
+                    return;
+                }
+                
+                tbody.innerHTML = pageData.map(project => {
+                    let actionButtons = '';
+                    if (project.status === 'terminated' || project.status === 'completed') {
+                        actionButtons = `
+                            <button onclick="viewCooperationDetail('${project.id}')" class="text-primary hover:text-indigo-700">查看详情</button>
+                        `;
+                    } else {
+                        actionButtons = `
+                            <button onclick="viewCooperationDetail('${project.id}')" class="text-primary hover:text-indigo-700 mr-3">查看详情</button>
+                            <button onclick="openCommunication('${project.id}')" class="text-green-600 hover:text-green-800 mr-3">沟通</button>
+                            <button onclick="terminateCooperation('${project.id}')" class="text-gray-600 hover:text-gray-900">终止合作</button>
+                        `;
+                    }
+                    
+                    return `
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-medium text-gray-900">${project.projectName}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <img class="h-8 w-8 rounded-full" src="${project.talentAvatar}" alt="${project.talentName}">
+                                    <div class="ml-2">
+                                        <div class="text-sm text-gray-900">${project.talentName}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-500">${project.startDate}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-500">${project.endDate}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                    <div class="bg-primary h-2.5 rounded-full" style="width: ${project.progress}%"></div>
+                                </div>
+                                <div class="text-xs text-gray-500 mt-1">${project.progress}%</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${project.statusClass}">${project.statusName}</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                ${actionButtons}
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+                
+                updateCooperationPagination();
+            }
+            
+            // 更新合作项目分页
+            function updateCooperationPagination() {
+                const paginationInfo = document.getElementById('cooperation-pagination-info');
+                const paginationContainer = document.getElementById('cooperation-pagination');
+                
+                if (!paginationInfo || !paginationContainer) return;
+                
+                const totalItems = filteredCooperationData.length;
+                const totalPages = Math.ceil(totalItems / cooperationItemsPerPage);
+                const startIndex = (cooperationCurrentPage - 1) * cooperationItemsPerPage + 1;
+                const endIndex = Math.min(cooperationCurrentPage * cooperationItemsPerPage, totalItems);
+                
+                paginationInfo.textContent = `显示 ${startIndex}-${endIndex} 条，共 ${totalItems} 条`;
+                
+                let paginationHTML = '';
+                paginationHTML += `
+                    <button onclick="changeCooperationPage(${cooperationCurrentPage - 1})" 
+                            class="px-3 py-1 rounded border border-gray-300 text-gray-500 hover:bg-gray-50 ${cooperationCurrentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}"
+                            ${cooperationCurrentPage === 1 ? 'disabled' : ''}>
+                        <i class="fa fa-angle-left"></i>
+                    </button>
+                `;
+                
+                const maxVisiblePages = 5;
+                let startPage = Math.max(1, cooperationCurrentPage - Math.floor(maxVisiblePages / 2));
+                let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+                
+                if (endPage - startPage < maxVisiblePages - 1) {
+                    startPage = Math.max(1, endPage - maxVisiblePages + 1);
+                }
+                
+                for (let i = startPage; i <= endPage; i++) {
+                    paginationHTML += `
+                        <button onclick="changeCooperationPage(${i})" 
+                                class="px-3 py-1 rounded border ${i === cooperationCurrentPage ? 'border-primary bg-primary text-white' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}">
+                            ${i}
+                        </button>
+                    `;
+                }
+                
+                paginationHTML += `
+                    <button onclick="changeCooperationPage(${cooperationCurrentPage + 1})" 
+                            class="px-3 py-1 rounded border border-gray-300 text-gray-500 hover:bg-gray-50 ${cooperationCurrentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''}"
+                            ${cooperationCurrentPage === totalPages ? 'disabled' : ''}>
+                        <i class="fa fa-angle-right"></i>
+                    </button>
+                `;
+                
+                paginationContainer.innerHTML = paginationHTML;
+            }
+            
+            // 切换合作项目页码
+            window.changeCooperationPage = function(page) {
+                if (page < 1) return;
+                const totalPages = Math.ceil(filteredCooperationData.length / cooperationItemsPerPage);
+                if (page > totalPages) return;
+                cooperationCurrentPage = page;
+                renderCooperationList();
+            };
+            
+            // 应用合作项目筛选
+            function applyCooperationFilters() {
+                const searchInput = document.getElementById('cooperation-search');
+                const statusFilter = document.getElementById('cooperation-status-filter');
+                
+                const keyword = searchInput ? searchInput.value.trim().toLowerCase() : '';
+                const status = statusFilter ? statusFilter.value : '';
+                
+                filteredCooperationData = cooperationData.filter(project => {
+                    if (keyword && !project.projectName.toLowerCase().includes(keyword) && !project.talentName.toLowerCase().includes(keyword)) return false;
+                    if (status && project.status !== status) return false;
+                    return true;
+                });
+                
+                cooperationCurrentPage = 1;
+                renderCooperationList();
+            }
+            
+            // 合作项目操作函数
+            window.viewCooperationDetail = function(projectId) {
+                const project = cooperationData.find(p => p.id === projectId);
+                if (project) {
+                    alert(`查看合作项目详情：${project.projectName}\n合作人才：${project.talentName}\n状态：${project.statusName}\n进度：${project.progress}%`);
+                }
+            };
+            
+            window.openCommunication = function(projectId) {
+                const project = cooperationData.find(p => p.id === projectId);
+                if (project) {
+                    const modal = document.getElementById('communication-modal');
+                    if (modal) {
+                        document.getElementById('communication-project-name').textContent = project.projectName;
+                        document.getElementById('communication-talent-name').textContent = project.talentName;
+                        document.getElementById('communication-talent-avatar').src = project.talentAvatar;
+                        modal.classList.remove('hidden');
+                    }
+                }
+            };
+            
+            window.terminateCooperation = function(projectId) {
+                const project = cooperationData.find(p => p.id === projectId);
+                if (!project) return;
+                
+                if (confirm(`确定要终止与${project.talentName}的合作项目"${project.projectName}"吗？\n\n终止后，保证金将根据项目完成度（${project.progress}%）进行分配。`)) {
+                    project.status = 'terminated';
+                    project.statusName = '已终止';
+                    project.statusClass = 'bg-red-100 text-red-800';
+                    
+                    // 计算保证金分配
+                    const completedAmount = Math.floor(project.deposit * project.progress / 100);
+                    const refundAmount = project.deposit - completedAmount;
+                    
+                    applyCooperationFilters();
+                    alert(`合作已终止\n\n保证金分配：\n- 转给候选人：¥${completedAmount.toLocaleString()}\n- 退还企业：¥${refundAmount.toLocaleString()}`);
+                }
+            };
+            
+            // 绑定合作项目筛选事件
+            const cooperationSearch = document.getElementById('cooperation-search');
+            const cooperationStatusFilter = document.getElementById('cooperation-status-filter');
+            
+            if (cooperationSearch) {
+                let searchTimeout;
+                cooperationSearch.addEventListener('input', function() {
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(() => {
+                        applyCooperationFilters();
+                    }, 300);
+                });
+            }
+            
+            if (cooperationStatusFilter) {
+                cooperationStatusFilter.addEventListener('change', applyCooperationFilters);
+            }
+            
+            // 初始化合作项目模块
+            initCooperationData();
+            renderCooperationList();
+        });
+    </script>
+</body>
+</html>

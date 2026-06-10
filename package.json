@@ -1,0 +1,37 @@
+{
+  "name": "question-management-desktop",
+  "version": "1.0.0",
+  "description": "试题管理系统桌面应用",
+  "main": "index.js",
+  "scripts": {
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build",
+    "backend:start": "cd backend && node server.js",
+    "backend:dev": "cd backend && nodemon server.js",
+    "build:exam": "cd frontend/exam-super-admin && npm run build",
+    "build:exam-admin": "cd frontend/exam-admin && npm run build",
+    "build:exam-student": "cd frontend/exam-student && npm run build",
+    "build:grader": "cd frontend/exam-grader && npm run build",
+    "build:all-exam-frontends": "npm run build:exam && npm run build:exam-admin && npm run build:exam-student && npm run build:grader",
+    "start": "npm run backend:start",
+    "dev": "npm run build:exam && npm run backend:start"
+  },
+  "keywords": [
+    "tauri",
+    "desktop",
+    "question-management"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@tauri-apps/api": "^1.5.0",
+    "qrcode": "^1.5.4",
+    "ws": "^8.19.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^1.5.0",
+    "playwright": "^1.60.0"
+  }
+}

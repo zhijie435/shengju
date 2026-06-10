@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>付费服务 - 圣举人才网</title>
+    <!-- Tailwind CSS -->
+    <script>(function(){var w=console.warn;console.warn=function(){var m=(arguments[0]!=null&&typeof arguments[0]==='string')?arguments[0]:'';if(m.indexOf('cdn.tailwindcss.com')!==-1||m.indexOf('Tracking Prevention')!==-1)return;return w.apply(console,arguments);};})();</script>
+    <link rel="stylesheet" href="/static/css/tailwind-local.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <script src="../js/api-config.js"></script>
+    <script src="../js/auth-helper.js"></script>
+    <script src="../js/user-navbar.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#1E40AF',
+                        accent: '#60A5FA',
+                        light: '#EFF6FF',
+                        dark: '#1E293B'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow {
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            }
+            .bg-gradient-blue {
+                background: linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%);
+            }
+        }
+    </style>
+</head>
+<body class="font-sans bg-gray-50">
+    <!-- 导航栏 -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+            <!-- Logo -->
+            <div class="flex items-center space-x-2">
+                <a href="../index.html" class="flex items-center space-x-2">
+                    <img data-site-brand-logo src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%231E40AF' rx='4'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-size='24' font-weight='bold' fill='white'%3E圣%3C/text%3E%3C/svg%3E" 
+                         alt="圣举人才网" class="h-10 w-10 rounded-full">
+                    <h1 class="text-2xl font-bold text-primary">圣举人才网</h1>
+                </a>
+                <span class="text-gray-400">|</span>
+                <span class="text-gray-600 font-medium">求职者中心</span>
+            </div>
+            
+            <!-- 导航链接（与首页完全一致） -->
+            <nav class="hidden md:flex items-center space-x-8">
+                <a href="index.html" class="text-primary font-medium border-b-2 border-primary">首页</a>
+                <a href="assessment.html" class="text-gray-700 hover:text-primary font-medium">测评中心</a>
+                <a href="recommendation.html" class="text-gray-700 hover:text-primary font-medium">岗位推荐</a>
+                <a href="announcements.html" class="text-gray-700 hover:text-primary font-medium">招聘公告</a>
+                <a href="talent-pool.html" class="text-gray-700 hover:text-primary font-medium">人才池</a>
+                <a href="payment.html" class="text-gray-700 hover:text-primary font-medium">付费服务</a>
+                <a href="profile.html" class="text-gray-700 hover:text-primary font-medium">个人中心</a>
+            </nav>
+            
+            <!-- 用户菜单 -->
+            <div class="flex items-center space-x-4">
+                <div class="hidden md:flex items-center space-x-2" id="user-menu">
+                    <img id="user-avatar-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="" class="h-8 w-8 rounded-full">
+                    <span class="text-gray-700" id="user-name-display"></span>
+                </div>
+                <button type="button" onclick="showLogoutModal()" class="hidden md:flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition">
+                    <i class="fa fa-sign-out"></i> 退出
+                </button>
+                <button class="md:hidden text-gray-700 focus:outline-none" id="menu-toggle">
+                    <i class="fa fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- 移动端菜单（与首页完全一致） -->
+        <div class="md:hidden hidden bg-white border-t border-gray-200" id="mobile-menu">
+            <div class="container mx-auto px-4 py-2">
+                <a href="index.html" class="block py-2 text-primary font-medium border-l-4 border-primary pl-2">首页</a>
+                <a href="assessment.html" class="block py-2 text-gray-700 hover:text-primary pl-2">测评中心</a>
+                <a href="recommendation.html" class="block py-2 text-gray-700 hover:text-primary pl-2">岗位推荐</a>
+                <a href="announcements.html" class="block py-2 text-gray-700 hover:text-primary pl-2">招聘公告</a>
+                <a href="talent-pool.html" class="block py-2 text-gray-700 hover:text-primary pl-2">人才池</a>
+                <a href="payment.html" class="block py-2 text-gray-700 hover:text-primary pl-2">付费服务</a>
+                <a href="profile.html" class="block py-2 text-gray-700 hover:text-primary pl-2">个人中心</a>
+                <div class="border-t border-gray-200 my-2"></div>
+                <button type="button" onclick="showLogoutModal()" class="block w-full text-left py-2 text-primary font-medium pl-2"><i class="fa fa-sign-out mr-2"></i>退出</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 退出确认弹窗 -->
+    <div id="logout-modal" class="fixed inset-0 z-50 hidden">
+        <div class="fixed inset-0 bg-black bg-opacity-50" onclick="closeLogoutModal()"></div>
+        <div class="fixed inset-0 flex items-center justify-center p-4">
+            <div class="bg-white rounded-xl shadow-xl max-w-sm w-full p-6">
+                <p class="text-center text-gray-800 mb-6">确定要退出登录吗？</p>
+                <div class="flex gap-3">
+                    <button type="button" onclick="closeLogoutModal()" class="flex-1 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">取消</button>
+                    <button type="button" onclick="confirmLogout()" class="flex-1 py-2 bg-primary text-white rounded-lg hover:bg-blue-700">确定退出</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+    function showLogoutModal() { document.getElementById('logout-modal').classList.remove('hidden'); }
+    function closeLogoutModal() { document.getElementById('logout-modal').classList.add('hidden'); }
+    function confirmLogout() {
+        if (typeof AuthHelper !== 'undefined') AuthHelper.clear('jobseeker');
+        else { localStorage.removeItem('authToken'); sessionStorage.removeItem('authToken'); localStorage.removeItem('userId'); localStorage.removeItem('userType'); localStorage.removeItem('username'); }
+        closeLogoutModal();
+        window.location.href = 'login.html';
+    }
+    </script>
+
+    <!-- 主内容区 -->
+    <main>
+        <!-- 页面标题 -->
+        <section class="bg-gradient-blue text-white py-12">
+            <div class="container mx-auto px-4">
+                <h1 class="text-4xl font-bold text-center mb-4">付费服务</h1>
+                <p class="text-center text-lg opacity-90">解锁更多专业服务，加速您的职业发展</p>
+            </div>
+        </section>
+        
+        <!-- 会员服务 -->
+        <section class="py-8">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-2">会员服务</h2>
+                    <p class="text-gray-600">选择适合您的会员套餐，享受更多专业服务</p>
+                </div>
+                
+                <!-- 会员服务列表 -->
+                <div id="services-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+                    <!-- 会员服务卡片将通过JavaScript动态加载 -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-gray-800 text-white py-10">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">关于我们</h4>
+                    <p class="text-gray-400">
+                        圣举人才网是一家以测评驱动的招聘平台，致力于连接求职者与企业，通过科学测评实现精准匹配。
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">求职者服务</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="assessment.html" class="hover:text-white">职业测评</a></li>
+                        <li><a href="profile.html" class="hover:text-white">个人中心</a></li>
+                        <li><a href="recommendation.html" class="hover:text-white">岗位推荐</a></li>
+                        <li><a href="payment.html" class="hover:text-white">付费服务</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">帮助中心</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white">常见问题</a></li>
+                        <li><a href="#" class="hover:text-white">使用指南</a></li>
+                        <li><a href="#" class="hover:text-white">隐私政策</a></li>
+                        <li><a href="#" class="hover:text-white">用户协议</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">联系我们</h4>
+                    <ul class="space-y-2 text-gray-400" id="footer-contact">
+                        <li class="flex items-center">
+                            <i class="fa fa-phone mr-2"></i>
+                            <span id="footer-phone">400-123-4567</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fa fa-envelope mr-2"></i>
+                            <span id="footer-email">contact@shengju.com</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fa fa-map-marker mr-2"></i>
+                            <span id="footer-address">北京市海淀区中关村大街1号</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                <p id="footer-copyright">&copy; 2025 圣举人才网 版权所有</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 支付弹窗（与企业端一致：微信/支付宝二维码 + 银行转账） -->
+    <div id="payment-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white z-10">
+                <h3 class="text-lg font-semibold text-gray-900">会员套餐购买</h3>
+                <button type="button" onclick="closePaymentModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fa fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="px-6 py-6">
+                <div id="payment-plan-info" class="mb-6 p-4 bg-gray-50 rounded-lg"></div>
+                <div class="mb-6">
+                    <h4 class="text-md font-medium text-gray-900 mb-4">选择支付方式</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <button type="button" class="payment-method-btn active px-4 py-3 border-2 border-primary bg-primary/5 rounded-lg text-center" data-method="wechat">
+                            <i class="fa fa-weixin text-3xl text-green-500 mb-2"></i>
+                            <p class="font-medium">微信支付</p>
+                        </button>
+                        <button type="button" class="payment-method-btn px-4 py-3 border-2 border-gray-200 rounded-lg text-center hover:border-primary hover:bg-primary/5 transition" data-method="alipay">
+                            <i class="fa fa-credit-card text-3xl text-blue-500 mb-2"></i>
+                            <p class="font-medium">支付宝</p>
+                        </button>
+                        <button type="button" class="payment-method-btn px-4 py-3 border-2 border-gray-200 rounded-lg text-center hover:border-primary hover:bg-primary/5 transition" data-method="bank">
+                            <i class="fa fa-university text-3xl text-gray-500 mb-2"></i>
+                            <p class="font-medium">银行转账</p>
+                        </button>
+                    </div>
+                </div>
+                <div id="payment-content"></div>
+                <div class="mt-6 flex justify-end">
+                    <button type="button" onclick="confirmPaymentDone()" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg">
+                        <i class="fa fa-check mr-2"></i>已完成支付
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE_URL = window.API_BASE_URL || 'http://127.0.0.1:3001/api/v1';
+        function getAuthToken() {
+            var a = (typeof AuthHelper !== 'undefined') ? AuthHelper.get('jobseeker') : null;
+            return (a && a.token) || localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+        }
+        async function apiRequest(url, options = {}) {
+            const token = getAuthToken();
+            const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
+            if (token) headers['Authorization'] = 'Bearer ' + token;
+            const res = await fetch(url, { ...options, headers });
+            if (res.status === 401) {
+                if (typeof AuthHelper !== 'undefined') AuthHelper.clear('jobseeker');
+                else { localStorage.removeItem('authToken'); sessionStorage.removeItem('authToken'); }
+                window.location.href = '../index.html';
+                throw new Error('未登录');
+            }
+            const text = await res.text();
+            if (!text) return null;
+            try { return JSON.parse(text); } catch (e) { throw new Error(text || res.statusText); }
+        }
+        function planTypeFromServiceId(serviceId) {
+            if (serviceId === 'membership-1') return 'normal';
+            if (serviceId === 'membership-2') return 'premium';
+            if (serviceId === 'membership-3') return 'vip';
+            return 'normal';
+        }
+        function parsePrice(priceStr) {
+            if (typeof priceStr === 'number') return priceStr;
+            const n = parseFloat(String(priceStr).replace(/[^\d.]/g, ''));
+            return isNaN(n) ? 0 : n;
+        }
+
+        function mapMembershipPlansToServices(plans) {
+            if (!Array.isArray(plans) || plans.length === 0) return null;
+            const periodMap = { month: '/月', quarter: '/季度', year: '/年' };
+            const iconMap = { 1: 'fa-user', 2: 'fa-crown', 3: 'fa-star' };
+            return plans.map((plan) => ({
+                id: `membership-${plan.id}`,
+                title: plan.name,
+                description: getMembershipDescription(plan.name),
+                price: `¥${plan.price}`,
+                period: periodMap[plan.period] || '/月',
+                features: plan.features || [],
+                popular: plan.id === 2,
+                icon: iconMap[plan.id] || 'fa-user'
+            }));
+        }
+
+        // 从管理者端加载会员服务数据（优先服务端 /public/site-settings，与仅写本机 localStorage 解耦）
+        function loadMembershipServices() {
+            try {
+                var pub = window.__publicSiteSettings;
+                if (pub && Array.isArray(pub.membershipPlans) && pub.membershipPlans.length > 0) {
+                    var fromSrv = mapMembershipPlansToServices(pub.membershipPlans);
+                    if (fromSrv) return fromSrv;
+                }
+                const savedPlans = localStorage.getItem('membershipPlans');
+                if (savedPlans) {
+                    const plans = JSON.parse(savedPlans);
+                    if (Array.isArray(plans) && plans.length > 0) {
+                        var fromLocal = mapMembershipPlansToServices(plans);
+                        if (fromLocal) return fromLocal;
+                    }
+                }
+            } catch (e) {
+                console.error('加载会员套餐数据失败:', e);
+            }
+            return getDefaultMembershipServices();
+        }
+        
+        // 获取会员描述
+        function getMembershipDescription(name) {
+            const descriptions = {
+                '普通会员': '适合刚入门的求职者，享受基础会员权益',
+                '高级会员': '享受无限次测评、专属客服、简历优化等特权',
+                '尊享会员': '最高级别会员服务，享受全部特权'
+            };
+            return descriptions[name] || '享受专业会员服务';
+        }
+        
+        // 默认会员服务数据（当管理者端没有数据时使用）
+        function getDefaultMembershipServices() {
+            return [
+                {
+                    id: 'membership-1',
+                    title: '普通会员',
+                    description: '适合刚入门的求职者，享受基础会员权益',
+                    price: '¥39',
+                    period: '/月',
+                    features: [
+                        '基础简历模板',
+                        '职位推送',
+                        '每月5次测评'
+                    ],
+                    popular: false,
+                    icon: 'fa-user'
+                },
+                {
+                    id: 'membership-2',
+                    title: '高级会员',
+                    description: '享受无限次测评、专属客服、简历优化等特权',
+                    price: '¥99',
+                    period: '/月',
+                    features: [
+                        '高级简历模板',
+                        '优先职位推送',
+                        '每月20次测评',
+                        '简历优化服务'
+                    ],
+                    popular: true,
+                    icon: 'fa-crown'
+                },
+                {
+                    id: 'membership-3',
+                    title: '尊享会员',
+                    description: '最高级别会员服务，享受全部特权',
+                    price: '¥199',
+                    period: '/月',
+                    features: [
+                        '全部简历模板',
+                        '专属职位推送',
+                        '无限次测评',
+                        '简历优化服务',
+                        '每月2次职业咨询'
+                    ],
+                    popular: false,
+                    icon: 'fa-star'
+                }
+            ];
+        }
+        
+        let membershipServices = [];
+        
+        // 移动端菜单切换
+        document.getElementById('menu-toggle').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        // 渲染会员服务列表（付费关闭时 main 会被替换掉，可能没有 #services-container）
+        function renderServices() {
+            const container = document.getElementById('services-container');
+            if (!container) return;
+            
+            container.innerHTML = membershipServices.map(service => `
+                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 ${service.popular ? 'ring-2 ring-primary' : ''}">
+                    ${service.popular ? `
+                        <div class="bg-primary text-white text-center py-1 text-sm font-medium">
+                            推荐
+                        </div>
+                    ` : ''}
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <i class="fa ${service.icon} text-primary text-xl"></i>
+                            </div>
+                            ${service.popular ? '<span class="bg-red-500 text-white text-xs font-medium px-2 py-1 rounded-full">热门</span>' : ''}
+                        </div>
+                        
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">${service.title}</h3>
+                        <p class="text-gray-600 text-sm mb-4">${service.description}</p>
+                        
+                        <div class="mb-4">
+                            <span class="text-3xl font-bold text-primary">${service.price}</span>
+                            <span class="text-gray-500">${service.period}</span>
+                        </div>
+                        
+                        <ul class="space-y-2 mb-6">
+                            ${service.features.map(feature => `
+                                <li class="flex items-start text-sm text-gray-600">
+                                    <i class="fa fa-check-circle text-green-500 mr-2 mt-0.5"></i>
+                                    <span>${feature}</span>
+                                </li>
+                            `).join('')}
+                        </ul>
+                        
+                        <button onclick="openPayment('${service.id}')" class="w-full bg-primary hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition">
+                            立即购买
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // 获取支付设置（与企业端一致：收款二维码优先服务端 /public/site-settings，银行账户仍可来自本地缓存）
+        function getPaymentSettings() {
+            let paymentData = JSON.parse(localStorage.getItem('paymentSettings') || 'null');
+            if (!paymentData) {
+                const systemSettings = JSON.parse(localStorage.getItem('systemSettings') || '{}');
+                if (systemSettings.payment) paymentData = systemSettings.payment;
+            }
+            var pubPay = window.__publicSiteSettings && window.__publicSiteSettings.payment;
+            var wx = paymentData?.wechat?.qrcode || paymentData?.qrCodes?.wechat || '';
+            var ali = paymentData?.alipay?.qrcode || paymentData?.qrCodes?.alipay || '';
+            if (pubPay) {
+                if (pubPay.wechatQrcodeUrl) wx = pubPay.wechatQrcodeUrl;
+                if (pubPay.alipayQrcodeUrl) ali = pubPay.alipayQrcodeUrl;
+            }
+            return {
+                qrCodes: { wechat: wx, alipay: ali },
+                bankAccount: {
+                    bankName: paymentData?.bankAccount?.bankName || '',
+                    accountNumber: paymentData?.bankAccount?.accountNumber || '',
+                    accountName: paymentData?.bankAccount?.accountName || ''
+                }
+            };
+        }
+        // 打开支付弹窗（与企业端一致：展示二维码/银行信息）
+        window.openPaymentModal = function(serviceId) {
+            const service = membershipServices.find(s => s.id === serviceId);
+            if (!service) { alert('套餐不存在'); return; }
+            const modal = document.getElementById('payment-modal');
+            const planInfo = document.getElementById('payment-plan-info');
+            if (!modal || !planInfo) return;
+            const amount = parsePrice(service.price);
+            planInfo.innerHTML = `
+                <h4 class="text-lg font-semibold text-gray-900 mb-2">${service.title}</h4>
+                <p class="text-gray-600 mb-1">价格：<span class="font-bold text-primary text-xl">¥${amount.toLocaleString()}</span>${service.period || '/月'}</p>
+                <p class="text-sm text-gray-500">${service.description || ''}</p>
+            `;
+            modal.setAttribute('data-payment-service-id', serviceId);
+            modal.setAttribute('data-payment-amount-yuan', String(amount));
+            switchPaymentMethod('wechat');
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        };
+        window.closePaymentModal = function() {
+            const modal = document.getElementById('payment-modal');
+            if (modal) { modal.classList.add('hidden'); document.body.style.overflow = 'auto'; }
+        };
+        function getModalAmountYuan() {
+            var modal = document.getElementById('payment-modal');
+            if (!modal) return 0;
+            var raw = modal.getAttribute('data-payment-amount-yuan');
+            var n = raw != null && raw !== '' ? parseFloat(raw) : NaN;
+            if (!Number.isFinite(n) || n < 0) {
+                var sid = modal.getAttribute('data-payment-service-id');
+                var svc = sid && membershipServices.find(function (s) { return s.id === sid; });
+                return svc ? parsePrice(svc.price) : 0;
+            }
+            return n;
+        }
+
+        function staticQrAmountHintHtml() {
+            var yuan = getModalAmountYuan();
+            var disp = yuan > 0 ? (Number.isInteger(yuan) ? String(yuan) : yuan.toFixed(2)) : '--';
+            return (
+                '<div class="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg text-left text-sm text-amber-950">' +
+                '<p class="font-medium mb-1"><i class="fa fa-info-circle mr-1"></i>为何要在手机里输入金额？</p>' +
+                '<p class="text-amber-900 mb-2">管理端配置的是<strong>静态收款码</strong>（一张固定二维码图片）。微信、支付宝扫码后<strong>不会自动带出</strong>本订单金额，这是官方对「个人收款码/静态码」的通行规则。</p>' +
+                '<p class="text-amber-900 mb-3">请在付款页输入与上方套餐一致的金额：<strong class="text-lg">¥' + disp + '</strong></p>' +
+                '<button type="button" onclick="copyPaymentAmountYuan()" class="px-3 py-2 bg-amber-200 hover:bg-amber-300 rounded text-amber-950 text-sm font-medium">复制金额（' + disp + ' 元）</button>' +
+                '<p class="text-xs text-amber-800 mt-2">若需扫码后自动显示金额，需接入微信/支付宝<strong>商户支付接口</strong>（服务端下单生成动态码或跳转收银台）。</p>' +
+                '</div>'
+            );
+        }
+
+        window.copyPaymentAmountYuan = function () {
+            var yuan = getModalAmountYuan();
+            var t = yuan > 0 ? (Number.isInteger(yuan) ? String(yuan) : yuan.toFixed(2)) : '';
+            if (!t) return;
+            function ok() {
+                var el = document.querySelector('#payment-content .payment-copy-toast');
+                if (el) {
+                    el.textContent = '已复制金额 ' + t + ' 元，请在微信/支付宝付款页粘贴';
+                    el.classList.remove('hidden');
+                    setTimeout(function () { el.classList.add('hidden'); }, 3500);
+                } else {
+                    alert('已复制金额：' + t + ' 元');
+                }
+            }
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(t).then(ok).catch(function () {
+                    window.prompt('请手动输入以下金额（元）', t);
+                });
+            } else {
+                window.prompt('请手动输入以下金额（元）', t);
+            }
+        };
+
+        function switchPaymentMethod(method) {
+            document.querySelectorAll('.payment-method-btn').forEach(btn => {
+                if (btn.getAttribute('data-method') === method) {
+                    btn.classList.add('active', 'border-primary', 'bg-primary/5'); btn.classList.remove('border-gray-200');
+                } else {
+                    btn.classList.remove('active', 'border-primary', 'bg-primary/5'); btn.classList.add('border-gray-200');
+                }
+            });
+            const paymentContent = document.getElementById('payment-content');
+            if (!paymentContent) return;
+            const s = getPaymentSettings();
+            var yuan = getModalAmountYuan();
+            var bankAmtLine =
+                yuan > 0
+                    ? '<p class="text-sm text-gray-700 mb-3">请按上方套餐转账 <strong class="text-primary text-lg">¥' +
+                      (Number.isInteger(yuan) ? String(yuan) : yuan.toFixed(2)) +
+                      '</strong>，备注中写明套餐名称。</p>'
+                    : '';
+            if (method === 'wechat') {
+                const qr = s.qrCodes.wechat;
+                paymentContent.innerHTML = qr
+                    ? '<div class="text-center">' +
+                      staticQrAmountHintHtml() +
+                      '<p class="text-sm text-gray-600 mb-4">请使用微信扫描下方二维码完成支付</p>' +
+                      '<div class="flex justify-center mb-4"><img src="' +
+                      qr.replace(/"/g, '&quot;') +
+                      '" alt="微信支付二维码" class="w-64 h-64 border border-gray-200 rounded-lg"></div>' +
+                      '<p class="payment-copy-toast hidden text-sm text-green-600 mb-2"></p></div>'
+                    : '<div class="p-8 bg-gray-50 rounded-lg"><i class="fa fa-weixin text-6xl text-gray-300 mb-4"></i><p class="text-gray-500">微信支付二维码未配置</p><p class="text-sm text-gray-400 mt-2">请联系管理员配置支付信息</p></div>';
+            } else if (method === 'alipay') {
+                const qr = s.qrCodes.alipay;
+                paymentContent.innerHTML = qr
+                    ? '<div class="text-center">' +
+                      staticQrAmountHintHtml() +
+                      '<p class="text-sm text-gray-600 mb-4">请使用支付宝扫描下方二维码完成支付</p>' +
+                      '<div class="flex justify-center mb-4"><img src="' +
+                      qr.replace(/"/g, '&quot;') +
+                      '" alt="支付宝二维码" class="w-64 h-64 border border-gray-200 rounded-lg"></div>' +
+                      '<p class="payment-copy-toast hidden text-sm text-green-600 mb-2"></p></div>'
+                    : '<div class="p-8 bg-gray-50 rounded-lg"><i class="fa fa-credit-card text-6xl text-gray-300 mb-4"></i><p class="text-gray-500">支付宝二维码未配置</p><p class="text-sm text-gray-400 mt-2">请联系管理员配置支付信息</p></div>';
+            } else {
+                const b = s.bankAccount;
+                paymentContent.innerHTML = (b.accountName || b.accountNumber || b.bankName)
+                    ? '<div class="bg-gray-50 rounded-lg p-6"><h5 class="font-medium text-gray-900 mb-4">银行对公账户信息</h5>' +
+                      bankAmtLine +
+                      '<div class="space-y-3 text-left"><div class="flex justify-between"><span class="text-gray-600">开户名称：</span><span class="font-medium">' +
+                      (b.accountName || '未配置') +
+                      '</span></div><div class="flex justify-between"><span class="text-gray-600">账号：</span><span class="font-medium">' +
+                      (b.accountNumber || '未配置') +
+                      '</span></div><div class="flex justify-between"><span class="text-gray-600">开户银行：</span><span class="font-medium">' +
+                      (b.bankName || '未配置') +
+                      '</span></div></div><div class="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg"><p class="text-sm text-yellow-800 mb-2"><i class="fa fa-info-circle mr-2"></i>转账须知：</p><ul class="text-xs text-yellow-700 space-y-1 list-disc list-inside"><li>转账时请备注会员套餐名称</li><li>转账完成后请联系客服开通</li></ul></div></div>'
+                    : '<div class="text-center py-8"><i class="fa fa-university text-6xl text-gray-300 mb-4"></i><p class="text-gray-500">银行账户信息未配置</p></div>';
+            }
+        }
+        // 用户点击「已完成支付」后：调用后端记单并开通会员，写入购买记录
+        async function confirmPaymentDone() {
+            const modal = document.getElementById('payment-modal');
+            const serviceId = modal ? modal.getAttribute('data-payment-service-id') : null;
+            const service = membershipServices.find(s => s.id === serviceId);
+            const amount = service ? parsePrice(service.price) : 0;
+            const planType = planTypeFromServiceId(serviceId || '');
+            if (!getAuthToken()) { alert('请先登录'); return; }
+            try {
+                const res = await apiRequest(API_BASE_URL + '/membership/orders', {
+                    method: 'POST',
+                    body: JSON.stringify({ planType, amount, period: 'month' })
+                });
+                if (res && res.success) {
+                    try {
+                        const raw = localStorage.getItem('purchases');
+                        const list = raw ? JSON.parse(raw) : [];
+                        list.push({ name: service ? service.title : '会员服务', time: new Date().toLocaleString('zh-CN'), price: amount.toFixed(2), status: '已完成', source: 'membership', action: null });
+                        localStorage.setItem('purchases', JSON.stringify(list));
+                    } catch (e) {}
+                    closePaymentModal();
+                    if (window.showToast) window.showToast('会员购买成功', 'success'); else alert('会员购买成功');
+                    return;
+                }
+            } catch (e) { console.warn('订单提交失败', e); }
+            alert('提交订单失败，请稍后重试或联系客服');
+        }
+        // 立即购买：先弹支付二维码弹窗（与企业端一致）
+        function openPayment(serviceId) {
+            if (!getAuthToken()) {
+                alert('请先登录后再购买会员');
+                return;
+            }
+            openPaymentModal(serviceId);
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.payment-method-btn').forEach(btn => {
+                btn.addEventListener('click', function() { switchPaymentMethod(this.getAttribute('data-method')); });
+            });
+        });
+        
+        // 检查求职者付费访问控制（以服务端 /public/site-settings 为准，避免本机旧 localStorage 误判为关闭）
+        function checkJobseekerPaymentAccess() {
+            try {
+                const paymentSettings = JSON.parse(localStorage.getItem('paymentSettings') || 'null');
+                const systemSettings = JSON.parse(localStorage.getItem('systemSettings') || '{}');
+                let jobseekerPaymentEnabled = true;
+                var pub = window.__publicSiteSettings;
+                if (pub && pub.payment && typeof pub.payment === 'object') {
+                    var jp = pub.payment.jobseekerPaymentEnabled;
+                    jobseekerPaymentEnabled = jp === undefined || jp === null ? true : !!jp;
+                } else if (typeof window.__jobseekerPaymentEnabledFromServer === 'boolean') {
+                    jobseekerPaymentEnabled = window.__jobseekerPaymentEnabledFromServer;
+                } else if (paymentSettings && paymentSettings.jobseekerPaymentEnabled !== undefined) {
+                    jobseekerPaymentEnabled = !!paymentSettings.jobseekerPaymentEnabled;
+                } else if (systemSettings.payment && systemSettings.payment.jobseekerPaymentEnabled !== undefined) {
+                    jobseekerPaymentEnabled = !!systemSettings.payment.jobseekerPaymentEnabled;
+                } else if (localStorage.getItem('jobseekerPaymentEnabled') === 'disabled') {
+                    jobseekerPaymentEnabled = false;
+                }
+                
+                if (!jobseekerPaymentEnabled) {
+                    const mainContent = document.querySelector('main');
+                    if (mainContent) {
+                        mainContent.innerHTML = `
+                            <section class="bg-gradient-blue text-white py-12">
+                                <div class="container mx-auto px-4">
+                                    <h1 class="text-4xl font-bold text-center mb-4">付费服务</h1>
+                                    <p class="text-center text-lg opacity-90">当前暂不开放求职者付费服务</p>
+                                </div>
+                            </section>
+                            <section class="py-16">
+                                <div class="container mx-auto px-4 text-center">
+                                    <div class="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-8">
+                                        <i class="fa fa-info-circle text-6xl text-gray-400 mb-4"></i>
+                                        <h2 class="text-2xl font-bold text-gray-800 mb-4">服务暂未开放</h2>
+                                        <p class="text-gray-600 mb-6 text-left leading-relaxed">
+                                            当前系统对求职者端关闭了付费入口（总开关在服务端）。请在管理端 <strong>系统设置 → 支付设置</strong> 中打开「允许求职者访问付费测评包」，点击 <strong>保存支付设置</strong>（会同步到服务器），并尽量配置微信/支付宝收款二维码。<br><br>
+                                            <span class="text-sm text-gray-500">说明：会员套餐价格在 <strong>求职者管理 → 会员套餐管理</strong> 中编辑并保存；与上述总开关分开，但总开关关闭时本页不会展示套餐。</span>
+                                        </p>
+                                        <a href="index.html" class="inline-block bg-primary hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition">
+                                            返回首页
+                                        </a>
+                                    </div>
+                                </div>
+                            </section>
+                        `;
+                    }
+                    const paymentNavLink = document.querySelector('nav a[href="payment.html"]');
+                    if (paymentNavLink) paymentNavLink.style.display = 'none';
+                    const paymentMobileLink = document.querySelector('#mobile-menu a[href="payment.html"]');
+                    if (paymentMobileLink) paymentMobileLink.style.display = 'none';
+                }
+            } catch (e) {
+                console.error('检查求职者付费访问控制失败:', e);
+            }
+        }
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                var base = (window.API_BASE_URL && String(window.API_BASE_URL).trim()) ? String(window.API_BASE_URL).replace(/\/$/, '') : '';
+                if (!base && window.location && window.location.origin) {
+                    base = window.location.origin.replace(/\/$/, '') + '/api/v1';
+                }
+                if (base) {
+                    var res = await fetch(base + '/public/site-settings', { cache: 'no-store' });
+                    var json = await res.json().catch(function () { return null; });
+                    if (json && json.success && json.data) {
+                        window.__publicSiteSettings = json.data;
+                        if (json.data.payment) {
+                            var jpv = json.data.payment.jobseekerPaymentEnabled;
+                            window.__jobseekerPaymentEnabledFromServer =
+                                jpv === undefined || jpv === null ? true : !!jpv;
+                        }
+                    }
+                }
+            } catch (e) {
+                console.warn('加载站点公开设置失败', e);
+            }
+            checkJobseekerPaymentAccess();
+            membershipServices = loadMembershipServices();
+            renderServices();
+            loadFooterContent();
+            
+            // 监听设置更新事件
+            window.addEventListener('contactInfoUpdated', function(e) {
+                loadFooterContent();
+            });
+            
+            // 监听支付设置更新
+            window.addEventListener('jobseekerPaymentEnabledUpdated', function(event) {
+                if (event.detail && !event.detail.enabled) {
+                    checkJobseekerPaymentAccess();
+                } else {
+                    location.reload();
+                }
+            });
+            
+            // 监听会员套餐数据更新
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'membershipPlans') {
+                    membershipServices = loadMembershipServices();
+                    renderServices();
+                }
+                if (e.key === 'jobseekerPaymentEnabled' || e.key === 'paymentSettings') {
+                    checkJobseekerPaymentAccess();
+                }
+            });
+        });
+        
+        // 从管理端基本设置加载底部内容
+        function loadFooterContent() {
+            try {
+                const contactInfo = JSON.parse(localStorage.getItem('contactInfo') || '{}');
+                const siteName = localStorage.getItem('siteName') || '圣举人才网';
+                
+                if (contactInfo.phone) {
+                    const phoneEl = document.getElementById('footer-phone');
+                    if (phoneEl) phoneEl.textContent = contactInfo.phone;
+                }
+                
+                if (contactInfo.email) {
+                    const emailEl = document.getElementById('footer-email');
+                    if (emailEl) emailEl.textContent = contactInfo.email;
+                }
+                
+                if (contactInfo.address) {
+                    const addressEl = document.getElementById('footer-address');
+                    if (addressEl) addressEl.textContent = contactInfo.address;
+                }
+                
+                const copyrightEl = document.getElementById('footer-copyright');
+                if (copyrightEl) {
+                    const year = new Date().getFullYear();
+                    copyrightEl.textContent = `© ${year} ${siteName} 版权所有`;
+                }
+            } catch (e) {
+                console.error('加载底部内容失败:', e);
+            }
+        }
+        
+        // 暴露函数到全局作用域
+        window.openPayment = openPayment;
+    </script>
+</body>
+</html>
