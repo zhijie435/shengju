@@ -70,10 +70,14 @@ if not exist "%DATA_DIR%\mysql" (
   echo  [1/5] 首次运行，正在初始化数据库...
   echo        ^(约 15-30 秒，请耐心等待^)
   echo.
-  "%MYSQL_INSTALL_EXE%" "--datadir=%DATA_DIR%" "--password=%DB_PASS%" --default-user=root >"%LOGS_DIR%\db_init.log" 2>&1
+  "%MYSQL_INSTALL_EXE%" "--datadir=%DATA_DIR%" "--password=%DB_PASS%" >"%LOGS_DIR%\db_init.log" 2>&1
   if errorlevel 1 (
     echo  [错误] 数据库初始化失败！
-    echo         详情：%LOGS_DIR%\db_init.log
+    echo.
+    echo  ---- db_init.log 末尾 20 行 ----
+    powershell -NoProfile -NonInteractive -Command "Get-Content '%LOGS_DIR%\db_init.log' -Tail 20 | ForEach-Object { '  ' + $_ }" 2>nul
+    echo  --------------------------------
+    echo  完整日志路径：%LOGS_DIR%\db_init.log
     goto :fatal
   )
   echo        初始化完成。
