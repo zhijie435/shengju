@@ -71,23 +71,6 @@ Type: filesandordirs; Name: "{app}\config\my_runtime.ini"
 Type: filesandordirs; Name: "{app}\app\backend\.env"
 
 [Code]
-function InitializeSetup(): Boolean;
-var
-  FreeSpace: Int64;
-  TargetDrive: String;
-begin
-  Result := True;
-  TargetDrive := ExtractFileDrive(ExpandConstant('{autopf}'));
-  if TargetDrive = '' then TargetDrive := 'C:';
-  GetSpaceFreeEx(TargetDrive + '\', FreeSpace, nil);
-  if FreeSpace < Int64(2) * 1024 * 1024 * 1024 then begin
-    MsgBox('Disk space insufficient! Need at least 2 GB.' + #13#10 +
-           'Available: ' + IntToStr(FreeSpace div (1024*1024)) + ' MB',
-           mbError, MB_OK);
-    Result := False;
-    Exit;
-  end;
-end;
 
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
 var
