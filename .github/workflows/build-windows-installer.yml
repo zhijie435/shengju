@@ -114,7 +114,7 @@ jobs:
           $version = "v20.19.2"
           $zipName = "node-$version-win-x64.zip"
           $url = "https://nodejs.org/dist/$version/$zipName"
-          Write-Host "下载 Node.js $version: $url"
+          Write-Host "下载 Node.js ${version}: $url"
 
           # curl.exe 原生随 Windows 10+ 内置，支持 -L 跟随重定向，比 Invoke-WebRequest 更可靠
           curl.exe -L -f --retry 3 --max-time 300 -o node-win-x64.zip $url
