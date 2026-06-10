@@ -17,15 +17,15 @@
 [LangOptions]
 ; The following three entries are very important. Be sure to read and 
 ; understand the '[LangOptions] section' topic in the help file.
-LanguageName=简体中文
-; If Language Name display incorrect, uncomment next line
-; LanguageName=<7B80><4F53><4E2D><6587>
+; LanguageName 使用 Unicode 转义，避免直接嵌入 GBK 字节
+LanguageName=<7B80><4F53><4E2D><6587>
 ; About LanguageID, to reference link:
 ; https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-lcid/a9eac961-e77d-41a6-90a5-ce1a8b0cdb9c
 LanguageID=$0804
-; About CodePage, to reference link:
-; https://docs.microsoft.com/en-us/windows/win32/intl/code-page-identifiers
-LanguageCodePage=936
+; LanguageCodePage=0 表示 Unicode 模式，不切换到 GBK (936)。
+; 若设为 936，Inno Setup 会把 package.iss 后续内容按 GBK 解析，
+; 导致 UTF-8 中文字节截断后面的 ASCII（如 "checked"），触发 unknown flag。
+LanguageCodePage=0
 ; If the language you are translating to requires special font faces or
 ; sizes, uncomment any of the following entries and change them accordingly.
 ;DialogFontName=
