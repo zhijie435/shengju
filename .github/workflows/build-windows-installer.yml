@@ -201,6 +201,23 @@ jobs:
       - name: 安装 Inno Setup 6
         run: choco install innosetup --yes --no-progress
 
+      - name: 为 package.iss 注入 UTF-8 BOM
+        shell: pwsh
+        run: |
+          # Inno Setup 6 官方机制：文件头有 UTF-8 BOM (EF BB BF) 时强制以 UTF-8 读取。
+          # 若无 BOM，则使用语言包声明的 LanguageCodePage（本例为 936/GBK），
+          # 导致 .iss 文件里的 UTF-8 中文字节被错误解析，后续 ASCII 字符（如 "checked"）
+          # 看起来是乱码，触发 "unknown flag" 编译错误。
+          $path = "deploy\offline-windows\build\package.iss"
+          $bytes = [System.IO.File]::ReadAllBytes($path)
+          if ($bytes.Length -lt 3 -or $bytes[0] -ne 0xEF -or $bytes[1] -ne 0xBB -or $bytes[2] -ne 0xBF) {
+            $bom = [byte[]](0xEF, 0xBB, 0xBF)
+            [System.IO.File]::WriteAllBytes($path, $bom + $bytes)
+            Write-Host "✓ 已注入 UTF-8 BOM"
+          } else {
+            Write-Host "✓ UTF-8 BOM 已存在"
+          }
+
       - name: 生成安装包 .exe
         shell: cmd
         env:
