@@ -105,6 +105,30 @@ jobs:
             }
           }
 
+      # ── 5b. 清理 node_modules 无用文件（避免 Inno Setup Out of Memory）──────
+      - name: 清理 node_modules 冗余文件
+        shell: pwsh
+        run: |
+          $nm = "deploy\offline-windows\packaging\app\backend\node_modules"
+          Write-Host "清理前文件数: $(( Get-ChildItem $nm -Recurse -File ).Count)"
+
+          # 删除测试文件
+          Get-ChildItem $nm -Recurse -Include @('*.test.js','*.test.ts','*.test.mjs','*.spec.js','*.spec.ts','*.spec.mjs') -ErrorAction SilentlyContinue | Remove-Item -Force
+          # 删除 TypeScript 源码（.ts / .tsx，但保留 .d.ts 可选，这里一并删除）
+          Get-ChildItem $nm -Recurse -Include @('*.ts','*.tsx') -ErrorAction SilentlyContinue | Remove-Item -Force
+          # 删除 Source Map
+          Get-ChildItem $nm -Recurse -Filter '*.map' -ErrorAction SilentlyContinue | Remove-Item -Force
+          # 删除文档/许可证文本
+          Get-ChildItem $nm -Recurse -Include @('*.md','*.markdown','LICENSE','LICENSE.*','LICENCE','LICENCE.*','CHANGELOG','CHANGELOG.*','NOTICE','AUTHORS','CONTRIBUTORS') -ErrorAction SilentlyContinue | Remove-Item -Force
+          # 删除空目录
+          do {
+            $empty = Get-ChildItem $nm -Recurse -Directory | Where-Object { (Get-ChildItem $_.FullName -Recurse -File).Count -eq 0 }
+            $empty | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue
+          } while ($empty.Count -gt 0)
+
+          Write-Host "清理后文件数: $(( Get-ChildItem $nm -Recurse -File ).Count)"
+          Write-Host "✓ node_modules 清理完成"
+
       # ── 6. 下载 Node.js v20 LTS 便携版（固定版本，curl.exe 直接下载）──────
       - name: 下载 Node.js v20 LTS 便携版
         shell: pwsh
