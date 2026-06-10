@@ -45,8 +45,8 @@ CreateUninstallRegKey=yes
 Name: "chs"; MessagesFile: "Languages\ChineseSimplified.isl"
 
 [Tasks]
-Name: "desktopicon";   Description: "Create desktop shortcut";     Flags: checked
-Name: "startmenuicon"; Description: "Create start menu shortcuts"; Flags: checked
+Name: "desktopicon";   Description: "Create desktop shortcut"
+Name: "startmenuicon"; Description: "Create start menu shortcuts"
 
 [Files]
 Source: "..\packaging\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
