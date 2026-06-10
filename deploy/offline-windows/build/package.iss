@@ -46,7 +46,8 @@ UninstallDisplayIcon={app}\启动考试系统.bat
 CreateUninstallRegKey=yes
 
 [Languages]
-Name: "chs"; MessagesFile: "compiler:Languages\ChineseSimplified.isl"
+; 使用随仓库附带的语言文件（相对于 .iss 文件路径），不依赖编译器安装目录
+Name: "chs"; MessagesFile: "Languages\ChineseSimplified.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "在桌面创建快捷方式"; GroupDescription: "附加任务:"; Flags: checked
