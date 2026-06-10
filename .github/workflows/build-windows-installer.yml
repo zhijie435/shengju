@@ -221,6 +221,83 @@ jobs:
             # 非致命，继续构建
           }
 
+      # ── 8b. 修复 bat 文件编码（UTF-8 → GBK），解决 cmd.exe 中文乱码 ────────────
+      - name: 修复 bat 文件编码（UTF-8 转 GBK）
+        shell: pwsh
+        run: |
+          # Windows cmd.exe 默认用 GBK(CP936) 读取批处理文件。
+          # 源文件在 macOS 上以 UTF-8 创建，直接在 Windows 运行会导致：
+          #   1. 中文全部乱码
+          #   2. chcp 等命令的参数被截断（"chcp 936" → "cho"），报"不是内部命令"
+          # 解决方案：在打包前统一重新写入为 GBK 编码（无 BOM）。
+          $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+          $gbk      = [System.Text.Encoding]::GetEncoding(936)
+          $pkgDir   = "deploy\offline-windows\packaging"
+
+          Get-ChildItem $pkgDir -Recurse -Filter "*.bat" | ForEach-Object {
+            $content = [System.IO.File]::ReadAllText($_.FullName, $utf8NoBom)
+            [System.IO.File]::WriteAllText($_.FullName, $content, $gbk)
+            Write-Host "✓ GBK 编码: $($_.Name)"
+          }
+          Write-Host "✓ 所有 bat 文件已转为 GBK 编码"
+
+      # ── 8c. 将安装包图标 PNG 转换为 ICO，并复制到打包目录 ────────────────────
+      - name: 转换图标 PNG → ICO
+        shell: pwsh
+        run: |
+          Add-Type -AssemblyName System.Drawing
+
+          $pngPath = "deploy\offline-windows\build\app-icon.png"
+          $icoPath = "deploy\offline-windows\build\app-icon.ico"
+
+          $sizes = @(256, 128, 64, 48, 32, 16)
+          $src = [System.Drawing.Bitmap]::new((Resolve-Path $pngPath).Path)
+
+          $streams = @()
+          foreach ($sz in $sizes) {
+            $bmp = New-Object System.Drawing.Bitmap($src, $sz, $sz)
+            $ms  = New-Object System.IO.MemoryStream
+            $bmp.Save($ms, [System.Drawing.Imaging.ImageFormat]::Png)
+            $streams += @{ Size = $sz; Data = $ms.ToArray() }
+            $bmp.Dispose(); $ms.Dispose()
+          }
+          $src.Dispose()
+
+          $count      = $streams.Count
+          $headerSize = 6 + 16 * $count
+          $offset     = $headerSize
+          foreach ($item in $streams) { $offset += $item.Data.Length }
+          $offset = $headerSize   # reset to start of data section
+
+          $fs = [System.IO.FileStream]::new($icoPath, [System.IO.FileMode]::Create)
+          $w  = New-Object System.IO.BinaryWriter($fs)
+
+          # ICONDIR header
+          $w.Write([uint16]0); $w.Write([uint16]1); $w.Write([uint16]$count)
+
+          # ICONDIRENTRY per size
+          $off = $headerSize
+          foreach ($item in $streams) {
+            $s = $item.Size
+            $w.Write([byte]$(if ($s -ge 256) { 0 } else { $s }))
+            $w.Write([byte]$(if ($s -ge 256) { 0 } else { $s }))
+            $w.Write([byte]0); $w.Write([byte]0)
+            $w.Write([uint16]1); $w.Write([uint16]32)
+            $w.Write([uint32]$item.Data.Length)
+            $w.Write([uint32]$off)
+            $off += $item.Data.Length
+          }
+
+          # image data
+          foreach ($item in $streams) { $w.Write($item.Data) }
+          $w.Flush(); $fs.Close()
+          Write-Host "✓ ICO 生成: $icoPath ($(( Get-Item $icoPath ).Length) bytes)"
+
+          # 同时复制到 packaging 目录，使安装后 {app}\app-icon.ico 可被快捷方式引用
+          $pkgIco = "deploy\offline-windows\packaging\app-icon.ico"
+          Copy-Item $icoPath $pkgIco -Force
+          Write-Host "✓ ICO 已复制到 packaging 目录"
+
       # ── 9. 安装 Inno Setup 并打包 ─────────────────────────────────────────
       - name: 安装 Inno Setup 6
         run: choco install innosetup --yes --no-progress
@@ -229,9 +306,6 @@ jobs:
         shell: pwsh
         run: |
           # Inno Setup 6 官方机制：文件头有 UTF-8 BOM (EF BB BF) 时强制以 UTF-8 读取。
-          # 若无 BOM，则使用语言包声明的 LanguageCodePage（本例为 936/GBK），
-          # 导致 .iss 文件里的 UTF-8 中文字节被错误解析，后续 ASCII 字符（如 "checked"）
-          # 看起来是乱码，触发 "unknown flag" 编译错误。
           $path = "deploy\offline-windows\build\package.iss"
           $bytes = [System.IO.File]::ReadAllBytes($path)
           if ($bytes.Length -lt 3 -or $bytes[0] -ne 0xEF -or $bytes[1] -ne 0xBB -or $bytes[2] -ne 0xBF) {

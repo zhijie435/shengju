@@ -27,6 +27,7 @@ DefaultGroupName={#AppName}
 AllowNoIcons=no
 OutputDir=..\dist
 OutputBaseFilename=sjrcw-installer-v{#AppVersion}
+SetupIconFile=..\build\app-icon.ico
 ; Use separate LZMA process to access all available RAM (avoids Out of Memory
 ; when packaging node_modules + Chromium runtime, 30k+ files / ~500MB).
 Compression=lzma2/max
@@ -56,10 +57,10 @@ Source: "..\packaging\placeholder.txt"; DestDir: "{app}\data"; Flags: ignorevers
 Source: "..\packaging\placeholder.txt"; DestDir: "{app}\logs"; Flags: ignoreversion
 
 [Icons]
-Name: "{group}\Start ShengjuExam";      Filename: "{cmd}"; Parameters: "/c ""{app}\start.bat"""; WorkingDir: "{app}"
-Name: "{group}\Stop ShengjuExam";       Filename: "{cmd}"; Parameters: "/c ""{app}\stop.bat""";  WorkingDir: "{app}"
+Name: "{group}\Start ShengjuExam";      Filename: "{cmd}"; Parameters: "/c ""{app}\start.bat"""; WorkingDir: "{app}"; IconFilename: "{app}\app-icon.ico"
+Name: "{group}\Stop ShengjuExam";       Filename: "{cmd}"; Parameters: "/c ""{app}\stop.bat""";  WorkingDir: "{app}"; IconFilename: "{app}\app-icon.ico"
 Name: "{group}\Uninstall {#AppName}";   Filename: "{uninstallexe}"
-Name: "{commondesktop}\ShengjuExam";    Filename: "{cmd}"; Parameters: "/c ""{app}\start.bat"""; WorkingDir: "{app}"; Tasks: desktopicon
+Name: "{commondesktop}\ShengjuExam";    Filename: "{cmd}"; Parameters: "/c ""{app}\start.bat"""; WorkingDir: "{app}"; IconFilename: "{app}\app-icon.ico"; Tasks: desktopicon
 
 [Run]
 Filename: "{cmd}"; Parameters: "/c ""{app}\start.bat"""; WorkingDir: "{app}"; Description: "Start exam system"; Flags: postinstall nowait
