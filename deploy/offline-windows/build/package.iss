@@ -1,4 +1,4 @@
-; ================================================================
+﻿; ================================================================
 ; Shengju Exam System - Inno Setup packaging script
 ; Tool: Inno Setup 6.x  https://jrsoftware.org/isdl.php
 ; Run:  ISCC.exe /DAppVersion=1.0.0 package.iss
@@ -52,7 +52,13 @@ Name: "desktopicon";   Description: "Create desktop shortcut"
 Name: "startmenuicon"; Description: "Create start menu shortcuts"
 
 [Files]
-Source: "..\packaging\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+; Bundle packaging files. Exclude runtime-generated artifacts:
+;   data\*            - MariaDB data (init fresh on target by start.bat->mysql_install_db)
+;   logs\*            - runtime logs
+;   config\my_runtime.ini  - generated from template at first run
+;   app\backend\.env  - generated from template at first run
+Source: "..\packaging\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: "data\*,logs\*,config\my_runtime.ini,app\backend\.env"
+; Ensure data and logs directories exist (placeholder.txt creates the dir)
 Source: "..\packaging\placeholder.txt"; DestDir: "{app}\data"; Flags: ignoreversion
 Source: "..\packaging\placeholder.txt"; DestDir: "{app}\logs"; Flags: ignoreversion
 
