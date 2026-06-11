@@ -39,6 +39,9 @@ ShowLanguageDialog=no
 LanguageDetectionMethod=locale
 UninstallDisplayName={#AppName}
 CreateUninstallRegKey=yes
+CloseApplications=yes
+CloseApplicationsFilter=*.dll,*.exe
+RestartApplications=no
 
 ; ---------- sections below are parsed AFTER ISL is loaded ----------
 ; ALL strings here are pure ASCII to avoid encoding issues with
@@ -62,6 +65,13 @@ Source: "..\packaging\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs 
 Source: "..\packaging\placeholder.txt"; DestDir: "{app}\data"; Flags: ignoreversion
 Source: "..\packaging\placeholder.txt"; DestDir: "{app}\logs"; Flags: ignoreversion
 
+[InstallDelete]
+; Clean up lock-prone runtime files before installing fresh copies
+Type: files; Name: "{app}\logs\node.log"
+Type: files; Name: "{app}\logs\node_err.log"
+Type: files; Name: "{app}\logs\mysql_error.log"
+Type: filesandordirs; Name: "{app}\logs"
+
 [Icons]
 Name: "{group}\Start ShengjuExam";      Filename: "{cmd}"; Parameters: "/c ""{app}\start.bat"""; WorkingDir: "{app}"; IconFilename: "{app}\app-icon.ico"
 Name: "{group}\Stop ShengjuExam";       Filename: "{cmd}"; Parameters: "/c ""{app}\stop.bat""";  WorkingDir: "{app}"; IconFilename: "{app}\app-icon.ico"
@@ -73,6 +83,8 @@ Filename: "{cmd}"; Parameters: "/c ""{app}\start.bat"""; WorkingDir: "{app}"; De
 
 [UninstallRun]
 Filename: "{cmd}"; Parameters: "/c ""{app}\stop.bat"""; WorkingDir: "{app}"; Flags: runhidden waituntilterminated; RunOnceId: "StopServices"
+Filename: "taskkill.exe"; Parameters: "/F /IM node.exe"; Flags: runhidden waituntilterminated; RunOnceId: "KillNode"
+Filename: "taskkill.exe"; Parameters: "/F /IM mysqld.exe"; Flags: runhidden waituntilterminated; RunOnceId: "KillMySQL"
 
 [UninstallDelete]
 Type: filesandordirs; Name: "{app}\logs"
@@ -80,6 +92,24 @@ Type: filesandordirs; Name: "{app}\config\my_runtime.ini"
 Type: filesandordirs; Name: "{app}\app\backend\.env"
 
 [Code]
+
+procedure KillShengjuProcesses();
+var
+  ResultCode: Integer;
+begin
+  // Kill node and mysqld processes that may hold file locks
+  Exec('taskkill.exe', '/F /IM node.exe',   '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  Exec('taskkill.exe', '/F /IM mysqld.exe', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  // Give OS time to release file handles
+  Sleep(2000);
+end;
+
+function PrepareToInstall(var NeedsRestart: Boolean): String;
+begin
+  Result := '';
+  NeedsRestart := False;
+  KillShengjuProcesses();
+end;
 
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
 var
