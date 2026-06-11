@@ -283,6 +283,19 @@ foreach ($app in $frontends) {
 }
 OK "Packaging directory ready"
 
+# ── Step 4 extra: Copy SQL production backup to packaging seeds directory ──────
+Write-Host "  Copying SQL production backup to packaging..."
+$seedsSrc = "$PROJ\backend\database\seeds\qms_full_backup.sql"
+$seedsDst = "$PACKAGING\app\backend\database\seeds"
+New-Item -ItemType Directory -Force -Path $seedsDst | Out-Null
+if (Test-Path $seedsSrc) {
+    Copy-Item $seedsSrc "$seedsDst\qms_production_backup.sql" -Force
+    $sz = [math]::Round((Get-Item "$seedsDst\qms_production_backup.sql").Length / 1MB, 2)
+    OK "SQL production backup copied ($sz MB) -> $seedsDst\qms_production_backup.sql"
+} else {
+    WARN "qms_full_backup.sql not found at $seedsSrc - skipping SQL seed copy"
+}
+
 # ── Step 5: Clean node_modules (reduce size to avoid Inno Setup OOM) ─────────
 Step 5 9 "Cleaning node_modules redundant files..."
 
@@ -396,19 +409,24 @@ if ($chrome) {
     WARN "chrome.exe not found - Word/formula/PDF features will be unavailable offline (non-fatal, continuing)"
 }
 
-# ── Step 8a: Convert bat files from UTF-8 to GBK ─────────────────────────────
-Step 8 9 "Fixing bat encoding + icon + BOM..."
+# ── Step 8a: Convert bat files from UTF-8 to GBK (cmd.exe native) ────────────
+# Chinese Windows cmd.exe uses GBK/CP936 font rendering by default.
+# UTF-8 bat files with chcp 65001 display doubled characters due to GBK font.
+# Solution: restore UTF-8 source from git, convert to GBK for packaging.
+Step 8 9 "Converting bat files to GBK for cmd.exe compatibility..."
 
-Write-Host "  Converting bat files to GBK (Windows cmd.exe compatible)..."
-$utf8NoBom = New-Object System.Text.UTF8Encoding($false)
-$gbk       = [System.Text.Encoding]::GetEncoding(936)
-
-Get-ChildItem $PACKAGING -Recurse -Filter "*.bat" | ForEach-Object {
-    $content = [System.IO.File]::ReadAllText($_.FullName, $utf8NoBom)
-    [System.IO.File]::WriteAllText($_.FullName, $content, $gbk)
-    Write-Host "    GBK: $($_.Name)"
-}
-OK "bat encoding conversion done"
+# Delegated to patch_and_convert.ps1 (a UTF-8 *with BOM* helper). It does, in one
+# idempotent pass: git checkout HEAD (clean UTF-8 source) -> patch startup bat logic
+# (data-driven SQL import + real production accounts) -> convert ALL bats to GBK ->
+# byte-level verify. NOTE: this build script itself is UTF-8 *without* BOM, so any
+# Chinese string literals here would be misread by PowerShell 5.1; keeping the
+# Chinese-bearing logic in a separate BOM'd script avoids that whole class of bugs.
+Write-Host "  Running patch_and_convert.ps1 (git checkout -> patch -> GBK -> verify)..."
+$patchScript = "$BUILD_DIR\patch_and_convert.ps1"
+if (-not (Test-Path $patchScript)) { FAIL "patch_and_convert.ps1 not found at $patchScript" }
+& powershell -NoProfile -ExecutionPolicy Bypass -File $patchScript -PackDir $PACKAGING -Proj $PROJ
+if ($LASTEXITCODE -ne 0) { FAIL "patch_and_convert.ps1 failed (exit $LASTEXITCODE)" }
+OK "bat files patched + converted to GBK (verified)"
 
 # ── Step 8b: PNG -> ICO ───────────────────────────────────────────────────────
 $pngPath = "$BUILD_DIR\app-icon.png"

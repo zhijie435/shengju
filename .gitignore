@@ -47,3 +47,19 @@ Cargo.lock
 *.tmp
 *.bak
 dist-tauri/
+
+# ── 敏感/调试产物（含明文凭据或生产数据，禁止提交）──────────────────────────
+backend/database/seeds/*.sql
+deploy/offline-windows/build/_ssh_result.txt
+deploy/offline-windows/build/ssh_export.py
+deploy/offline-windows/build/scp_download.py
+deploy/offline-windows/build/diag_ssh_investigate.py
+deploy/offline-windows/build/check*.ps1
+deploy/offline-windows/build/diagnose.ps1
+deploy/offline-windows/build/convert-to-gbk.ps1
+deploy/offline-windows/build/fix-bat-encoding.ps1
+deploy/offline-windows/build/fix-bat-final.ps1
+deploy/offline-windows/build/patch_and_convert.ps1
+deploy/offline-windows/build/rebuild-installer.ps1
+deploy/offline-windows/build/verify-encoding.ps1
+deploy/offline-windows/build/verify_bat.ps1

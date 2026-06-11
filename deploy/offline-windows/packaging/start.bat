@@ -1,2 +1,2 @@
 @echo off
-call "%~dp0Е░╞Е┼╗Х─┐Х╞∙ГЁ╩Г╩÷.bat"
+call "%~dp0фТ╤╞©╪йто╣мЁ.bat"

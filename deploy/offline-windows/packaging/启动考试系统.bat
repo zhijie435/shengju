@@ -1,9 +1,9 @@
 @echo off
 chcp 936 >nul
 setlocal enabledelayedexpansion
-title 圣举考试系统
+title Shengju Exam System - Local
 
-rem ── 所有路径均基于本脚本所在目录，绝对路径避免 cd 后失效 ──────────────────
+rem -- All paths are based on this script's directory; absolute paths avoid breakage after cd --
 set "ROOT=%~dp0"
 if "%ROOT:~-1%"=="\" set "ROOT=%ROOT:~0,-1%"
 
@@ -21,12 +21,16 @@ set "ENV_FILE=%ROOT%\app\backend\.env"
 set "APP_ENTRY=%ROOT%\app\backend\server.js"
 set "SEED_SCRIPT=%ROOT%\app\backend\scripts\seed_initial_data.js"
 set "SEED_FLAG=%ROOT%\data\.seed_done"
+set "SQL_SEED=%ROOT%\app\backend\database\seeds\qms_production_backup.sql"
 
 set "DB_PORT=3306"
 set "APP_PORT=3000"
 set "DB_PASS=ShengjuLocal2024"
 set "DB_NAME=question_management_shared"
-set "CHROMIUM_EXE=%ROOT%\runtime\chromium\chrome-win\chrome.exe"
+rem -- dynamically locate Chromium (puppeteer cache layout varies by version; avoid hardcoded path) --
+set "CHROMIUM_EXE="
+for /r "%ROOT%\runtime\chromium" %%F in (chrome.exe) do if not defined CHROMIUM_EXE set "CHROMIUM_EXE=%%F"
+if not defined CHROMIUM_EXE set "CHROMIUM_EXE=%ROOT%\runtime\chromium\chrome-win\chrome.exe"
 
 if not exist "%LOGS_DIR%" mkdir "%LOGS_DIR%" 2>nul
 if not exist "%DATA_DIR%" mkdir "%DATA_DIR%" 2>nul
@@ -34,63 +38,67 @@ if not exist "%DATA_DIR%" mkdir "%DATA_DIR%" 2>nul
 cls
 echo.
 echo  ============================================================
-echo    圣  举  考  试  系  统  —  本  地  版
+echo    Shengju Exam System - Local Edition
 echo  ============================================================
 echo.
 
-rem ── 环境自检 ─────────────────────────────────────────────────────────────
+rem -- Environment self-check --
 if not exist "%NODE_EXE%" (
-  echo  [错误] 未找到 Node.js 运行时。
-  echo         请重新安装本程序，或手动解压 runtime\node.zip
+  echo  [ERROR] Node.js runtime not found.
+  echo          Please reinstall, or manually extract runtime\node.zip
   goto :fatal
 )
 if not exist "%MYSQLD_EXE%" (
-  echo  [错误] 未找到数据库服务。
-  echo         请重新安装本程序，或手动解压 runtime\mariadb.zip
+  echo  [ERROR] Database service not found.
+  echo          Please reinstall, or manually extract runtime\mariadb.zip
   goto :fatal
 )
 
-rem ── 生成 my_runtime.ini（PowerShell 字符串替换，避免括号/感叹号问题）────
+rem -- Generate my_runtime.ini (PowerShell string replace; avoids paren/bang issues) --
 powershell -NoProfile -NonInteractive -Command ^
-  "(Get-Content '%CONFIG_TEMPLATE%') -replace 'DATA_DIR_PLACEHOLDER','%DATA_DIR:\=\\%' -replace 'LOGS_DIR_PLACEHOLDER','%LOGS_DIR:\=\\%' | Set-Content '%MY_INI%' -Encoding UTF8" >nul 2>&1
+  "$c=(Get-Content '%CONFIG_TEMPLATE%' -Raw) -replace 'DATA_DIR_PLACEHOLDER','%DATA_DIR:\=\\%' -replace 'LOGS_DIR_PLACEHOLDER','%LOGS_DIR:\=\\%'; [System.IO.File]::WriteAllText('%MY_INI%', $c, (New-Object System.Text.UTF8Encoding($false)))" >nul 2>&1
 
-rem ── 生成 app\backend\.env（注入 Chromium 绝对路径）──────────────────────
+rem -- Generate app\backend\.env (inject Chromium absolute path) --
 powershell -NoProfile -NonInteractive -Command ^
-  "(Get-Content '%ENV_TEMPLATE%') -replace 'CHROMIUM_PATH_PLACEHOLDER','%CHROMIUM_EXE:\=\\%' | Set-Content '%ENV_FILE%' -Encoding UTF8" >nul 2>&1
+  "$c=(Get-Content '%ENV_TEMPLATE%' -Raw) -replace 'CHROMIUM_PATH_PLACEHOLDER','%CHROMIUM_EXE:\=\\%'; [System.IO.File]::WriteAllText('%ENV_FILE%', $c, (New-Object System.Text.UTF8Encoding($false)))" >nul 2>&1
 
-rem ── 检查 DB 端口是否已被占用 ─────────────────────────────────────────────
+rem -- Check whether DB port is already in use --
 call :port_in_use %DB_PORT%
 if "%PORT_USED%"=="1" (
-  echo  [i] 数据库端口 %DB_PORT% 已在监听，复用已有数据库实例。
+  echo  [i] Database port %DB_PORT% already listening; reusing existing instance.
   goto :check_node_port
 )
 
-rem ── 首次：初始化 MariaDB ──────────────────────────────────────────────────
-if not exist "%DATA_DIR%\mysql" (
-  echo  [1/5] 首次运行，正在初始化数据库...
-  echo        ^(约 15-30 秒，请耐心等待^)
+rem -- First run: initialize MariaDB --
+if exist "%DATA_DIR%\mysql" (
+  echo  [1/5] Data directory exists, skipping initialization.
+  goto :db_bootstrap_done
+)
+rem -- data dir exists but has no mysql system db = residual/corrupt: wipe and rebuild --
+if exist "%DATA_DIR%" rmdir /s /q "%DATA_DIR%"
+mkdir "%DATA_DIR%" 2>nul
+  echo  [1/5] First run, initializing database...
+  echo        ^(about 15-30 seconds, please wait^)
   echo.
   "%MYSQL_INSTALL_EXE%" "--datadir=%DATA_DIR%" "--password=%DB_PASS%" >"%LOGS_DIR%\db_init.log" 2>&1
   if errorlevel 1 (
-    echo  [错误] 数据库初始化失败！
+    echo  [ERROR] Database initialization failed!
     echo.
-    echo  ---- db_init.log 末尾 20 行 ----
+    echo  ---- db_init.log last 20 lines ----
     powershell -NoProfile -NonInteractive -Command "Get-Content '%LOGS_DIR%\db_init.log' -Tail 20 | ForEach-Object { '  ' + $_ }" 2>nul
     echo  --------------------------------
-    echo  完整日志路径：%LOGS_DIR%\db_init.log
+    echo  Full log path: %LOGS_DIR%\db_init.log
     goto :fatal
   )
-  echo        初始化完成。
-) else (
-  echo  [1/5] 数据目录已存在，跳过初始化。
-)
+  echo        Initialization complete.
+:db_bootstrap_done
 
-rem ── 启动 MariaDB ──────────────────────────────────────────────────────────
-echo  [2/5] 启动数据库服务...
+rem -- Start MariaDB --
+echo  [2/5] Starting database service...
 start "" /B "%MYSQLD_EXE%" "--defaults-file=%MY_INI%" "--datadir=%DATA_DIR%"
 
 set /a WAIT=0
-set /p "=        等待数据库就绪 " <nul
+set /p "=        Waiting for database " <nul
 :waitdb
 timeout /t 1 /nobreak >nul
 "%MYSQLADMIN_EXE%" -u root "--password=%DB_PASS%" -h 127.0.0.1 -P %DB_PORT% ping >nul 2>&1
@@ -99,34 +107,34 @@ set /p "=." <nul
 set /a WAIT+=1
 if %WAIT% lss 45 goto :waitdb
 echo.
-echo  [错误] 数据库启动超时（45秒）。详情：%LOGS_DIR%\mysql_error.log
+echo  [ERROR] Database start timed out (45s). Details: %LOGS_DIR%\mysql_error.log
 goto :fatal
 :db_ready
 echo  OK
 
-rem ── 建库（幂等）──────────────────────────────────────────────────────────
+rem -- Create database (idempotent) --
 "%MYSQL_EXE%" -u root "--password=%DB_PASS%" -h 127.0.0.1 -P %DB_PORT% ^
   -e "CREATE DATABASE IF NOT EXISTS %DB_NAME% DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;" >nul 2>&1
 
 :check_node_port
 call :port_in_use %APP_PORT%
 if "%PORT_USED%"=="1" (
-  echo  [i] 后端端口 %APP_PORT% 已在监听，服务正在运行，直接打开浏览器。
+  echo  [i] Backend port %APP_PORT% already listening; service running, opening browser.
   goto :open_browser
 )
 
-rem ── 启动 Node 后端（Chromium 路径在进程环境变量中注入）────────────────────
-echo  [3/5] 启动后端服务...
+rem -- Start Node backend (Chromium path injected via process env) --
+echo  [3/5] Starting backend service...
 set "PUPPETEER_EXECUTABLE_PATH=%CHROMIUM_EXE%"
 set "PUPPETEER_SKIP_DOWNLOAD=true"
-rem cd 到 backend 目录，使 require('dotenv').config() 能找到 .env（dotenv 默认读 process.cwd()/.env）
+rem cd into backend so require('dotenv').config() finds .env (dotenv reads process.cwd()/.env)
 cd /d "%ROOT%\app\backend"
 start "" /B "%NODE_EXE%" "%APP_ENTRY%" 1>"%LOGS_DIR%\node.log" 2>&1
 cd /d "%ROOT%"
 
-rem 等待后端健康（最多 55 秒，PowerShell 兼容 Win10 1803 以前）
+rem Wait for backend health (up to 55s; PowerShell compatible with pre-Win10 1803)
 set /a WAIT=0
-set /p "=        等待后端就绪 " <nul
+set /p "=        Waiting for backend " <nul
 :waitnode
 timeout /t 2 /nobreak >nul
 powershell -NoProfile -NonInteractive -Command "try{$r=(Invoke-WebRequest 'http://127.0.0.1:%APP_PORT%/api/v1/health' -UseBasicParsing -TimeoutSec 2 -ErrorAction Stop).Content;if($r -match 'connected'){exit 0}else{exit 1}}catch{exit 1}" >nul 2>&1
@@ -135,33 +143,52 @@ set /p "=." <nul
 set /a WAIT+=2
 if %WAIT% lss 55 goto :waitnode
 echo.
-echo  [警告] 后端超时，将直接打开浏览器。若页面空白请稍候刷新。
-echo         日志：%LOGS_DIR%\node.log
+echo  [WARN] Backend timed out, opening browser anyway. If the page is blank, please refresh shortly.
+echo         Log: %LOGS_DIR%\node.log
 goto :open_browser
 :node_ready
 echo  OK
 
-rem ── 首次运行种子数据（检查标记文件）────────────────────────────────────
-echo  [4/5] 初始化默认账号数据...
+echo  [4/5] Checking and initializing database data...
 if exist "%SEED_FLAG%" (
-  echo        账号已初始化，跳过。
-) else (
-  if exist "%SEED_SCRIPT%" (
-    "%NODE_EXE%" "%SEED_SCRIPT%" 1>>"%LOGS_DIR%\seed.log" 2>&1
+  echo        Data already initialized, skipping.
+  goto :seed_done
+)
+rem -- determine import need from real table: count rows in users (treat missing table as 0) --
+del "%LOGS_DIR%\user_count.txt" 2>nul
+"%MYSQL_EXE%" -u root "--password=%DB_PASS%" -h 127.0.0.1 -P %DB_PORT% -N -s -e "SELECT COUNT(*) FROM %DB_NAME%.users" 1>"%LOGS_DIR%\user_count.txt" 2>nul
+set "USER_COUNT=0"
+if exist "%LOGS_DIR%\user_count.txt" (
+  for /f "usebackq delims=" %%C in ("%LOGS_DIR%\user_count.txt") do set "USER_COUNT=%%C"
+)
+if not defined USER_COUNT set "USER_COUNT=0"
+if "%USER_COUNT%"=="0" (
+  if exist "%SQL_SEED%" (
+    echo        Database is empty, importing production data ^(qms_production_backup.sql^)...
+    "%MYSQL_EXE%" -u root "--password=%DB_PASS%" -h 127.0.0.1 -P %DB_PORT% %DB_NAME% < "%SQL_SEED%" >"%LOGS_DIR%\sql_import.log" 2>&1
     if errorlevel 1 (
-      echo        [警告] 种子数据写入失败，可能影响首次登录。
-      echo               详情：%LOGS_DIR%\seed.log
+      echo        [WARN] Production data import failed, falling back to default seed script.
+      echo               Details: %LOGS_DIR%\sql_import.log
+      if exist "%SEED_SCRIPT%" "%NODE_EXE%" "%SEED_SCRIPT%" 1>>"%LOGS_DIR%\seed.log" 2>&1
     ) else (
-      echo        默认账号创建完成。
+      echo        Production data import complete.
+      echo done> "%SEED_FLAG%"
     )
   ) else (
-    echo        [警告] 未找到种子脚本，跳过。
+    echo        [WARN] Production SQL file not found, using default seed script.
+    if exist "%SEED_SCRIPT%" "%NODE_EXE%" "%SEED_SCRIPT%" 1>>"%LOGS_DIR%\seed.log" 2>&1
+    echo done> "%SEED_FLAG%"
   )
+) else (
+  echo        Database already has %USER_COUNT% users, skipping import.
+  echo done> "%SEED_FLAG%"
 )
-
+:seed_done
+rem -- ensure qms_users exists (production backup names the user table "users"; backend requires qms_users). idempotent mirror; silently skips if users missing --
+"%MYSQL_EXE%" -u root "--password=%DB_PASS%" -h 127.0.0.1 -P %DB_PORT% %DB_NAME% -e "CREATE TABLE IF NOT EXISTS qms_users LIKE users; INSERT IGNORE INTO qms_users SELECT * FROM users;" >"%LOGS_DIR%\ensure_qms_users.log" 2>&1
 :open_browser
-echo  [5/5] 打开浏览器...
-rem 优先打开欢迎页（含账号密码和所有入口链接），若不存在则回退到企业端
+echo  [5/5] Opening browser...
+rem Prefer the welcome page (accounts + entry links); fall back to enterprise portal
 set "WELCOME=%ROOT%\app\welcome.html"
 if exist "%WELCOME%" (
   start "" "%WELCOME%"
@@ -169,40 +196,43 @@ if exist "%WELCOME%" (
   start "" "http://localhost:%APP_PORT%/exam-admin"
 )
 
-rem ── 打印访问信息 ──────────────────────────────────────────────────────────
+rem -- Print access info --
 echo.
 echo  ============================================================
-echo   服务已就绪！
+echo   Service is ready!
 echo.
-echo   访问地址：
-echo     企业端（出题/考试管理） http://localhost:%APP_PORT%/exam-admin
-echo     考生端（在线答题）      http://localhost:%APP_PORT%/exam-student
-echo     阅卷端                  http://localhost:%APP_PORT%/exam-grader
-echo     总管理端                http://localhost:%APP_PORT%/exam-super-admin
+echo   Access URLs:
+echo     Enterprise (authoring / exam mgmt) http://localhost:%APP_PORT%/exam-admin
+echo     Student    (online exam)           http://localhost:%APP_PORT%/exam-student
+echo     Grader                             http://localhost:%APP_PORT%/exam-grader
+echo     Super-Admin                        http://localhost:%APP_PORT%/exam-super-admin
 echo.
-echo   初始账号（首次登录后请修改密码）：
-echo     超级管理员   用户名: admin        密码: Admin@2024
-echo     企业管理员   用户名: enterprise   密码: Enterprise@2024
-echo     阅  卷  员   用户名: grader       密码: Grader@2024
-echo     测试考生     用户名: student1     密码: Student@2024
+echo   Initial accounts (from production DB import; passwords as in production):
+echo     System Admin     username: admin            role: admin
+echo     Enterprise Admin username: enterprise       role: enterprise
+echo     Enterprise Acct  username: Shengju Pingce (CN)  role: enterprise
+echo     Test Candidate   username: candidate        role: candidate
+echo     Candidates       username: 2024001-2024016 etc (25 total) role: candidate
 echo.
-echo   局域网其他设备：将 localhost 替换为本机 IP 即可访问
+echo   Note: passwords are bcrypt hashes from production; plaintext cannot be shown. Use production passwords to log in.
 echo.
-echo   [!] 保持本窗口开启。关闭本窗口将停止所有服务。
+echo   LAN access: replace localhost with this machine's IP.
+echo.
+echo   [!] Keep this window open. Closing it stops all services.
 echo  ============================================================
 echo.
 
-rem ── 持续监控（每 15 秒健康检查，崩溃时告警）────────────────────────────
+rem -- Continuous monitor (health check every 15s; warn on crash) --
 :monitor
 timeout /t 15 /nobreak >nul
 powershell -NoProfile -NonInteractive -Command "try{Invoke-WebRequest 'http://127.0.0.1:%APP_PORT%/api/v1/health' -UseBasicParsing -TimeoutSec 3 -ErrorAction Stop|Out-Null;exit 0}catch{exit 1}" >nul 2>&1
 if errorlevel 1 (
   echo.
-  echo  [%time%] 警告：后端无响应，服务可能已停止。查看 logs\node.log
+  echo  [%time%] WARN: backend not responding, service may have stopped. See logs\node.log
 )
 goto :monitor
 
-rem ── 子程序：检测 TCP 端口是否有进程监听 ─────────────────────────────────
+rem -- Subroutine: check whether a TCP port has a listening process --
 :port_in_use
 set "PORT_USED=0"
 netstat -ano 2>nul | findstr /R "[ :]%~1 " | findstr /C:"LISTENING" >nul 2>&1
@@ -211,7 +241,7 @@ goto :eof
 
 :fatal
 echo.
-echo  请将 logs\ 目录下的日志文件发送给技术支持。
-echo  按任意键退出...
+echo  Please send the log files under logs\ to technical support.
+echo  Press any key to exit...
 pause >nul
 exit /b 1

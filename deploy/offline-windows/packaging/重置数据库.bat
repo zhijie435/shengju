@@ -9,39 +9,39 @@ set "MYSQLADMIN_EXE=%ROOT%\runtime\mariadb\bin\mysqladmin.exe"
 set "DB_PASS=ShengjuLocal2024"
 
 echo ============================================================
-echo   [警告] 重置数据库
+echo   [WARNING] Reset database
 echo ============================================================
 echo.
-echo   此操作将删除所有考试数据，包括：
-echo   - 所有试题、题库、试卷
-echo   - 所有考生报名和答题记录
-echo   - 所有用户账号
+echo   This will delete ALL exam data, including:
+echo   - all questions, question banks, papers
+echo   - all candidate enrollments and answer records
+echo   - all user accounts
 echo.
-echo   此操作不可撤销！
+echo   This operation cannot be undone!
 echo.
-set /p "CONFIRM=确认重置？请输入 YES 并回车（其他任意键取消）: "
+set /p "CONFIRM=Confirm reset? Type YES and press Enter (anything else cancels): "
 if /i not "%CONFIRM%"=="YES" (
-  echo 已取消。
+  echo Cancelled.
   pause
   exit /b 0
 )
 
 echo.
-echo 正在停止数据库服务...
+echo Stopping database service...
 "%MYSQLADMIN_EXE%" -u root "--password=%DB_PASS%" -h 127.0.0.1 -P 3306 shutdown >nul 2>&1
 taskkill /f /im mysqld.exe >nul 2>&1
 timeout /t 2 /nobreak >nul
 
-echo 正在删除数据目录...
+echo Deleting data directory...
 if exist "%DATA_DIR%" (
   rd /s /q "%DATA_DIR%"
   mkdir "%DATA_DIR%"
 )
 
-echo 正在清理日志...
+echo Cleaning logs...
 if exist "%LOGS_DIR%\mysql_error.log" del /f /q "%LOGS_DIR%\mysql_error.log"
 if exist "%LOGS_DIR%\node.log" del /f /q "%LOGS_DIR%\node.log"
 
 echo.
-echo 重置完成。请重新运行「启动考试系统.bat」完成初始化。
+echo Reset complete. Please re-run the Start Exam System shortcut to re-initialize.
 pause
